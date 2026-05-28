@@ -1,0 +1,108 @@
+services:
+  dev_app:
+    extends:
+      file: ./docker-compose.base.yml
+      service: app
+    container_name: dev_app
+    profiles:
+      - dev
+    env_file:
+      - .env.dev
+    depends_on:
+      - mailhog
+      - redis
+      - dev_postgres
+      - localstack_dev
+    command: >
+      sh -c '
+        npm install --legacy-peer-deps &&
+        npm run start;
+      '
+
+  test_app:
+    extends:
+      file: ./docker-compose.base.yml
+      service: app
+    container_name: test_app
+    environment:
+      - .env.test
+    profiles:
+      - test
+    depends_on:
+      - mailhog
+      - redis
+      - test_postgres
+      - localstack_test
+    command: >
+      sh -c '
+        npm install --legacy-peer-deps &&
+        npm run test;
+      '
+
+  dev_postgres:
+    extends:
+      file: ./docker-compose.base.yml
+      service: postgres
+    volumes:
+      - ./docker/local/postgres/pgdata:/var/lib/postgresql/data
+    profiles:
+      - dev
+      - localDev
+
+  test_postgres:
+    extends:
+      file: ./docker-compose.base.yml
+      service: postgres
+    profiles:
+      - test
+      - localTest
+
+  mailhog:
+    extends:
+      file: ./docker-compose.base.yml
+      service: mailhog
+    profiles:
+      - dev
+      - test
+      - localDev
+      - localTest
+
+  redis:
+    extends:
+      file: ./docker-compose.base.yml
+      service: redis
+    profiles:
+      - dev
+      - test
+      - localDev
+      - localTest
+
+  localstack_dev:
+    container_name: localstack_dev
+    extends:
+      file: ./docker-compose.base.yml
+      service: localstack
+    profiles:
+      - dev
+      - localDev
+    volumes:
+      - ./localstack-data:/persisted-data
+    environment:
+      DATA_DIR: /data
+
+  localstack_test:
+    container_name: localstack_test
+    extends:
+      file: ./docker-compose.base.yml
+      service: localstack
+    profiles:
+      - test
+      - localTest
+
+volumes:
+  psql_data:
+    driver: local
+  localstack_data:
+    driver: local
+  localstack_bucket:
+    driver: local

@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2022"
+    ],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "target": "es2022",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "sourceRoot": "/",
+    "inlineSources": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
+    ]
+  },
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "include": [
+    "./src/**/*",
+    "./config/**/*",
+    "./tests/**/*",
+    "./scripts/**/*.ts",
+    "i18next-scanner.config.ts"
+  ]
+}
