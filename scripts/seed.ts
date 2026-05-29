@@ -1,13 +1,34 @@
+import { UserRole } from '@prisma/client';
+import config from 'config';
+
 import { EncryptionService } from '../src/services/Encryption';
+import logger from '../src/services/Logger';
 import prisma from '../src/services/Prisma';
+import { IConfig } from '../src/types/config';
 import UserGenerator from '../tests/utils/UserGenerator';
+
+const seedConfig = config.get<IConfig['seed']>('seed')
 
 async function seed() {
     const users = [];
 
     // Generate plain objects
-    for (let i = 0; i < 10; i++) {
-        users.push(UserGenerator.generateData({ password: EncryptionService.hashSHA256('Test123') }));   // must return plain object
+    for (let i = 0; i < seedConfig.grain; i++) {
+        if (i % 3 === 0) {
+            users.push(UserGenerator.generateData({ 
+                password: EncryptionService.hashSHA256('Test123'), 
+                role: UserRole.Admin
+            }))
+        } else if (i % 2 === 0) {
+            users.push(UserGenerator.generateData({
+                password: EncryptionService.hashSHA256('Test123'),
+                role: UserRole.User
+            }))
+        } else {
+            users.push(UserGenerator.generateData({
+                role: UserRole.NotRegistered
+            }))
+        }
     }
 
     const promises: Promise<any>[] = [];
@@ -22,14 +43,12 @@ async function seed() {
     }
 
     await Promise.all(promises);
-
-    // eslint-disable-next-line
-    console.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`);
+     
+    logger.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`);
 }
 
 seed().catch((error) => {
-    // eslint-disable-next-line
-    console.error('Seeding failed:', error);
+    logger.error('Seeding failed:', error);
     process.exit(1);
 });
 

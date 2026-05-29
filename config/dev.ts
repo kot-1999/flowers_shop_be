@@ -146,6 +146,9 @@ const options: IConfig = {
         interpolation: {
             escapeValue: false
         }
+    },
+    seed: {
+        grain: 100
     }
 }
 export default options

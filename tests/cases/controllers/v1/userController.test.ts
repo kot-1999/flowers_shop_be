@@ -2,14 +2,14 @@ import { faker } from '@faker-js/faker'
 import { expect } from 'chai'
 import supertest from 'supertest'
 
-import app from '../../../../../src/app'
-import { UsersController } from '../../../../../src/controllers/v1/UserController';
-import { JwtService } from '../../../../../src/services/Jwt';
-import prisma from '../../../../../src/services/Prisma';
-import { JwtAudience } from '../../../../../src/utils/enums';
-import UserGenerator from '../../../../utils/UserGenerator'
+import app from '../../../../src/app'
+import { UsersController } from '../../../../src/controllers/v1/UserController';
+import { JwtService } from '../../../../src/services/Jwt';
+import prisma from '../../../../src/services/Prisma';
+import { JwtAudience } from '../../../../src/utils/enums';
+import UserGenerator from '../../../utils/UserGenerator'
 
-const endpoint = (val: string = '') => '/api/b2c/v1/user/' + val
+const endpoint = (val: string = '') => '/api/v1/user/' + val
 
 describe('GET ' + endpoint(':userID'), () => {
     let userID: string
@@ -24,7 +24,6 @@ describe('GET ' + endpoint(':userID'), () => {
                 id: user.id,
                 aud: JwtAudience.admin
             })}`)
-
         expect(res.statusCode).to.equal(401)
     })
 

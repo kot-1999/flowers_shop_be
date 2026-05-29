@@ -101,7 +101,7 @@ export class UsersController extends AbstractController {
                         lastName: true,
                         email: true,
                         emailVerified: true,
-                        type: true,
+                        role: true,
                         createdAt: true,
                         updatedAt: true
                     }

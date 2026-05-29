@@ -98,8 +98,10 @@ export class AuthorizationController extends AbstractController {
                 }
             })
 
-            if (user && user.role !== UserRole.NotRegistered) {
-                throw new IError(409, req.t('User already exists. Try to login again, or use forgot password'))
+            if (user) {
+                if (user.role && user.role === UserRole.NotRegistered) {} else {
+                    throw new IError(409, req.t('User already exists. Try to login again, or use forgot password'))
+                }
             }
             
             const data = {
@@ -107,7 +109,8 @@ export class AuthorizationController extends AbstractController {
                 lastName: body.lastName,
                 email: body.email,
                 emailVerified: false,
-                password: EncryptionService.hashSHA256(EncryptionService.decryptAES(body.password))
+                password: EncryptionService.hashSHA256(EncryptionService.decryptAES(body.password)),
+                role: UserRole.User
             }
             
             if (!user) {

@@ -72,4 +72,7 @@ export interface IConfig {
     fallbackLng: { default: string[] }
     backend: { loadPath: string }
   },
+  seed: {
+    grain: number
+  }
 }
