@@ -1,12 +1,12 @@
 {
-  "name": "BE-project-01",
+  "name": "flowers-shop-be",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "build:frontend": "rm -rf RestB_FE && git clone https://github.com/kot-1999/RestB_FE.git && cd RestB_FE && npm install --legacy-peer-deps && npm run build",
     "prestart": "npx prisma generate && npx prisma db push && npm run apidoc && npm run db:seed && npm run translate:scan",
-    "prestart:test": "npx prisma generate && npx prisma db push && npm run db:seed",
+    "prestart:test": "npx prisma generate && npx prisma db push",
     "start": "npm run prestart && cross-env nodemon --watch src -L --verbose --exec \"node --watch -r dotenv/config -r ts-node/register src/index.ts\"",
     "test": "npm run prestart:test && npm run db:push && mocha -r dotenv/config -r ts-node/register --config .mocharc.js",
     "docker:dev": "docker compose  --env-file .env.dev --profile dev up -d && docker attach dev_app",
