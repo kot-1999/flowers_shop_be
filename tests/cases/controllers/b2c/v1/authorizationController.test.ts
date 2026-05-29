@@ -4,7 +4,7 @@ import config from 'config'
 import supertest from 'supertest'
 
 import app from '../../../../../src/app'
-import { AuthorizationController } from '../../../../../src/controllers/b2c/v1/AuthorizationController'
+import { AuthorizationController } from '../../../../../src/controllers/v1/AuthorizationController'
 import { EncryptionService } from '../../../../../src/services/Encryption'
 import { JwtService } from '../../../../../src/services/Jwt'
 import prisma from '../../../../../src/services/Prisma'
@@ -183,7 +183,7 @@ describe('POST ' + endpoint('/reset-password'), () => {
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${JwtService.generateToken({
                 id: user.id,
-                aud: JwtAudience.b2cForgotPassword
+                aud: JwtAudience.userForgotPassword
             })}`)
             .send({
                 newPassword
@@ -203,7 +203,7 @@ describe('POST ' + endpoint('/reset-password'), () => {
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${JwtService.generateToken({
                 id: user.id,
-                aud: JwtAudience.b2c
+                aud: JwtAudience.user
             })}`)
             .send({
                 newPassword

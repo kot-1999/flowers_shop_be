@@ -29,7 +29,6 @@
     "./src/**/*",
     "./config/**/*",
     "./tests/**/*",
-    "./scripts/**/*.ts",
-    "i18next-scanner.config.ts"
+    "./scripts/**/*.ts"
   ]
 }

@@ -1,14 +1,15 @@
-import { Request, Response, NextFunction, AuthUserRequest } from 'express'
+import { UserRole } from '@prisma/client';
+import { Request, Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 
-import emailService from '../../../services/Email'
-import { EncryptionService } from '../../../services/Encryption'
-import { JwtService } from '../../../services/Jwt'
-import prisma from '../../../services/Prisma'
-import { AbstractController } from '../../../types/AbstractController'
-import { JoiCommon } from '../../../types/JoiCommon'
-import { EmailType, JwtAudience } from '../../../utils/enums'
-import { IError } from '../../../utils/IError'
+import emailService from '../../services/Email'
+import { EncryptionService } from '../../services/Encryption'
+import { JwtService } from '../../services/Jwt'
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { EmailType, JwtAudience } from '../../utils/enums'
+import { IError } from '../../utils/IError'
 
 export class AuthorizationController extends AbstractController {
     private static readonly userSchema = Joi.object({
@@ -49,10 +50,20 @@ export class AuthorizationController extends AbstractController {
             })
         },
         response: {
-            register: AuthorizationController.userSchema.keys({
+            register: Joi.object({
+                user: Joi.object({
+                    id: JoiCommon.string.id,
+                    role: Joi.string().valid(...Object.values(UserRole))
+                        .required()
+                }).required(),
                 message: Joi.string().required()
             }).required(),
-            login: AuthorizationController.userSchema.keys({
+            login: Joi.object({
+                user: Joi.object({
+                    id: JoiCommon.string.id,
+                    role: Joi.string().valid(...Object.values(UserRole))
+                        .required()
+                }).required(),
                 message: Joi.string().required()
             }).required(),
             logout: AuthorizationController.userSchema.keys({
@@ -87,22 +98,36 @@ export class AuthorizationController extends AbstractController {
                 }
             })
 
-            if (user) {
+            if (user && user.role !== UserRole.NotRegistered) {
                 throw new IError(409, req.t('User already exists. Try to login again, or use forgot password'))
             }
-
-            user = await prisma.user.create({
-                data: {
-                    firstName: body.firstName,
-                    lastName: body.lastName,
-                    email: body.email,
-                    emailVerified: false,
-                    password: EncryptionService.hashSHA256(EncryptionService.decryptAES(body.password))
-                }
-            })
+            
+            const data = {
+                firstName: body.firstName,
+                lastName: body.lastName,
+                email: body.email,
+                emailVerified: false,
+                password: EncryptionService.hashSHA256(EncryptionService.decryptAES(body.password))
+            }
+            
+            if (!user) {
+                // If user doesn't exist, create one
+                user = await prisma.user.create({
+                    data
+                })
+            } else {
+                // If user wasn't registered, update him
+                await prisma.user.update({
+                    where: {
+                        id: user.id
+                    },
+                    data
+                })
+            }
+            
             req.session.jwt = JwtService.generateToken({
                 id: user.id,
-                aud: JwtAudience.b2c
+                aud: JwtAudience.user
             })
 
             if (user) {
@@ -117,7 +142,8 @@ export class AuthorizationController extends AbstractController {
                 .status(200)
                 .json({
                     user: {
-                        id: user.id
+                        id: user.id,
+                        role: UserRole.User
                     },
                     message: req.t('Successfully registered')
                 })
@@ -143,7 +169,7 @@ export class AuthorizationController extends AbstractController {
                 }
             })
 
-            if (!user) {
+            if (!user || user.role === UserRole.NotRegistered) {
                 throw new IError(401, req.t('Password or email is incorrect'))
             }
 
@@ -152,17 +178,25 @@ export class AuthorizationController extends AbstractController {
             if (user.password !== EncryptionService.hashSHA256(decryptedPassword)) {
                 throw new IError(401, req.t('Password or email is incorrect'))
             }
-
-            req.session.jwt = JwtService.generateToken({
-                id: user.id,
-                aud: JwtAudience.b2c
-            })
+            
+            if (user.role === UserRole.Admin) {
+                req.session.jwt = JwtService.generateToken({
+                    id: user.id,
+                    aud: JwtAudience.admin
+                })
+            } else if (user.role === UserRole.User) {
+                req.session.jwt = JwtService.generateToken({
+                    id: user.id,
+                    aud: JwtAudience.user
+                })
+            }
 
             return res
                 .status(200)
                 .json({
                     user: {
-                        id: user.id
+                        id: user.id,
+                        role: user.role
                     },
                     message: req.t('Logged in successfully')
                 })
@@ -185,7 +219,7 @@ export class AuthorizationController extends AbstractController {
 
     private LogoutResType: Joi.extractType<typeof AuthorizationController.schemas.response.logout>
     public async logout(
-        req: AuthUserRequest,
+        req: AuthRequest,
         res: Response<typeof this.LogoutResType>,
         next: NextFunction
     ) {
@@ -253,7 +287,14 @@ export class AuthorizationController extends AbstractController {
                     id: user.id,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    email: user.email
+                    email: user.email,
+                    jwtToken: user.role === UserRole.Admin ? JwtService.generateToken({
+                        id: user.id,
+                        aud: JwtAudience.admin
+                    }) : JwtService.generateToken({
+                        id: user.id,
+                        aud: JwtAudience.user
+                    })
                 })
             }
 
@@ -267,7 +308,7 @@ export class AuthorizationController extends AbstractController {
     private ResetPasswordReqType: Joi.extractType<typeof AuthorizationController.schemas.request.resetPassword>
     private ResetPasswordResType: Joi.extractType<typeof AuthorizationController.schemas.response.resetPassword>
     public async resetPassword(
-        req: AuthUserRequest & typeof this.ResetPasswordReqType,
+        req: AuthRequest & typeof this.ResetPasswordReqType,
         res: Response<typeof this.ResetPasswordResType>,
         next: NextFunction
     ) {

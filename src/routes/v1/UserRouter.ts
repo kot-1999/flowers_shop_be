@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { UsersController } from '../../controllers/b2c/v1/UserController'
+import { UsersController } from '../../controllers/v1/UserController'
 import authorizationMiddleware from '../../middlewares/authorizationMiddleware'
 import validationMiddleware from '../../middlewares/validationMiddleware'
 import { PassportStrategy } from '../../utils/enums'
@@ -13,37 +13,37 @@ export default function authorizationRouter() {
     // List endpoints
     router.get(
         /*
-            #swagger.tags = ['b2c-v1-User']
+            #swagger.tags = ['v1-User']
             #swagger.description = 'Get user details',
             #swagger.parameters['body'] = {
                 in: 'body',
-                schema: { $ref: '#/definitions/b2cV1GetUserReqBody' }
+                schema: { $ref: '#/definitions/v1GetUserReqBody' }
             }
             #swagger.responses[200] = {
-                schema: { "$ref": "#/definitions/b2cV1GetUserRes" },
+                schema: { "$ref": "#/definitions/v1GetUserRes" },
             }
         */
         '/:userID',
         validationMiddleware(UsersController.schemas.request.getUser),
-        authorizationMiddleware([PassportStrategy.jwtB2c, PassportStrategy.google]),
+        authorizationMiddleware([PassportStrategy.jwtUser, PassportStrategy.google]),
         userController.getUser
     )
 
     router.delete(
         /*
-            #swagger.tags = ['b2c-v1-User']
+            #swagger.tags = ['v1-User']
             #swagger.description = 'Delete user. User can delete only himself.',
             #swagger.parameters['body'] = {
                 in: 'body',
-                schema: { $ref: '#/definitions/b2cV1DeleteUserReqBody' }
+                schema: { $ref: '#/definitions/v1DeleteUserReqBody' }
             }
             #swagger.responses[200] = {
-                schema: { "$ref": "#/definitions/b2cV1DeleteUserRes" },
+                schema: { "$ref": "#/definitions/v1DeleteUserRes" },
             }
         */
         '/',
         validationMiddleware(UsersController.schemas.request.deleteUser),
-        authorizationMiddleware([PassportStrategy.jwtB2c, PassportStrategy.google]),
+        authorizationMiddleware([PassportStrategy.jwtUser, PassportStrategy.google]),
         userController.deleteUser
     )
 

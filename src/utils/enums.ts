@@ -1,9 +1,9 @@
 export enum PassportStrategy {
     google = 'google',
-    jwtB2c = 'jwt-b2c',
-    jwtB2cForgotPassword = 'jwt-b2c-forgot_password',
-    jwtB2b = 'jwt-b2b',
-    jwtB2bForgotPassword = 'jwt-b2b-forgot_password',
+    jwtUser = 'jwt-usr',
+    jwtUserForgotPassword = 'jwt-user-forgot_password',
+    jwtAdmin = 'jwt-b2b',
+    jwtAdminForgotPassword = 'jwt-admin-forgot_password',
 }
 
 export enum EmailType {
@@ -12,10 +12,10 @@ export enum EmailType {
 }
 
 export enum JwtAudience {
-    b2c ='b2c',
-    b2b = 'b2b',
-    b2cForgotPassword = 'b2cfps',
-    b2bForgotPassword = 'b2bfps'
+    user ='user',
+    admin = 'admin',
+    userForgotPassword = 'userfps',
+    adminForgotPassword = 'adminfps'
 }
 
 export enum NodeEnv {

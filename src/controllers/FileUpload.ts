@@ -1,4 +1,4 @@
-import { Response, NextFunction, AuthAdminRequest } from 'express'
+import { Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 
 import s3Service from '../services/AwsS3'
@@ -35,7 +35,7 @@ export class FileUpload extends AbstractController {
     private PutFileReqType: Joi.extractType<typeof FileUpload.schemas.request.putFile>
     private PutFileResType: Joi.extractType<typeof FileUpload.schemas.response.putFile>
     public async putFile(
-        req: AuthAdminRequest & typeof this.PutFileReqType,
+        req: AuthRequest & typeof this.PutFileReqType,
         res: Response<typeof this.PutFileResType>,
         next: NextFunction
     ) {

@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import supertest from 'supertest'
 
 import app from '../../../../../src/app'
-import { UsersController } from '../../../../../src/controllers/b2c/v1/UserController';
+import { UsersController } from '../../../../../src/controllers/v1/UserController';
 import { JwtService } from '../../../../../src/services/Jwt';
 import prisma from '../../../../../src/services/Prisma';
 import { JwtAudience } from '../../../../../src/utils/enums';
@@ -22,7 +22,7 @@ describe('GET ' + endpoint(':userID'), () => {
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${JwtService.generateToken({
                 id: user.id,
-                aud: JwtAudience.b2b
+                aud: JwtAudience.admin
             })}`)
 
         expect(res.statusCode).to.equal(401)
@@ -34,7 +34,7 @@ describe('GET ' + endpoint(':userID'), () => {
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${JwtService.generateToken({
                 id: userID,
-                aud: JwtAudience.b2c
+                aud: JwtAudience.user
             })}`)
 
         expect(res.statusCode).to.equal(200)
@@ -51,7 +51,7 @@ describe('GET ' + endpoint(':userID'), () => {
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${JwtService.generateToken({
                 id: user.id,
-                aud: JwtAudience.b2c
+                aud: JwtAudience.user
             })}`)
 
         expect(res.statusCode).to.equal(200)
@@ -67,7 +67,7 @@ describe('GET ' + endpoint(':userID'), () => {
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${JwtService.generateToken({
                 id: userID,
-                aud: JwtAudience.b2c
+                aud: JwtAudience.user
             })}`)
 
         expect(res.statusCode).to.equal(404)
@@ -83,7 +83,7 @@ describe('DELETE ' + endpoint(), () => {
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${JwtService.generateToken({
                 id: user.id,
-                aud: JwtAudience.b2c
+                aud: JwtAudience.user
             })}`)
 
         expect(res.statusCode).to.equal(200)

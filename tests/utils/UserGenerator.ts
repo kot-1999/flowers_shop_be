@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { User, UserType } from '@prisma/client'
+import { User, UserRole } from '@prisma/client'
 import dayjs from 'dayjs'
 
 import { EncryptionService } from '../../src/services/Encryption'
@@ -18,7 +18,7 @@ export default class UserGenerator {
             email: userData.email ?? faker.internet.email(),
             emailVerified: userData.emailVerified ?? false,
             password: userData.password ?? EncryptionService.hashSHA256(faker.internet.password()),
-            type: userData.type ?? UserType.Default,
+            role: userData.role ?? UserRole.User,
             googleProfileID: userData.googleProfileID ?? null,
             createdAt: userData.createdAt as Date ?? dayjs().toISOString(),
             updatedAt: userData.updatedAt as Date ?? dayjs().toISOString(),
