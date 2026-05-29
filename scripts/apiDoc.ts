@@ -5,42 +5,27 @@ import Joi from 'joi'
 import j2s from 'joi-to-swagger'
 import swaggerAutogen from 'swagger-autogen'
 
-import {
-    AuthorizationController as b2bAuthorizationController
-} from '../src/controllers/b2b/v1/AuthorizationController'
-import { AuthorizationController as UserAuthorizationController } from '../src/controllers/b2c/v1/AuthorizationController'
 import { FileUpload } from '../src/controllers/FileUpload';
+import { AuthorizationController as UserAuthorizationController } from '../src/controllers/v1/AuthorizationController'
 
 /**
  * Link all endpoints to their schemas
  * Requirements:
- *   - All schema names must be under the valid category: b2c.v1.getUser
+ *   - All schema names must be under the valid category: v1.getUser
  *   - Schema names and endpoint names must be the same getUser (endpoint Name) === getUser (Schema name)
  * All new endpoints must be listed here
  * */
 const schemas: {[key: string]: {[key: string]: any}} = {
-    b2c: {
-        v1: {
-            // Auth
-            register: UserAuthorizationController.schemas,
-            login: UserAuthorizationController.schemas,
-            forgotPassword: UserAuthorizationController.schemas,
-            logout: UserAuthorizationController.schemas,
-            resetPassword: UserAuthorizationController.schemas,
+    v1: {
+        // Auth
+        register: UserAuthorizationController.schemas,
+        login: UserAuthorizationController.schemas,
+        forgotPassword: UserAuthorizationController.schemas,
+        logout: UserAuthorizationController.schemas,
+        resetPassword: UserAuthorizationController.schemas,
 
-            // File Upload
-            putFile: FileUpload.schemas
-        }
-    },
-    b2b: {
-        v1: {
-            // Auth
-            register: b2bAuthorizationController.schemas,
-            login: b2bAuthorizationController.schemas,
-            forgotPassword: b2bAuthorizationController.schemas,
-            logout: b2bAuthorizationController.schemas,
-            resetPassword: b2bAuthorizationController.schemas
-        }
+        // File Upload
+        putFile: FileUpload.schemas
     }
 }
 
@@ -155,31 +140,29 @@ function joiToCustomSwagger(node: any, key: string | null = null, parentRequired
 
 const definitions: any = {}
 
-Object.keys(schemas).forEach((platform) => {
-    Object.keys(schemas[platform]).forEach((version) => {
-        Object.keys(schemas[platform][version]).forEach((endpoint) => {
-            const reference = `${platform}${version.toUpperCase()}${endpoint.charAt(0).toUpperCase() + endpoint.slice(1)}`
+Object.keys(schemas).forEach((version) => {
+    Object.keys(schemas[version]).forEach((endpoint) => {
+        const reference = `${version}${endpoint.charAt(0).toUpperCase() + endpoint.slice(1)}`
 
-            const controllerSchemas = schemas[platform][version][endpoint]
-            const reqSchema = controllerSchemas.request[endpoint]
-            const resSchema = controllerSchemas.response[endpoint]
-            if (!Joi.isSchema(reqSchema)) {
-                throw new Error('Is not a request schema: ' + platform + version +endpoint)
-            }
+        const controllerSchemas = schemas[version][endpoint]
+        const reqSchema = controllerSchemas.request[endpoint]
+        const resSchema = controllerSchemas.response[endpoint]
+        if (!Joi.isSchema(reqSchema)) {
+            throw new Error('Is not a request schema: ' + version + endpoint)
+        }
 
-            if (!Joi.isSchema(resSchema)) {
-                throw new Error('Is not a response schema: ' + platform + version +endpoint)
-            }
+        if (!Joi.isSchema(resSchema)) {
+            throw new Error('Is not a response schema: ' + version +endpoint)
+        }
 
-            definitions[`${reference}ReqBody`] = joiToCustomSwagger(j2s(reqSchema).swagger?.properties)
-            definitions[`${reference}Res`] = joiToCustomSwagger(j2s(resSchema).swagger?.properties)
-        })
+        definitions[`${reference}ReqBody`] = joiToCustomSwagger(j2s(reqSchema).swagger?.properties)
+        definitions[`${reference}Res`] = joiToCustomSwagger(j2s(resSchema).swagger?.properties)
     })
 })
 
 const doc = {
     info: {
-        title: 'My API',
+        title: 'Flower Shop API',
         description: 'Description'
     },
     host: 'localhost:3000',
