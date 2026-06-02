@@ -90,7 +90,7 @@ export default function userAuthorizationRouter() {
         '/me',
         /*
             #swagger.tags = ['v1-UserAuthorization']
-            #swagger.description = 'Check session ser',
+            #swagger.description = 'Check session user',
             #swagger.parameters['body'] = {
                 in: 'body',
                 schema: { $ref: '#/definitions/v1MeReqBody' }
@@ -99,10 +99,11 @@ export default function userAuthorizationRouter() {
                 schema: { "$ref": "#/definitions/v1MeRes" }
             }
         */
+        authorizationMiddleware([PassportStrategy.google]),
         authorizationController.me
     )
 
-    router.get(
+    router.post(
         /*
             #swagger.tags = ['v1-UserAuthorization']
             #swagger.description = 'Logout a user.',
@@ -138,14 +139,14 @@ export default function userAuthorizationRouter() {
 
     router.post(
         /*
-           #swagger.tags = ['b2c-v1-UserAuthorization']
+           #swagger.tags = ['v1-UserAuthorization']
            #swagger.description = 'Resets a password.',
            #swagger.parameters['body'] = {
                in: 'body',
-               schema: { $ref: '#/definitions/b2cV1ResetPasswordReqBody' }
+               schema: { $ref: '#/definitions/v1ResetPasswordReqBody' }
            }
            #swagger.responses[200] = {
-               schema: { "$ref": "#/definitions/b2cV1ResetPasswordRes" }
+               schema: { "$ref": "#/definitions/v1ResetPasswordRes" }
            }
        */
         '/reset-password',

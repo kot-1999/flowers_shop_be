@@ -142,10 +142,10 @@ describe('POST ' + endpoint('/login'), () => {
     })
 })
 
-describe('GET ' + endpoint('/logout'), () => {
+describe('POST ' + endpoint('/logout'), () => {
     it('should logout user (200)', async () => {
         const res = await supertest(app)
-            .get(endpoint('/logout'))
+            .post(endpoint('/logout'))
             .set('Content-Type', 'application/json')
             .set('Cookie', sessionCookie)
 
@@ -158,7 +158,7 @@ describe('GET ' + endpoint('/logout'), () => {
 
     it('logged out user does not have access to app anymore (401)', async () => {
         const res = await supertest(app)
-            .get(endpoint('/logout'))
+            .post(endpoint('/logout'))
             .set('Content-Type', 'application/json')
             .set('Cookie', sessionCookie)
 

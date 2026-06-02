@@ -94,12 +94,16 @@ export class AuthorizationController extends AbstractController {
                 message: Joi.string().required()
             }).required(),
             me: Joi.object({
-                id: JoiCommon.string.id,
-                email: Joi.string().email()
-                    .required(),
-                firstName: Joi.string().required(),
-                lastName: Joi.string().required(),
-                googleProfileID: Joi.string().allow(null)
+                user: Joi.object({
+                    id: JoiCommon.string.id,
+                    email: Joi.string().email()
+                        .required(),
+                    firstName: Joi.string().required(),
+                    lastName: Joi.string().required(),
+                    googleProfileID: Joi.string().allow(null),
+                    role: Joi.string().valid(...Object.values(UserRole))
+                        .required()
+                })
             }).required(),
             resetPassword: AuthorizationController.userSchema.keys({
                 message: Joi.string().required()
@@ -243,10 +247,10 @@ export class AuthorizationController extends AbstractController {
             const { user } = req
             
             if (user.role === UserRole.NotRegistered) {
-                return res.redirect(`${appConfig.frontendUrl}/complete-registration`)
+                return res.redirect(`${appConfig.frontendUrl}/pages/auth/complete-registration`)
             }
 
-            return res.redirect(`${appConfig.frontendUrl}/dashboard`)
+            return res.redirect(`${appConfig.frontendUrl}/`)
         } catch (err) {
             return next(err)
         }
@@ -301,7 +305,8 @@ export class AuthorizationController extends AbstractController {
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                googleProfileID: user.googleProfileID
+                googleProfileID: user.googleProfileID,
+                role: user.role
             })
         } catch (err) {
             return next(err)
@@ -318,24 +323,27 @@ export class AuthorizationController extends AbstractController {
         try {
             const userID = req.user.id
             // Wrap req.logout() in a Promise
-            await new Promise<void>((resolve) => {
+            await new Promise<void>((resolve, reject) => {
                 req.logout((err) => {
                     if (err) {
-                        throw err
+                        return reject(err);
                     }
-                    resolve()
-                })
-            })
+
+                    resolve();
+                });
+            });
 
             // Destroy the session after logout
-            await new Promise<void>((resolve) => {
+            await new Promise<void>((resolve, reject) => {
                 req.session.destroy((err) => {
                     if (err) {
-                        throw err
+                        return reject(err);
                     }
-                    resolve()
-                })
-            })
+
+                    resolve();
+                });
+            });
+
             res
                 .clearCookie('connect.sid')
                 .status(200)

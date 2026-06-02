@@ -23,6 +23,9 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         forgotPassword: UserAuthorizationController.schemas,
         logout: UserAuthorizationController.schemas,
         resetPassword: UserAuthorizationController.schemas,
+        googleRedirect: UserAuthorizationController.schemas,
+        completeRegistration: UserAuthorizationController.schemas,
+        me: UserAuthorizationController.schemas,
 
         // File Upload
         putFile: FileUpload.schemas
