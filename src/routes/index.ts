@@ -36,7 +36,7 @@ export default function authorizeRouters() {
         */
         '/upload-url',
         validationMiddleware(FileUpload.schemas.request.putFile),
-        authorizationMiddleware([PassportStrategy.jwtAdmin, PassportStrategy.jwtUser, PassportStrategy.google]),
+        authorizationMiddleware([PassportStrategy.google]),
         fileUpload.putFile
     )
 

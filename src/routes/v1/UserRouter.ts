@@ -25,7 +25,7 @@ export default function authorizationRouter() {
         */
         '/:userID',
         validationMiddleware(UsersController.schemas.request.getUser),
-        authorizationMiddleware([PassportStrategy.jwtUser, PassportStrategy.google]),
+        authorizationMiddleware([PassportStrategy.google]),
         userController.getUser
     )
 
@@ -43,7 +43,7 @@ export default function authorizationRouter() {
         */
         '/',
         validationMiddleware(UsersController.schemas.request.deleteUser),
-        authorizationMiddleware([PassportStrategy.jwtUser, PassportStrategy.google]),
+        authorizationMiddleware([PassportStrategy.google]),
         userController.deleteUser
     )
 

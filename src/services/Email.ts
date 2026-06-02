@@ -16,6 +16,7 @@ class EmailService {
     private transporter: nodemailer.Transporter
     private config: IConfig['email']
     private htmlToTextCompiler: compiledFunction
+    private appConfig: IConfig['app']
 
     private initTransporter(): void {
         this.transporter = nodemailer.createTransport({
@@ -31,8 +32,9 @@ class EmailService {
         })
     }
 
-    constructor(config: IConfig['email']) {
+    constructor(config: IConfig['email'], appConfig: IConfig['app']) {
         this.config = config
+        this.appConfig = appConfig
         this.initTransporter()
         this.htmlToTextCompiler = compile()
         logger.info(`Connected to email server at PORT ${config.port}`)
@@ -67,7 +69,7 @@ class EmailService {
         const templateData = {
             firstName: data.firstName ?? 'Dear customer',
             lastName: data.lastName ?? '',
-            link: `http//www.localhost:3001/reset-password?token=${data.jwtToken}`
+            link: `${this.appConfig.frontendUrl}/reset-password?token=${data.jwtToken}`
         }
         const htmlContent = await ejs.renderFile(templatePath, templateData)
 
@@ -105,7 +107,9 @@ class EmailService {
         })
     }
 }
+
+const appConfig = config.get<IConfig['app']>('app')
 const emailConfig = config.get<IConfig['email']>('email')
-const emailService = new EmailService(emailConfig)
+const emailService = new EmailService(emailConfig, appConfig)
 
 export default emailService

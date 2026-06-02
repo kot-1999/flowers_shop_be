@@ -1,8 +1,6 @@
 export enum PassportStrategy {
     google = 'google',
-    jwtUser = 'jwt-usr',
     jwtUserForgotPassword = 'jwt-user-forgot_password',
-    jwtAdmin = 'jwt-b2b',
     jwtAdminForgotPassword = 'jwt-admin-forgot_password',
 }
 
@@ -12,8 +10,6 @@ export enum EmailType {
 }
 
 export enum JwtAudience {
-    user ='user',
-    admin = 'admin',
     userForgotPassword = 'userfps',
     adminForgotPassword = 'adminfps'
 }

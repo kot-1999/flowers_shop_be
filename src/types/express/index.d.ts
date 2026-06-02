@@ -11,4 +11,8 @@ declare module 'express' {
     interface AuthRequest extends Request {
         user: User
     }
+
+    interface OptionalAuthRequest extends Request {
+        user?: User
+    }
 }

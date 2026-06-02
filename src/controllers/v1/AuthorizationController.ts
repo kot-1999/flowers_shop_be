@@ -1,11 +1,13 @@
-import { User, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import config from 'config';
+import dayjs from 'dayjs';
 import { Request, Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 
 import emailService from '../../services/Email'
 import { EncryptionService } from '../../services/Encryption'
 import { JwtService } from '../../services/Jwt'
+import logger from '../../services/Logger';
 import prisma from '../../services/Prisma'
 import { AbstractController } from '../../types/AbstractController'
 import { IConfig } from '../../types/config';
@@ -152,32 +154,30 @@ export class AuthorizationController extends AbstractController {
                     where: {
                         id: user.id
                     },
-                    data
+                    data: {
+                        ...user,
+                        ...data,
+                        updatedAt: dayjs().toISOString()
+                    }
                 })
             }
-            
-            req.session.jwt = JwtService.generateToken({
-                id: user.id,
-                aud: JwtAudience.user
+
+            emailService.sendEmail(EmailType.registered, {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email
+            }).catch((err: Error) => {
+                logger.error('EMAIL ERROR:' + err.message)
             })
 
-            if (user) {
-                emailService.sendEmail(EmailType.registered, {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email
-                })
-            }
+            return res.status(200).json({
+                user: {
+                    id: user!.id,
+                    role: user!.rolec
+                },
+                message: req.t('Successfully registered')
+            })
 
-            return res
-                .status(200)
-                .json({
-                    user: {
-                        id: user.id,
-                        role: UserRole.User
-                    },
-                    message: req.t('Successfully registered')
-                })
         } catch (err) {
             return next(err)
         }
@@ -200,8 +200,12 @@ export class AuthorizationController extends AbstractController {
                 }
             })
 
-            if (!user || user.role === UserRole.NotRegistered) {
+            if (!user) {
                 throw new IError(401, req.t('Password or email is incorrect'))
+            }
+
+            if (user.role === UserRole.NotRegistered) {
+                return res.redirect(`${appConfig.frontendUrl}/complete-registration`)
             }
 
             // Check password
@@ -209,28 +213,20 @@ export class AuthorizationController extends AbstractController {
             if (user.password !== EncryptionService.hashSHA256(decryptedPassword)) {
                 throw new IError(401, req.t('Password or email is incorrect'))
             }
-            
-            if (user.role === UserRole.Admin) {
-                req.session.jwt = JwtService.generateToken({
-                    id: user.id,
-                    aud: JwtAudience.admin
-                })
-            } else if (user.role === UserRole.User) {
-                req.session.jwt = JwtService.generateToken({
-                    id: user.id,
-                    aud: JwtAudience.user
-                })
-            }
 
-            return res
-                .status(200)
-                .json({
+            req.login(user, (err) => {
+                if (err) {
+                    return next(err)
+                }
+
+                return res.status(200).json({
                     user: {
                         id: user.id,
                         role: user.role
                     },
                     message: req.t('Logged in successfully')
                 })
+            })
         } catch (err) {
             return next(err)
         }
@@ -239,14 +235,14 @@ export class AuthorizationController extends AbstractController {
     private GoogleRedirectReqType: Joi.extractType<typeof AuthorizationController.schemas.request.googleRedirect>
     private GoogleRedirectResType: Joi.extractType<typeof AuthorizationController.schemas.response.googleRedirect>
     public googleRedirect(
-        req: Request & typeof this.GoogleRedirectReqType,
+        req: AuthRequest & typeof this.GoogleRedirectReqType,
         res: Response & typeof this.GoogleRedirectResType,
         next: NextFunction
     ): void | Response {
         try {
             const { user } = req
             
-            if (!(user as User).password) {
+            if (user.role === UserRole.NotRegistered) {
                 return res.redirect(`${appConfig.frontendUrl}/complete-registration`)
             }
 
@@ -271,7 +267,8 @@ export class AuthorizationController extends AbstractController {
                     id: user.id
                 },
                 data: {
-                    password: EncryptionService.hashSHA256(EncryptionService.decryptAES(body.password))
+                    password: EncryptionService.hashSHA256(EncryptionService.decryptAES(body.password)),
+                    role: UserRole.User
                 }
             })
 
@@ -385,10 +382,10 @@ export class AuthorizationController extends AbstractController {
                     email: user.email,
                     jwtToken: user.role === UserRole.Admin ? JwtService.generateToken({
                         id: user.id,
-                        aud: JwtAudience.admin
+                        aud: JwtAudience.adminForgotPassword
                     }) : JwtService.generateToken({
                         id: user.id,
-                        aud: JwtAudience.user
+                        aud: JwtAudience.userForgotPassword
                     })
                 })
             }
