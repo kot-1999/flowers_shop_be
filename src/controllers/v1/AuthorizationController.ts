@@ -173,7 +173,7 @@ export class AuthorizationController extends AbstractController {
             return res.status(200).json({
                 user: {
                     id: user!.id,
-                    role: user!.rolec
+                    role: user!.role
                 },
                 message: req.t('Successfully registered')
             })

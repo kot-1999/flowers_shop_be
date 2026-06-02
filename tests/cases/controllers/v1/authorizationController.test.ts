@@ -241,7 +241,7 @@ describe('POST ' + endpoint('/reset-password'), () => {
             .set('Content-Type', 'application/json')
             .set('Authorization', `Bearer ${JwtService.generateToken({
                 id: user.id,
-                aud: JwtAudience.user
+                aud: 'asd'
             })}`)
             .send({
                 newPassword
