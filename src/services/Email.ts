@@ -69,7 +69,7 @@ class EmailService {
         const templateData = {
             firstName: data.firstName ?? 'Dear customer',
             lastName: data.lastName ?? '',
-            link: `${this.appConfig.frontendUrl}/reset-password?token=${data.jwtToken}`
+            link: `${this.appConfig.frontendUrl}/pages/auth/reset-password?token=${data.jwtToken}`
         }
         const htmlContent = await ejs.renderFile(templatePath, templateData)
 
