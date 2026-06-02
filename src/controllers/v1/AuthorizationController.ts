@@ -1,4 +1,5 @@
-import { UserRole } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
+import config from 'config';
 import { Request, Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 
@@ -7,9 +8,12 @@ import { EncryptionService } from '../../services/Encryption'
 import { JwtService } from '../../services/Jwt'
 import prisma from '../../services/Prisma'
 import { AbstractController } from '../../types/AbstractController'
+import { IConfig } from '../../types/config';
 import { JoiCommon } from '../../types/JoiCommon'
 import { EmailType, JwtAudience } from '../../utils/enums'
 import { IError } from '../../utils/IError'
+
+const appConfig = config.get<IConfig['app']>('app')
 
 export class AuthorizationController extends AbstractController {
     private static readonly userSchema = Joi.object({
@@ -36,6 +40,18 @@ export class AuthorizationController extends AbstractController {
                     password: Joi.string().required()
                 })
             }),
+
+            me: JoiCommon.object.request,
+            googleRedirect: JoiCommon.object.request,
+            
+            completeRegistration: JoiCommon.object.request.keys({
+                body: Joi.object({
+                    firstName: JoiCommon.string.name.required(),
+                    lastName: JoiCommon.string.name.required(),
+                    password: Joi.string().min(3)
+                        .required()
+                }).required()
+            }).required(),
 
             forgotPassword: JoiCommon.object.request.keys({
                 body: Joi.object({
@@ -72,9 +88,21 @@ export class AuthorizationController extends AbstractController {
             forgotPassword: Joi.object({
                 message: Joi.string().required()
             }).required(),
+            completeRegistration: Joi.object({
+                message: Joi.string().required()
+            }).required(),
+            me: Joi.object({
+                id: JoiCommon.string.id,
+                email: Joi.string().email()
+                    .required(),
+                firstName: Joi.string().required(),
+                lastName: Joi.string().required(),
+                googleProfileID: Joi.string().allow(null)
+            }).required(),
             resetPassword: AuthorizationController.userSchema.keys({
                 message: Joi.string().required()
-            }).required()
+            }).required(),
+            googleRedirect: Joi.object()
         }
     }
 
@@ -208,21 +236,85 @@ export class AuthorizationController extends AbstractController {
         }
     }
 
+    private GoogleRedirectReqType: Joi.extractType<typeof AuthorizationController.schemas.request.googleRedirect>
+    private GoogleRedirectResType: Joi.extractType<typeof AuthorizationController.schemas.response.googleRedirect>
     public googleRedirect(
-        req: Request,
-        res: Response,
+        req: Request & typeof this.GoogleRedirectReqType,
+        res: Response & typeof this.GoogleRedirectResType,
         next: NextFunction
     ): void | Response {
         try {
-            return res.status(200).json({ message: req.t('callback URI') })
+            const { user } = req
+            
+            if (!(user as User).password) {
+                return res.redirect(`${appConfig.frontendUrl}/complete-registration`)
+            }
+
+            return res.redirect(`${appConfig.frontendUrl}/dashboard`)
         } catch (err) {
             return next(err)
         }
     }
 
+    private CompleteRegistrationReqType: Joi.extractType<typeof AuthorizationController.schemas.request.completeRegistration>
+    private CompleteRegistrationResType: Joi.extractType<typeof AuthorizationController.schemas.response.completeRegistration>
+    public async completeRegistration(
+        req: AuthRequest & typeof this.CompleteRegistrationReqType,
+        res: Response & typeof this.CompleteRegistrationResType,
+        next: NextFunction
+    ) {
+        try {
+            const { user, body } = req
+
+            await prisma.user.update({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    password: EncryptionService.hashSHA256(EncryptionService.decryptAES(body.password))
+                }
+            })
+
+            return res.json({
+                message: req.t('Registration completed')
+            })
+        } catch (err) {
+            return next(err)
+        }
+    }
+
+    private MeReqType: Joi.extractType<typeof AuthorizationController.schemas.request.me>
+    private MeResType: Joi.extractType<typeof AuthorizationController.schemas.response.me>
+    public me(
+        req: AuthRequest & typeof this.MeReqType,
+        res: Response & typeof this.MeResType,
+        next: NextFunction
+    ) {
+        try {
+            if (!req.user) {
+                return res.status(401).json({
+                    message: req.t('Unauthorized')
+                })
+            }
+
+            const user = req.user
+
+            return res.status(200).json({
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                googleProfileID: user.googleProfileID
+            })
+        } catch (err) {
+            return next(err)
+        }
+    }
+
+    private LogoutReqType: Joi.extractType<typeof AuthorizationController.schemas.request.logout>
     private LogoutResType: Joi.extractType<typeof AuthorizationController.schemas.response.logout>
     public async logout(
-        req: AuthRequest,
+        req: AuthRequest & typeof this.LogoutReqType,
         res: Response<typeof this.LogoutResType>,
         next: NextFunction
     ) {

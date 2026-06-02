@@ -70,6 +70,38 @@ export default function userAuthorizationRouter() {
         authorizationController.googleRedirect
     )
 
+    router.post(
+        '/google/complete-registration',
+        /*
+            #swagger.tags = ['v1-UserAuthorization']
+            #swagger.description = 'Complete Google OAuth2 registration',
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { $ref: '#/definitions/v1CompleteRegistrationReqBody' }
+            }
+            #swagger.responses[200] = {
+                schema: { "$ref": "#/definitions/v1CompleteRegistrationRes" }
+            }
+        */
+        authorizationController.completeRegistration
+    )
+
+    router.get(
+        '/me',
+        /*
+            #swagger.tags = ['v1-UserAuthorization']
+            #swagger.description = 'Check session ser',
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { $ref: '#/definitions/v1MeReqBody' }
+            }
+            #swagger.responses[200] = {
+                schema: { "$ref": "#/definitions/v1MeRes" }
+            }
+        */
+        authorizationController.me
+    )
+
     router.get(
         /*
             #swagger.tags = ['v1-UserAuthorization']
