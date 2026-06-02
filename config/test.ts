@@ -1,20 +1,20 @@
 import 'dotenv/config'
 
+import path from 'node:path';
 import process from 'node:process';
 
 import { Request } from 'express'
 import { ExtractJwt } from 'passport-jwt'
 
 import { IConfig } from '../src/types/config'
-import {Language, NodeEnv} from '../src/utils/enums';
-import path from "node:path";
+import { Language, NodeEnv } from '../src/utils/enums';
 
 const options: IConfig = {
     app: {
         name: 'BE-project-01',
         port: process.env.PORT as string,
         env: process.env.NODE_ENV as NodeEnv,
-        frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3055'
+        frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3001'
     },
     cookieSession: {
         name: 'session',
@@ -33,7 +33,7 @@ const options: IConfig = {
     googleStrategy: {
         clientID: process.env.GOOGLE_CLIENT_ID as string,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-        callbackURL: '/api/b2c/v1/authorization/google/redirect'
+        callbackURL: `http://localhost:${process.env.PORT}/api/v1/authorization/google/redirect`
     },
     passport: {
         jwtFromCookie: ExtractJwt.fromExtractors([
@@ -138,6 +138,9 @@ const options: IConfig = {
         interpolation: {
             escapeValue: false
         }
+    },
+    seed: {
+        grain: 100
     }
 }
 

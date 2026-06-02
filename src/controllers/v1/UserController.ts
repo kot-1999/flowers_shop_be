@@ -1,12 +1,12 @@
-import { UserType } from '@prisma/client'
+import { UserRole } from '@prisma/client'
 import dayjs from 'dayjs';
-import { Response, NextFunction, AuthUserRequest } from 'express'
+import { Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 
-import prisma from '../../../services/Prisma'
-import { AbstractController } from '../../../types/AbstractController'
-import { JoiCommon } from '../../../types/JoiCommon'
-import { IError } from '../../../utils/IError'
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { IError } from '../../utils/IError'
 
 export class UsersController extends AbstractController {
     private static readonly userSchema = Joi.object({
@@ -15,7 +15,7 @@ export class UsersController extends AbstractController {
         lastName: JoiCommon.string.name.allow(null),
         email: JoiCommon.string.email,
         emailVerified: Joi.boolean().required(),
-        type: Joi.string().valid(...Object.values(UserType))
+        role: Joi.string().valid(...Object.values(UserRole))
             .required(),
         createdAt: Joi.date().iso()
             .required(),
@@ -71,7 +71,7 @@ export class UsersController extends AbstractController {
     private GetUserReqType: Joi.extractType<typeof UsersController.schemas.request.getUser>
     private GetUserResType: Joi.extractType<typeof UsersController.schemas.response.getUser>
     async getUser(
-        req: AuthUserRequest & typeof this.GetUserReqType,
+        req: AuthRequest & typeof this.GetUserReqType,
         res: Response<typeof this.GetUserResType>,
         next: NextFunction
     ) {
@@ -85,7 +85,7 @@ export class UsersController extends AbstractController {
                     lastName: user.lastName,
                     email: user.email,
                     emailVerified: user.emailVerified,
-                    type: user.type,
+                    role: user.role,
                     createdAt: user.createdAt,
                     updatedAt: user.updatedAt
                 }
@@ -101,7 +101,7 @@ export class UsersController extends AbstractController {
                         lastName: true,
                         email: true,
                         emailVerified: true,
-                        type: true,
+                        role: true,
                         createdAt: true,
                         updatedAt: true
                     }
@@ -121,7 +121,7 @@ export class UsersController extends AbstractController {
     private GetUsersReqType: Joi.extractType<typeof UsersController.schemas.request.getUsers>
     private GetUsersResType: Joi.extractType<typeof UsersController.schemas.response.getUsers>
     async getUsers(
-        req: AuthUserRequest & typeof this.GetUsersReqType,
+        req: AuthRequest & typeof this.GetUsersReqType,
         res: Response<typeof this.GetUsersResType>,
         next: NextFunction
     ) {
@@ -143,7 +143,7 @@ export class UsersController extends AbstractController {
     private DeleteUserReqType: Joi.extractType<typeof UsersController.schemas.request.deleteUser>
     private DeleteUserResType: Joi.extractType<typeof UsersController.schemas.response.deleteUser>
     public async deleteUser(
-        req: AuthUserRequest & typeof this.DeleteUserReqType,
+        req: AuthRequest & typeof this.DeleteUserReqType,
         res: Response<typeof this.DeleteUserResType>,
         next: NextFunction
     ) {

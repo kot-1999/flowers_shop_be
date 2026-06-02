@@ -8,44 +8,24 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-enum UserType {
-  Default
-  Premium
-}
-
-enum AdminRole {
+enum UserRole {
   Admin
-  EmployeeManager
-  Employee
+  User
+  NotRegistered
 }
 
 model User {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  firstName       String?   @db.Text
-  lastName        String?   @db.Text
+  firstName       String    @db.Text
+  lastName        String    @db.Text
   email           String    @db.Text
   emailVerified   Boolean   @default(false) @db.Boolean
   password        String?   @db.Text
-  type            UserType  @default(Default)
+  role            UserRole  @default(NotRegistered)
   googleProfileID String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
 
   @@map("users")
-}
-
-model Admin {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  firstName     String    @db.Text
-  lastName      String    @db.Text
-  email         String    @db.Text
-  emailVerified Boolean   @default(false) @db.Boolean
-  password      String    @db.Text
-  role          AdminRole @default(Admin)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-
-  @@map("admins")
 }

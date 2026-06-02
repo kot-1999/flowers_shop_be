@@ -1,4 +1,4 @@
-import { Admin, User } from '@prisma/client'
+import { User, UserRole } from '@prisma/client'
 import config from 'config'
 import { JwtPayload } from 'jsonwebtoken'
 import passport from 'passport'
@@ -22,11 +22,10 @@ import { IError } from '../utils/IError'
  * @param {IConfig['passport']} passportConfig - Passport-related configuration (extractors, etc.)
  *
  * @method googleStrategy Handles Google OAuth authentication
- * @method b2cJwtStrategy Handles JWT authentication for users (B2C)
- * @method b2cJwtForgotPasswordStrategy Handles JWT for B2C password reset
- * @method b2bJwtStrategy Handles JWT authentication for admins (B2B)
- * @method b2bJwtForgotPasswordStrategy Handles JWT for B2B password reset
- * @method inviteEmployee Handles JWT for employee invitation flow
+ * @method userJwtStrategy Handles JWT authentication for users
+ * @method userJwtForgotPasswordStrategy Handles JWT for B2C password reset
+ * @method adminJwtStrategy Handles JWT authentication for admins
+ * @method adminJwtForgotPasswordStrategy Handles JWT for B2B password reset
  * @method serializeUser Serializes user/admin into session
  * @method deserializeUser Deserializes user/admin from session
  */
@@ -63,39 +62,20 @@ class PassportSetup {
             logger.warn('Google strategy config not provided')
         }
 
-        passport.use(PassportStrategy.jwtB2c, new JwtStrategy(
-            {
-                jwtFromRequest: ExtractJwt.fromExtractors([
-                    this.passportConfig.jwtFromCookie,
-                    this.passportConfig.jwtFromRequestHeader
-                ]),
-                secretOrKey: this.jwtConfig.secret
-            },
-            this.b2cJwtStrategy
-        ))
-
-        passport.use(PassportStrategy.jwtB2cForgotPassword, new JwtStrategy(
+        passport.use(PassportStrategy.jwtUserForgotPassword, new JwtStrategy(
             {
                 jwtFromRequest: ExtractJwt.fromExtractors([this.passportConfig.jwtFromRequestHeader]),
                 secretOrKey: this.jwtConfig.secret
             },
-            this.b2cJwtForgotPasswordStrategy
+            this.userJwtForgotPasswordStrategy
         ))
 
-        passport.use(PassportStrategy.jwtB2b, new JwtStrategy(
+        passport.use(PassportStrategy.jwtAdminForgotPassword, new JwtStrategy(
             {
                 jwtFromRequest: ExtractJwt.fromExtractors([this.passportConfig.jwtFromRequestHeader, this.passportConfig.jwtFromCookie]),
                 secretOrKey: this.jwtConfig.secret
             },
-            this.b2bJwtStrategy
-        ))
-
-        passport.use(PassportStrategy.jwtB2bForgotPassword, new JwtStrategy(
-            {
-                jwtFromRequest: ExtractJwt.fromExtractors([this.passportConfig.jwtFromRequestHeader, this.passportConfig.jwtFromCookie]),
-                secretOrKey: this.jwtConfig.secret
-            },
-            this.b2bJwtForgotPasswordStrategy
+            this.adminJwtForgotPasswordStrategy
         ))
 
         passport.serializeUser(this.serializeUser)
@@ -172,38 +152,12 @@ class PassportSetup {
     }
 
     /**
-     * @method b2cJwtForgotPasswordStrategy
-     * @description Validates JWT for B2C password reset flow
-     */
-    private async b2cJwtStrategy(payload: JwtPayload, done: VerifyCallback) {
-        try {
-            if (payload.aud !== JwtAudience.b2c) {
-                throw new IError(401, 'Not authorized (JwtStrategy)')
-            }
-
-            const user = await prisma.user.findFirst({
-                where: {
-                    id: payload.id,
-                    deletedAt: null
-                }
-            })
-
-            if (!user) {
-                throw new IError(401, 'Not authorized (JwtStrategy)')
-            }
-            return done(null, user)
-        } catch {
-            return done(null, false)
-        }
-    }
-
-    /**
-     * @method b2bJwtForgotPasswordStrategy
+     * @method userJwtForgotPasswordStrategy
      * @description Validates JWT for B2B password reset flow
      */
-    private async b2cJwtForgotPasswordStrategy(payload: JwtPayload, done: VerifyCallback) {
+    private async userJwtForgotPasswordStrategy(payload: JwtPayload, done: VerifyCallback) {
         try {
-            if (payload.aud !== JwtAudience.b2cForgotPassword) {
+            if (payload.aud !== JwtAudience.userForgotPassword) {
                 throw new IError(401, 'Not authorized (JwtForgotPasswordStrategy)')
             }
 
@@ -214,9 +168,10 @@ class PassportSetup {
                 }
             })
 
-            if (!user) {
+            if (!user || user.role !== UserRole.User) {
                 throw new IError(401, 'Not authorized (JwtForgotPasswordStrategy)')
             }
+            
             return done(null, user)
         } catch {
             return done(null, false)
@@ -224,38 +179,12 @@ class PassportSetup {
     }
 
     /**
-     * @method b2bJwtStrategy
-     * @description Validates JWT for admin (B2B) authentication
-     */
-    private async b2bJwtStrategy(payload: JwtPayload, done: VerifyCallback) {
-        try {
-            if (payload.aud !== JwtAudience.b2b) {
-                throw new IError(401, 'Not authorized (JwtStrategy)')
-            }
-
-            const admin = await prisma.admin.findFirst({
-                where: {
-                    id: payload.id,
-                    deletedAt: null
-                }
-            })
-
-            if (!admin) {
-                throw new IError(401, 'Not authorized (JwtStrategy)')
-            }
-            return done(null, admin)
-        } catch {
-            return done(null, false)
-        }
-    }
-
-    /**
-     * @method b2bJwtForgotPasswordStrategy
+     * @method adminJwtForgotPasswordStrategy
      * @description Validates JWT for B2B password reset flow
      */
-    private async b2bJwtForgotPasswordStrategy(payload: JwtPayload, done: VerifyCallback) {
+    private async adminJwtForgotPasswordStrategy(payload: JwtPayload, done: VerifyCallback) {
         try {
-            if (payload.aud !== JwtAudience.b2bForgotPassword) {
+            if (payload.aud !== JwtAudience.adminForgotPassword) {
                 throw new IError(401, 'Not authorized (JwtForgotPasswordStrategy)')
             }
 
@@ -266,7 +195,7 @@ class PassportSetup {
                 }
             })
 
-            if (!admin) {
+            if (!admin || admin.role !== UserRole.Admin) {
                 throw new IError(401, 'Not authorized (JwtForgotPasswordStrategy)')
             }
             return done(null, admin)
@@ -280,17 +209,16 @@ class PassportSetup {
      * @description Serializes user/admin into session
      */
     private serializeUser(
-        user: User | Admin,
+        user: User,
         done: (
             err: Error | null,
-            entity: { id: string | null, type: 'user' | 'admin' }
+            id?: string | false
         ) => void
     ): void {
-        const err = !user?.id ? new IError(401, 'Authorization id is missing') : null
-        done(err, {
-            id: user.id,
-            type: 'role' in user ? 'admin' : 'user'
-        })
+        if (!user?.id) {
+            return done(null, false)  // Pass false, not an error
+        }
+        done(null, user.id)  // Pass the ID directly, not an object
     }
 
     /**
@@ -298,14 +226,26 @@ class PassportSetup {
      * @description Deserializes session entity back into user/admin
      */
     private async deserializeUser(
-        entity: { id: string, type: 'user' | 'admin' },
-        done: (err: Error | null, user: User | Admin | null) => void
+        id: string,
+        done: (err: Error | null, user: User | false | null) => void
     ): Promise<void> {
-        const user = entity.type === 'user'
-            ? await prisma.user.findFirst({ where: { id: entity.id } })
-            : await prisma.admin.findFirst({ where: { id: entity.id } })
-        const err = user ? null : new IError(401, 'User wasn\'t deserialized')
-        done(err, user)
+        try {
+
+            if (!id) {
+                return done(null, false)
+            }
+
+            const user = await prisma.user.findFirst({
+                where: {
+                    id: id,
+                    deletedAt: null
+                }
+            })
+
+            done(null, user || false)
+        } catch {
+            done(null, false)
+        }
     }
 }
 

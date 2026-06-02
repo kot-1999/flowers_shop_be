@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import { ValidationErrorItem } from 'joi';
 
 import logger from '../services/Logger';
 import { IError } from '../utils/IError'
@@ -13,7 +14,7 @@ export default function errorMiddleware(err: Error, req: Request, res: Response,
         code = err.statusCode
 
         if (err.isJoi) {
-            messages = err.validationErrorItems
+            messages = err.validationErrorItems.map((errorItem: ValidationErrorItem) => errorItem.message)
         } else {
             messages.push(err.message)
         }
