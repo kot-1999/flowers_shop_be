@@ -1,11 +1,11 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["strictUndefinedChecks"]
+  adapter         = "postgresql"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URL")
 }
 
 enum UserRole {
@@ -14,18 +14,267 @@ enum UserRole {
   NotRegistered
 }
 
+enum GoodState {
+  Available
+  OutOfStock
+  Awaiting
+  Deleted
+}
+
+enum OrderState {
+  Pending
+  Paid
+  Processing
+  Shipped
+  Delivered
+  Cancelled
+  Refunded
+}
+
 model User {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  firstName       String    @db.Text
-  lastName        String    @db.Text
-  email           String    @db.Text
-  emailVerified   Boolean   @default(false) @db.Boolean
-  password        String?   @db.Text
-  role            UserRole  @default(NotRegistered)
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstName       String   @db.Text
+  lastName        String   @db.Text
+  firstNameSlug   String?  @db.Text
+  lastNameSlug    String?  @db.Text
+  email           String   @db.Text
+  emailVerified   Boolean  @default(false) @db.Boolean
+  password        String?  @db.Text
+  role            UserRole @default(NotRegistered)
   googleProfileID String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+  phone           String?  @db.Text
+  avatar          String?  @db.Text
+
+  basketItems BasketItem[]
+  orders      Order[]
+
+  addressID String?  @db.Uuid
+  address   Address? @relation(fields: [addressID], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("users")
+}
+
+model Address {
+  id        String  @id @default(uuid()) @db.Uuid
+  apartment String? @db.Text
+  building  String  @db.Text
+  street    String  @db.Text
+  city      String  @db.Text
+  postcode  String  @db.Text
+  country   String  @db.Text
+
+  // Foreign Keys
+  users  User[]
+  orders Order[]
+
+  // Metadata
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("addresses")
+}
+
+model Translation {
+  id String @id @default(uuid()) @db.Uuid
+
+  en     String  @db.Text
+  enSlug String? @db.Text
+
+  ua     String  @db.Text
+  uaSlug String? @db.Text
+
+  de     String  @db.Text
+  deSlug String? @db.Text
+
+  sk     String  @db.Text
+  skSlug String? @db.Text
+
+  categoryNames        Category[] @relation("CategoryName")
+  categoryDescriptions Category[] @relation("CategoryDescription")
+
+  tagNames      Tag[]      @relation("TagName")
+  itemTypeNames ItemType[] @relation("ItemTypeName")
+
+  goodNames        Good[] @relation("GoodName")
+  goodDescriptions Good[] @relation("GoodDescription")
+
+  @@map("translations")
+}
+
+model Category {
+  id String @id @default(uuid()) @db.Uuid
+
+  nameTID        String @db.Uuid
+  descriptionTID String @db.Uuid
+
+  name        Translation @relation("CategoryName", fields: [nameTID], references: [id])
+  description Translation @relation("CategoryDescription", fields: [descriptionTID], references: [id])
+
+  goods Good[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("categories")
+}
+
+model Good {
+  id String @id @default(uuid()) @db.Uuid
+
+  categoryID     String @db.Uuid
+  selectionistID String @db.Uuid
+  pricingID      String @db.Uuid
+
+  nameTID        String @db.Uuid
+  descriptionTID String @db.Uuid
+
+  amount Int       @db.Integer
+  state  GoodState
+  photos String[]
+
+  category     Category     @relation(fields: [categoryID], references: [id])
+  selectionist Selectionist @relation(fields: [selectionistID], references: [id])
+
+  name        Translation @relation("GoodName", fields: [nameTID], references: [id])
+  description Translation @relation("GoodDescription", fields: [descriptionTID], references: [id])
+
+  pricing Pricing @relation(fields: [pricingID], references: [id])
+
+  tags GoodTag[]
+
+  basketItems BasketItem[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("goods")
+}
+
+model Pricing {
+  id String @id @default(uuid()) @db.Uuid
+
+  price Decimal @db.Decimal(10, 2)
+
+  itemTypeID String   @db.Uuid
+  itemType   ItemType @relation(fields: [itemTypeID], references: [id])
+
+  goods Good[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("pricings")
+}
+
+model GoodTag {
+  goodID String @db.Uuid
+  tagID  String @db.Uuid
+
+  good Good @relation(fields: [goodID], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagID], references: [id], onDelete: Cascade)
+
+  @@id([goodID, tagID])
+  @@map("good_tags")
+}
+
+model ItemType {
+  id String @id @default(uuid()) @db.Uuid
+
+  nameTID String  @db.Uuid
+  weight  Decimal @db.Decimal(10, 2)
+
+  name    Translation @relation("ItemTypeName", fields: [nameTID], references: [id])
+  pricing Pricing[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("item_types")
+}
+
+model Selectionist {
+  id String @id @default(uuid()) @db.Uuid
+
+  name    String
+  country String
+
+  goods Good[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("selectionists")
+}
+
+model BasketItem {
+  id String @id @default(uuid()) @db.Uuid
+
+  buyingAmount Int
+
+  goodID  String  @db.Uuid
+  userID  String  @db.Uuid
+  orderID String? @db.Uuid
+
+  good Good @relation(fields: [goodID], references: [id])
+  user User @relation(fields: [userID], references: [id])
+
+  order Order? @relation(fields: [orderID], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([goodID, userID])
+  @@map("basket_items")
+}
+
+model Order {
+  id String @id @default(uuid()) @db.Uuid
+
+  userID    String @db.Uuid
+  addressID String @db.Uuid
+
+  transactionID String @unique
+
+  sum Decimal @db.Decimal(12, 2)
+
+  state OrderState
+
+  trackingUrl    String?
+  trackingNumber String?
+
+  user    User    @relation(fields: [userID], references: [id])
+  address Address @relation(fields: [addressID], references: [id])
+
+  basketItems BasketItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("orders")
+}
+
+model Tag {
+  id String @id @default(uuid()) @db.Uuid
+
+  nameTID String      @db.Uuid
+  name    Translation @relation("TagName", fields: [nameTID], references: [id])
+
+  goods GoodTag[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("tags")
 }

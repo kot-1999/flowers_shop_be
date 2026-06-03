@@ -10,13 +10,19 @@ export default class UserGenerator {
     }
 
     public static generateData(userData: Partial<User> = {}): User {
+        const id = userData.id ?? faker.string.uuid()
         return {
-            id: userData.id ?? faker.string.uuid(),
+            id,
             firstName: userData.firstName ?? faker.person.firstName(),
             lastName: userData.lastName ?? faker.person.lastName(),
+            firstNameSlug: null,
+            lastNameSlug: null,
             email: userData?.email?.toLowerCase() ?? faker.internet.email().toLowerCase(),
             emailVerified: userData.emailVerified ?? false,
             password: userData.password ?? null,
+            avatar: userData.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${id}&size=256`,
+            addressID: userData.addressID ?? null,
+            phone: userData.phone ?? faker.phone.number({ style: 'international' }),
             role: userData.role ?? UserRole.User,
             googleProfileID: userData.googleProfileID ?? null,
             createdAt: userData.createdAt as Date ?? dayjs().toISOString(),
