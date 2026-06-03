@@ -45,11 +45,11 @@ model User {
   phone           String?  @db.Text
   avatar          String?  @db.Text
 
-  basketItems BasketItem[]
-  orders      Order[]
-
   addressID String?  @db.Uuid
   address   Address? @relation(fields: [addressID], references: [id])
+
+  basketItems BasketItem[]
+  orders      Order[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -109,11 +109,11 @@ model Translation {
 model Category {
   id String @id @default(uuid()) @db.Uuid
 
-  nameTID        String @db.Uuid
-  descriptionTID String @db.Uuid
+  nameTID String      @db.Uuid
+  name    Translation @relation("CategoryName", fields: [nameTID], references: [id])
 
-  name        Translation @relation("CategoryName", fields: [nameTID], references: [id])
-  description Translation @relation("CategoryDescription", fields: [descriptionTID], references: [id])
+  descriptionTID String      @db.Uuid
+  description    Translation @relation("CategoryDescription", fields: [descriptionTID], references: [id])
 
   goods Good[]
 
@@ -127,27 +127,24 @@ model Category {
 model Good {
   id String @id @default(uuid()) @db.Uuid
 
-  categoryID     String @db.Uuid
-  selectionistID String @db.Uuid
-  pricingID      String @db.Uuid
-
-  nameTID        String @db.Uuid
-  descriptionTID String @db.Uuid
-
   amount Int       @db.Integer
   state  GoodState
   photos String[]
 
-  category     Category     @relation(fields: [categoryID], references: [id])
-  selectionist Selectionist @relation(fields: [selectionistID], references: [id])
+  nameTID String      @db.Uuid
+  name    Translation @relation("GoodName", fields: [nameTID], references: [id])
 
-  name        Translation @relation("GoodName", fields: [nameTID], references: [id])
-  description Translation @relation("GoodDescription", fields: [descriptionTID], references: [id])
+  descriptionTID String      @db.Uuid
+  description    Translation @relation("GoodDescription", fields: [descriptionTID], references: [id])
 
-  pricing Pricing @relation(fields: [pricingID], references: [id])
+  categoryID String   @db.Uuid
+  category   Category @relation(fields: [categoryID], references: [id])
 
-  tags GoodTag[]
+  selectionistID String       @db.Uuid
+  selectionist   Selectionist @relation(fields: [selectionistID], references: [id])
 
+  pricing     GoodPricing[]
+  tags        GoodTag[]
   basketItems BasketItem[]
 
   createdAt DateTime  @default(now())
@@ -165,13 +162,24 @@ model Pricing {
   itemTypeID String   @db.Uuid
   itemType   ItemType @relation(fields: [itemTypeID], references: [id])
 
-  goods Good[]
+  goods GoodPricing[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@map("pricings")
+}
+
+model GoodPricing {
+  pricingID String @db.Uuid
+  goodID    String @db.Uuid
+
+  pricing Pricing @relation(fields: [pricingID], references: [id], onDelete: Cascade)
+  good    Good    @relation(fields: [goodID], references: [id], onDelete: Cascade)
+
+  @@id([goodID, pricingID])
+  @@map("GoodPricing")
 }
 
 model GoodTag {
@@ -188,10 +196,11 @@ model GoodTag {
 model ItemType {
   id String @id @default(uuid()) @db.Uuid
 
-  nameTID String  @db.Uuid
-  weight  Decimal @db.Decimal(10, 2)
+  weight Decimal @db.Decimal(10, 2)
 
+  nameTID String      @db.Uuid
   name    Translation @relation("ItemTypeName", fields: [nameTID], references: [id])
+
   pricing Pricing[]
 
   createdAt DateTime  @default(now())
@@ -225,9 +234,8 @@ model BasketItem {
   userID  String  @db.Uuid
   orderID String? @db.Uuid
 
-  good Good @relation(fields: [goodID], references: [id])
-  user User @relation(fields: [userID], references: [id])
-
+  good  Good   @relation(fields: [goodID], references: [id])
+  user  User   @relation(fields: [userID], references: [id])
   order Order? @relation(fields: [orderID], references: [id])
 
   createdAt DateTime  @default(now())
@@ -241,20 +249,17 @@ model BasketItem {
 model Order {
   id String @id @default(uuid()) @db.Uuid
 
-  userID    String @db.Uuid
-  addressID String @db.Uuid
-
-  transactionID String @unique
-
-  sum Decimal @db.Decimal(12, 2)
-
-  state OrderState
-
+  transactionID  String     @unique
+  sum            Decimal    @db.Decimal(12, 2)
+  state          OrderState
   trackingUrl    String?
   trackingNumber String?
 
-  user    User    @relation(fields: [userID], references: [id])
-  address Address @relation(fields: [addressID], references: [id])
+  userID String @db.Uuid
+  user   User   @relation(fields: [userID], references: [id])
+
+  addressID String  @db.Uuid
+  address   Address @relation(fields: [addressID], references: [id])
 
   basketItems BasketItem[]
 
