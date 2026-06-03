@@ -1,6 +1,9 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { Prisma, PrismaClient } from '@prisma/client'
+import config from 'config';
 
 import logger from './Logger'
+import { IConfig } from '../types/config';
 
 /**
  * @class PrismaService
@@ -11,18 +14,21 @@ import logger from './Logger'
  *
  * @property client - Prisma client instance (extended with custom queries)
  *
- * @method attachQueries Extends Prisma models with custom query methods
  * @method getPrismaClient Returns the current Prisma client instance
  */
 class PrismaService {
     private client: any
-
+    private dbConfig: IConfig['database']
     /**
      * @constructor
      * @description Initializes Prisma client with logging and event listeners
      */
-    constructor() {
+    constructor(dbConfig: IConfig['database']) {
+        this.dbConfig = dbConfig;
         this.client = new PrismaClient({
+            adapter: new PrismaPg({
+                connectionString: this.dbConfig.postgresURL
+            }),
             log: [{
                 level: 'warn',
                 emit: 'event'
@@ -50,6 +56,10 @@ class PrismaService {
         logger.info('Prisma client was created')
     }
 
+    // private initSlug() {
+    //     this.client
+    // }
+
     /**
      * @method getPrismaClient
      * @description Returns the current Prisma client instance
@@ -61,7 +71,9 @@ class PrismaService {
     }
 }
 
-const prismaService = new PrismaService()
+const dbConfig = config.get<IConfig['database']>('database')
+
+const prismaService = new PrismaService(dbConfig)
 
 const prisma = prismaService.getPrismaClient()
 

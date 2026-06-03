@@ -5,6 +5,7 @@ import passport from 'passport'
 import { Profile, Strategy as GoogleStrategy, VerifyCallback } from 'passport-google-oauth20'
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt'
 
+import { EncryptionService } from './Encryption';
 import logger from './Logger';
 import prisma from './Prisma'
 import { IConfig } from '../types/config'
@@ -22,9 +23,7 @@ import { IError } from '../utils/IError'
  * @param {IConfig['passport']} passportConfig - Passport-related configuration (extractors, etc.)
  *
  * @method googleStrategy Handles Google OAuth authentication
- * @method userJwtStrategy Handles JWT authentication for users
  * @method userJwtForgotPasswordStrategy Handles JWT for B2C password reset
- * @method adminJwtStrategy Handles JWT authentication for admins
  * @method adminJwtForgotPasswordStrategy Handles JWT for B2B password reset
  * @method serializeUser Serializes user/admin into session
  * @method deserializeUser Deserializes user/admin from session
@@ -130,13 +129,18 @@ class PassportSetup {
                     })
                 }
             } else {
+                const firstName = profile.name?.givenName ?? 'Name'
+                const lastName = profile.name?.familyName ?? 'Surname'
                 user = await prisma.user.create({
                     data: {
                         googleProfileID: profile.id,
-                        firstName: profile.name?.givenName ?? null,
-                        lastName: profile.name?.familyName ?? null,
+                        firstName,
+                        lastName,
                         email: profile.emails[0].value,
-                        emailVerified: profile.emails?.length ? profile.emails[0].verified : false
+                        emailVerified: profile.emails?.length ? profile.emails[0].verified : false,
+                        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${
+                            EncryptionService.encryptAES(firstName + lastName)
+                        }&size=256`
                     }
                 })
             }
