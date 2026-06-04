@@ -250,7 +250,7 @@ export class AuthorizationController extends AbstractController {
             const { user } = req
             
             if (user.role === UserRole.NotRegistered) {
-                return res.redirect(`${appConfig.frontendUrl}/pages/auth/complete-registration`)
+                return res.redirect(`${appConfig.frontendUrl}/auth/complete-registration`)
             }
 
             return res.redirect(`${appConfig.frontendUrl}/`)
