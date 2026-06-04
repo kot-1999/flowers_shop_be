@@ -29,6 +29,7 @@
     "./src/**/*",
     "./config/**/*",
     "./tests/**/*",
-    "./scripts/**/*.ts"
+    "./scripts/**/*.ts",
+    "prisma.config.ts"
   ]
 }

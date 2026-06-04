@@ -1,6 +1,6 @@
 services:
   app:
-    image: node:22.8.0
+    image: node:22.12.0
     ports:
       - ${PORT}:${PORT}
     volumes:

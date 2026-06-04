@@ -143,8 +143,10 @@ export class AuthorizationController extends AbstractController {
                 lastName: body.lastName,
                 email: body.email,
                 emailVerified: false,
+                phone: null,
                 password: EncryptionService.hashSHA256(EncryptionService.decryptAES(body.password)),
-                role: UserRole.User
+                role: UserRole.User,
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${EncryptionService.encryptAES(body.firstName + body.lastName)}&size=256`
             }
             
             if (!user) {
@@ -161,6 +163,7 @@ export class AuthorizationController extends AbstractController {
                     data: {
                         ...user,
                         ...data,
+                        avatar: user.avatar,
                         updatedAt: dayjs().toISOString()
                     }
                 })
@@ -179,7 +182,7 @@ export class AuthorizationController extends AbstractController {
                     id: user!.id,
                     role: user!.role
                 },
-                message: req.t('Successfully registered')
+                message: req.t('Registration completed')
             })
 
         } catch (err) {
@@ -247,7 +250,7 @@ export class AuthorizationController extends AbstractController {
             const { user } = req
             
             if (user.role === UserRole.NotRegistered) {
-                return res.redirect(`${appConfig.frontendUrl}/pages/auth/complete-registration`)
+                return res.redirect(`${appConfig.frontendUrl}/auth/complete-registration`)
             }
 
             return res.redirect(`${appConfig.frontendUrl}/`)
