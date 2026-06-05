@@ -2,10 +2,13 @@
 CREATE TYPE "UserRole" AS ENUM ('Admin', 'User', 'NotRegistered');
 
 -- CreateEnum
-CREATE TYPE "GoodState" AS ENUM ('Available', 'OutOfStock', 'Awaiting', 'Deleted');
+CREATE TYPE "GoodState" AS ENUM ('Available', 'NoShow', 'Awaiting', 'Deleted');
 
 -- CreateEnum
 CREATE TYPE "OrderState" AS ENUM ('Pending', 'Paid', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded');
+
+-- CreateEnum
+CREATE TYPE "Country" AS ENUM ('Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'CzechRepublic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Albania', 'Andorra', 'Armenia', 'Azerbaijan', 'BosniaAndHerzegovina', 'Georgia', 'Iceland', 'Kosovo', 'Liechtenstein', 'Moldova', 'Monaco', 'Montenegro', 'NorthMacedonia', 'Norway', 'SanMarino', 'Serbia', 'Switzerland', 'Turkey', 'Ukraine', 'VaticanCity', 'Australia', 'Canada', 'China', 'HongKong', 'India', 'Israel', 'Japan', 'Kazakhstan', 'Malaysia', 'NewZealand', 'Singapore', 'SouthKorea', 'Taiwan', 'Thailand', 'UnitedArabEmirates', 'UnitedStates', 'Argentina', 'Brazil', 'Chile', 'Colombia', 'Mexico', 'Paraguay', 'Peru', 'Uruguay', 'Egypt', 'Morocco', 'SouthAfrica');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -21,7 +24,6 @@ CREATE TABLE "users" (
     "googleProfileID" TEXT,
     "phone" TEXT,
     "avatar" TEXT,
-    "addressID" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -37,7 +39,9 @@ CREATE TABLE "addresses" (
     "street" TEXT NOT NULL,
     "city" TEXT NOT NULL,
     "postcode" TEXT NOT NULL,
-    "country" TEXT NOT NULL,
+    "country" "Country" NOT NULL,
+    "isDefault" BOOLEAN NOT NULL,
+    "userID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -65,6 +69,7 @@ CREATE TABLE "categories" (
     "id" UUID NOT NULL,
     "nameTID" UUID NOT NULL,
     "descriptionTID" UUID NOT NULL,
+    "coverImage" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -75,14 +80,13 @@ CREATE TABLE "categories" (
 -- CreateTable
 CREATE TABLE "goods" (
     "id" UUID NOT NULL,
-    "categoryID" UUID NOT NULL,
-    "selectionistID" UUID NOT NULL,
-    "pricingID" UUID NOT NULL,
-    "nameTID" UUID NOT NULL,
-    "descriptionTID" UUID NOT NULL,
     "amount" INTEGER NOT NULL,
     "state" "GoodState" NOT NULL,
     "photos" TEXT[],
+    "nameTID" UUID NOT NULL,
+    "descriptionTID" UUID NOT NULL,
+    "categoryID" UUID NOT NULL,
+    "selectionistID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -103,6 +107,14 @@ CREATE TABLE "pricings" (
 );
 
 -- CreateTable
+CREATE TABLE "good_pricings" (
+    "pricingID" UUID NOT NULL,
+    "goodID" UUID NOT NULL,
+
+    CONSTRAINT "good_pricings_pkey" PRIMARY KEY ("goodID","pricingID")
+);
+
+-- CreateTable
 CREATE TABLE "good_tags" (
     "goodID" UUID NOT NULL,
     "tagID" UUID NOT NULL,
@@ -113,8 +125,8 @@ CREATE TABLE "good_tags" (
 -- CreateTable
 CREATE TABLE "item_types" (
     "id" UUID NOT NULL,
-    "nameTID" UUID NOT NULL,
     "weight" DECIMAL(10,2) NOT NULL,
+    "nameTID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -137,13 +149,11 @@ CREATE TABLE "selectionists" (
 -- CreateTable
 CREATE TABLE "basket_items" (
     "id" UUID NOT NULL,
-    "buyingAmount" INTEGER NOT NULL,
+    "quantity" INTEGER NOT NULL,
     "goodID" UUID NOT NULL,
     "userID" UUID NOT NULL,
-    "orderID" UUID,
+    "pricingID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "basket_items_pkey" PRIMARY KEY ("id")
 );
@@ -151,17 +161,30 @@ CREATE TABLE "basket_items" (
 -- CreateTable
 CREATE TABLE "orders" (
     "id" UUID NOT NULL,
-    "userID" UUID NOT NULL,
-    "addressID" UUID NOT NULL,
     "transactionID" TEXT NOT NULL,
     "sum" DECIMAL(12,2) NOT NULL,
     "state" "OrderState" NOT NULL,
     "trackingUrl" TEXT,
     "trackingNumber" TEXT,
+    "userID" UUID NOT NULL,
+    "addressID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "expiresAt" TIMESTAMP(3),
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "order_items" (
+    "id" UUID NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "unitPrice" DECIMAL(10,2) NOT NULL,
+    "snapshot" JSONB NOT NULL,
+    "orderID" UUID NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "order_items_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -176,13 +199,67 @@ CREATE TABLE "tags" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "basket_items_goodID_userID_key" ON "basket_items"("goodID", "userID");
+CREATE INDEX "users_deletedAt_idx" ON "users"("deletedAt");
+
+-- CreateIndex
+CREATE INDEX "users_email_idx" ON "users"("email");
+
+-- CreateIndex
+CREATE INDEX "goods_state_idx" ON "goods"("state");
+
+-- CreateIndex
+CREATE INDEX "goods_categoryID_idx" ON "goods"("categoryID");
+
+-- CreateIndex
+CREATE INDEX "goods_createdAt_idx" ON "goods"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "goods_selectionistID_idx" ON "goods"("selectionistID");
+
+-- CreateIndex
+CREATE INDEX "goods_deletedAt_idx" ON "goods"("deletedAt");
+
+-- CreateIndex
+CREATE INDEX "goods_categoryID_state_idx" ON "goods"("categoryID", "state");
+
+-- CreateIndex
+CREATE INDEX "pricings_itemTypeID_idx" ON "pricings"("itemTypeID");
+
+-- CreateIndex
+CREATE INDEX "basket_items_userID_idx" ON "basket_items"("userID");
+
+-- CreateIndex
+CREATE INDEX "basket_items_goodID_idx" ON "basket_items"("goodID");
+
+-- CreateIndex
+CREATE INDEX "basket_items_pricingID_idx" ON "basket_items"("pricingID");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "basket_items_goodID_userID_pricingID_key" ON "basket_items"("goodID", "userID", "pricingID");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "orders_transactionID_key" ON "orders"("transactionID");
 
+-- CreateIndex
+CREATE INDEX "orders_userID_idx" ON "orders"("userID");
+
+-- CreateIndex
+CREATE INDEX "orders_state_idx" ON "orders"("state");
+
+-- CreateIndex
+CREATE INDEX "orders_expiresAt_idx" ON "orders"("expiresAt");
+
+-- CreateIndex
+CREATE INDEX "orders_createdAt_idx" ON "orders"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "orders_state_expiresAt_idx" ON "orders"("state", "expiresAt");
+
+-- CreateIndex
+CREATE INDEX "order_items_orderID_idx" ON "order_items"("orderID");
+
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_addressID_fkey" FOREIGN KEY ("addressID") REFERENCES "addresses"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "addresses" ADD CONSTRAINT "addresses_userID_fkey" FOREIGN KEY ("userID") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "categories" ADD CONSTRAINT "categories_nameTID_fkey" FOREIGN KEY ("nameTID") REFERENCES "translations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -191,22 +268,25 @@ ALTER TABLE "categories" ADD CONSTRAINT "categories_nameTID_fkey" FOREIGN KEY ("
 ALTER TABLE "categories" ADD CONSTRAINT "categories_descriptionTID_fkey" FOREIGN KEY ("descriptionTID") REFERENCES "translations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "goods" ADD CONSTRAINT "goods_categoryID_fkey" FOREIGN KEY ("categoryID") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "goods" ADD CONSTRAINT "goods_selectionistID_fkey" FOREIGN KEY ("selectionistID") REFERENCES "selectionists"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "goods" ADD CONSTRAINT "goods_nameTID_fkey" FOREIGN KEY ("nameTID") REFERENCES "translations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "goods" ADD CONSTRAINT "goods_descriptionTID_fkey" FOREIGN KEY ("descriptionTID") REFERENCES "translations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "goods" ADD CONSTRAINT "goods_pricingID_fkey" FOREIGN KEY ("pricingID") REFERENCES "pricings"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "goods" ADD CONSTRAINT "goods_categoryID_fkey" FOREIGN KEY ("categoryID") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "goods" ADD CONSTRAINT "goods_selectionistID_fkey" FOREIGN KEY ("selectionistID") REFERENCES "selectionists"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "pricings" ADD CONSTRAINT "pricings_itemTypeID_fkey" FOREIGN KEY ("itemTypeID") REFERENCES "item_types"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "good_pricings" ADD CONSTRAINT "good_pricings_pricingID_fkey" FOREIGN KEY ("pricingID") REFERENCES "pricings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "good_pricings" ADD CONSTRAINT "good_pricings_goodID_fkey" FOREIGN KEY ("goodID") REFERENCES "goods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "good_tags" ADD CONSTRAINT "good_tags_goodID_fkey" FOREIGN KEY ("goodID") REFERENCES "goods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -224,13 +304,16 @@ ALTER TABLE "basket_items" ADD CONSTRAINT "basket_items_goodID_fkey" FOREIGN KEY
 ALTER TABLE "basket_items" ADD CONSTRAINT "basket_items_userID_fkey" FOREIGN KEY ("userID") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "basket_items" ADD CONSTRAINT "basket_items_orderID_fkey" FOREIGN KEY ("orderID") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "basket_items" ADD CONSTRAINT "basket_items_pricingID_fkey" FOREIGN KEY ("pricingID") REFERENCES "pricings"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_userID_fkey" FOREIGN KEY ("userID") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_addressID_fkey" FOREIGN KEY ("addressID") REFERENCES "addresses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "order_items" ADD CONSTRAINT "order_items_orderID_fkey" FOREIGN KEY ("orderID") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "tags" ADD CONSTRAINT "tags_nameTID_fkey" FOREIGN KEY ("nameTID") REFERENCES "translations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

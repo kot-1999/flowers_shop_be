@@ -8,29 +8,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum UserRole {
-  Admin
-  User
-  NotRegistered
-}
-
-enum GoodState {
-  Available
-  OutOfStock
-  Awaiting
-  Deleted
-}
-
-enum OrderState {
-  Pending
-  Paid
-  Processing
-  Shipped
-  Delivered
-  Cancelled
-  Refunded
-}
-
 model User {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   firstName       String   @db.Text
@@ -45,16 +22,16 @@ model User {
   phone           String?  @db.Text
   avatar          String?  @db.Text
 
-  addressID String?  @db.Uuid
-  address   Address? @relation(fields: [addressID], references: [id])
-
   basketItems BasketItem[]
   orders      Order[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+  addresses Address[]
 
+  @@index([deletedAt])
+  @@index([email])
   @@map("users")
 }
 
@@ -65,10 +42,11 @@ model Address {
   street    String  @db.Text
   city      String  @db.Text
   postcode  String  @db.Text
-  country   String  @db.Text
+  country   Country
+  isDefault Boolean @db.Boolean
 
-  // Foreign Keys
-  users  User[]
+  userID String  @db.Uuid
+  user   User    @relation(fields: [userID], references: [id])
   orders Order[]
 
   // Metadata
@@ -115,6 +93,8 @@ model Category {
   descriptionTID String      @db.Uuid
   description    Translation @relation("CategoryDescription", fields: [descriptionTID], references: [id])
 
+  coverImage String?
+
   goods Good[]
 
   createdAt DateTime  @default(now())
@@ -151,6 +131,12 @@ model Good {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  @@index([state])
+  @@index([categoryID])
+  @@index([createdAt])
+  @@index([selectionistID])
+  @@index([deletedAt])
+  @@index([categoryID, state])
   @@map("goods")
 }
 
@@ -162,12 +148,14 @@ model Pricing {
   itemTypeID String   @db.Uuid
   itemType   ItemType @relation(fields: [itemTypeID], references: [id])
 
-  goods GoodPricing[]
+  goods       GoodPricing[]
+  basketItems BasketItem[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  @@index([itemTypeID])
   @@map("pricings")
 }
 
@@ -179,7 +167,7 @@ model GoodPricing {
   good    Good    @relation(fields: [goodID], references: [id], onDelete: Cascade)
 
   @@id([goodID, pricingID])
-  @@map("GoodPricing")
+  @@map("good_pricings")
 }
 
 model GoodTag {
@@ -228,21 +216,22 @@ model Selectionist {
 model BasketItem {
   id String @id @default(uuid()) @db.Uuid
 
-  buyingAmount Int
+  quantity Int
 
-  goodID  String  @db.Uuid
-  userID  String  @db.Uuid
-  orderID String? @db.Uuid
+  goodID    String @db.Uuid
+  userID    String @db.Uuid
+  pricingID String @db.Uuid
 
-  good  Good   @relation(fields: [goodID], references: [id])
-  user  User   @relation(fields: [userID], references: [id])
-  order Order? @relation(fields: [orderID], references: [id])
+  good    Good    @relation(fields: [goodID], references: [id])
+  user    User    @relation(fields: [userID], references: [id])
+  pricing Pricing @relation(fields: [pricingID], references: [id])
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime @default(now())
 
-  @@unique([goodID, userID])
+  @@unique([goodID, userID, pricingID])
+  @@index([userID])
+  @@index([goodID])
+  @@index([pricingID])
   @@map("basket_items")
 }
 
@@ -261,12 +250,35 @@ model Order {
   addressID String  @db.Uuid
   address   Address @relation(fields: [addressID], references: [id])
 
-  basketItems BasketItem[]
+  orderItems OrderItem[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime?
+
+  @@index([userID])
+  @@index([state])
+  @@index([expiresAt])
+  @@index([createdAt])
+  @@index([state, expiresAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id String @id @default(uuid()) @db.Uuid
+
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  snapshot Json
+
+  orderID String @db.Uuid
+  order   Order  @relation(fields: [orderID], references: [id])
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@map("orders")
+  @@index([orderID])
+  @@map("order_items")
 }
 
 model Tag {
@@ -282,4 +294,108 @@ model Tag {
   deletedAt DateTime?
 
   @@map("tags")
+}
+
+enum UserRole {
+  Admin
+  User
+  NotRegistered
+}
+
+enum GoodState {
+  Available
+  NoShow
+  Awaiting
+  Deleted
+}
+
+enum OrderState {
+  Pending
+  Paid
+  Processing
+  Shipped
+  Delivered
+  Cancelled
+  Refunded
+}
+
+enum Country {
+  Austria
+  Belgium
+  Bulgaria
+  Croatia
+  Cyprus
+  CzechRepublic
+  Denmark
+  Estonia
+  Finland
+  France
+  Germany
+  Greece
+  Hungary
+  Ireland
+  Italy
+  Latvia
+  Lithuania
+  Luxembourg
+  Malta
+  Netherlands
+  Poland
+  Portugal
+  Romania
+  Slovakia
+  Slovenia
+  Spain
+  Sweden
+
+  Albania
+  Andorra
+  Armenia
+  Azerbaijan
+  BosniaAndHerzegovina
+  Georgia
+  Iceland
+  Kosovo
+  Liechtenstein
+  Moldova
+  Monaco
+  Montenegro
+  NorthMacedonia
+  Norway
+  SanMarino
+  Serbia
+  Switzerland
+  Turkey
+  Ukraine
+  VaticanCity
+
+  Australia
+  Canada
+  China
+  HongKong
+  India
+  Israel
+  Japan
+  Kazakhstan
+  Malaysia
+  NewZealand
+  Singapore
+  SouthKorea
+  Taiwan
+  Thailand
+  UnitedArabEmirates
+  UnitedStates
+
+  Argentina
+  Brazil
+  Chile
+  Colombia
+  Mexico
+  Paraguay
+  Peru
+  Uruguay
+
+  Egypt
+  Morocco
+  SouthAfrica
 }

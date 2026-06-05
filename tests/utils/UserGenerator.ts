@@ -21,7 +21,6 @@ export default class UserGenerator {
             emailVerified: userData.emailVerified ?? false,
             password: userData.password ?? null,
             avatar: userData.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${id}&size=256`,
-            addressID: userData.addressID ?? null,
             phone: userData.phone ?? faker.phone.number({ style: 'international' }),
             role: userData.role ?? UserRole.User,
             googleProfileID: userData.googleProfileID ?? null,
