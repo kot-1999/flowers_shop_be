@@ -52,19 +52,8 @@ export class JoiCommon {
 
             country: Joi.string().trim()
                 .min(1)
-                .required(),
-
-            latitude: Joi.number()
-                .min(-90)
-                .max(90)
-                .precision(6)
-                .required(),
-
-            longitude: Joi.number()
-                .min(-180)
-                .max(180)
-                .precision(6)
                 .required()
+
         }),
 
         pagination: Joi.object({
