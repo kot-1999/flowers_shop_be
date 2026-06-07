@@ -50,9 +50,11 @@ export class AIController extends AbstractController {
         }
     }
 
+    private PostTranslationsReqType: Joi.extractType<typeof AIController.schemas.request.postTranslations>
+    private PostTranslationsResType: Joi.extractType<typeof AIController.schemas.response.postTranslations>
     public async postTranslations(
-        req: AuthRequest & Joi.extractType<typeof AIController.schemas.request.postTranslations>,
-        res: Response<Joi.extractType<typeof AIController.schemas.response.postTranslations>>,
+        req: AuthRequest & typeof this.PostTranslationsReqType,
+        res: Response & typeof this.PostTranslationsResType,
         next: NextFunction
     ) {
         try {
@@ -93,9 +95,11 @@ export class AIController extends AbstractController {
         }
     }
 
+    private PostGoodMetadataReqType: Joi.extractType<typeof AIController.schemas.request.postGoodMetadata>
+    private PostGoodMetadataResType: Joi.extractType<typeof AIController.schemas.response.postGoodMetadata>
     public async postGoodMetadata(
-        req: AuthRequest & Joi.extractType<typeof AIController.schemas.request.postGoodMetadata>,
-        res: Response<Joi.extractType<typeof AIController.schemas.response.postGoodMetadata>>,
+        req: AuthRequest & typeof this.PostGoodMetadataReqType,
+        res: Response & typeof this.PostGoodMetadataResType,
         next: NextFunction
     ) {
         try {
