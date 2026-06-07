@@ -1,0 +1,143 @@
+import config from 'config';
+import { Response, NextFunction, AuthRequest } from 'express'
+import Joi from 'joi'
+
+import { AbstractController } from '../../types/AbstractController'
+import { IConfig } from '../../types/config';
+import { JoiCommon } from '../../types/JoiCommon'
+
+const ollamaConfig = config.get<IConfig['ollama']>('ollama')
+
+export class AIController extends AbstractController {
+
+    public static readonly schemas = {
+        request: {
+            postTranslations: JoiCommon.object.request.keys({
+                body: Joi.object({
+                    text: Joi.array().items(Joi.string().required())
+                        .min(1)
+                }).required()
+            }),
+
+            postGoodMetadata: JoiCommon.object.request.keys({
+                body: Joi.object({
+                    imageUrl: Joi.string().uri()
+                        .required(),
+                    name: Joi.string().required(),
+                    category: Joi.string().required()
+                }).required()
+            })
+        },
+
+        response: {
+            postTranslations: Joi.object({
+                translations: Joi.object({
+                    en: Joi.string().required(),
+                    ua: Joi.string().required(),
+                    de: Joi.string().required(),
+                    sk: Joi.string().required()
+                }).required()
+            }),
+
+            postGoodMetadata: Joi.object({
+                description: Joi.string().required(),
+                tags: Joi.array().items({
+                    id: JoiCommon.string.id.optional(),
+                    name: Joi.string().required()
+                })
+                    .required()
+            })
+        }
+    }
+
+    public async postTranslations(
+        req: AuthRequest & Joi.extractType<typeof AIController.schemas.request.postTranslations>,
+        res: Response<Joi.extractType<typeof AIController.schemas.response.postTranslations>>,
+        next: NextFunction
+    ) {
+        try {
+            if (!ollamaConfig) {
+                return res.status(200).json({
+                    translations: {
+                        en: 'en: ' + req.body.text,
+                        ua: 'ua: ' + req.body.text,
+                        de: 'de: ' + req.body.text,
+                        sk: 'sk: ' + req.body.text
+                    }
+                })
+            }
+
+            const response = await fetch(`${ollamaConfig.url}/api/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: ollamaConfig.model,
+                    stream: false,
+                    format: 'json',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: JSON.stringify({
+                                text: req.body.text,
+                            })
+                        }
+                    ]
+                })
+            })
+
+            const data: any = await response.json()
+            const content = JSON.parse(data.message.content)
+            return res.status(200).json(content)
+        } catch (e) {
+            return next(e)
+        }
+    }
+
+    public async postGoodMetadata(
+        req: AuthRequest & Joi.extractType<typeof AIController.schemas.request.postGoodMetadata>,
+        res: Response<Joi.extractType<typeof AIController.schemas.response.postGoodMetadata>>,
+        next: NextFunction
+    ) {
+        try {
+            if (!ollamaConfig) {
+                return res.status(200).json({
+                    description: 'Handmade ceramic cup with matte black finish, suitable for hot drinks.',
+                    tags: [{
+                        name: 'Red'
+                    }, {
+                        name: 'Miniature'
+                    }]
+                })
+            }
+
+            const response = await fetch(`${ollamaConfig.url}/api/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: ollamaConfig.model,
+                    stream: false,
+                    format: 'json',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: JSON.stringify({
+                                imageUrl: req.body.imageUrl,
+                                name: req.body.name,
+                                category: req.body.category
+                                // TODO: add tags list
+                                // tags: req.body.tags
+                            })
+                        }
+                    ]
+                })
+            })
+
+            const data: any = await response.json()
+            const content = JSON.parse(data.message.content)
+
+            return res.status(200).json(content)
+        } catch (e) {
+            return next(e)
+        }
+    }
+}
