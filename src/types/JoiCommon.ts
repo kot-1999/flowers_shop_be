@@ -1,6 +1,7 @@
 import Joi from 'joi'
 
 import { Constants } from '../utils/Constants'
+import { Language } from '../utils/enums';
 
 export class JoiCommon {
     static readonly string = {
@@ -72,6 +73,11 @@ export class JoiCommon {
                 .integer()
                 .min(0)
                 .required()
-        })
+        }),
+
+        translations: Joi.object(Object.fromEntries(Object.values(Language).map((lang) => [
+            lang,
+            Joi.string().required()
+        ])))
     }
 }
