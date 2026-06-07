@@ -27,22 +27,22 @@ export default function itemTypesRouter() {
         itemTypesController.getItemTypes
     )
 
-    router.patch(
+    router.put(
         /*
             #swagger.tags = ['v1-ItemTypes']
-            #swagger.description = 'Update item type.'
+            #swagger.description = 'Update or create item type.'
             #swagger.parameters['body'] = {
                 in: 'body',
-                schema: { "$ref": "#/definitions/v1PatchItemTypeReqBody" }
+                schema: { "$ref": "#/definitions/v1PutItemTypeReqBody" }
             }
             #swagger.responses[200] = {
-                schema: { "$ref": "#/definitions/v1PatchItemTypeRes" }
+                schema: { "$ref": "#/definitions/v1PutItemTypeRes" }
             }
         */
-        '/:itemTypeID',
-        validationMiddleware(ItemTypeController.schemas.request.patchItemType),
+        '/',
+        validationMiddleware(ItemTypeController.schemas.request.putItemType),
         authorizationMiddleware([PassportStrategy.google]),
-        itemTypesController.patchItemType
+        itemTypesController.putItemType
     )
 
     router.delete(

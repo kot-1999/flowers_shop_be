@@ -26,22 +26,22 @@ export default function selectionistsRouter() {
         selectionistsController.getSelectionists
     )
 
-    router.patch(
+    router.put(
         /*
             #swagger.tags = ['v1-Selectionists']
             #swagger.description = 'Update selectionist.'
             #swagger.parameters['body'] = {
                 in: 'body',
-                schema: { "$ref": "#/definitions/v1PatchSelectionistReqBody" }
+                schema: { "$ref": "#/definitions/v1PutSelectionistReqBody" }
             }
             #swagger.responses[200] = {
-                schema: { "$ref": "#/definitions/v1PatchSelectionistRes" }
+                schema: { "$ref": "#/definitions/v1PutSelectionistRes" }
             }
         */
-        '/:selectionistID',
-        validationMiddleware(SelectionistController.schemas.request.patchSelectionist),
+        '/',
+        validationMiddleware(SelectionistController.schemas.request.putSelectionist),
         authorizationMiddleware([PassportStrategy.google]),
-        selectionistsController.patchSelectionist
+        selectionistsController.putSelectionist
     )
 
     router.delete(

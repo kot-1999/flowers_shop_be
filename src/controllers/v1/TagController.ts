@@ -15,12 +15,9 @@ export class TagController extends AbstractController {
                 }).required()
             }),
 
-            patchTag: JoiCommon.object.request.keys({
-                params: Joi.object({
-                    tagID: JoiCommon.string.id.required()
-                }).required(),
-
+            putTag: JoiCommon.object.request.keys({
                 body: Joi.object({
+                    tagID: JoiCommon.string.id.optional(),
                     nameTID: JoiCommon.string.id.optional()
                 }).required()
             }),
@@ -41,7 +38,7 @@ export class TagController extends AbstractController {
                     .required()
             }),
 
-            patchTag: Joi.object({
+            putTag: Joi.object({
                 tag: Joi.object({
                     id: JoiCommon.string.id.required()
                 }).required()
@@ -73,17 +70,17 @@ export class TagController extends AbstractController {
         }
     }
 
-    private PatchTagReqType: Joi.extractType<typeof TagController.schemas.request.patchTag>
-    private PatchTagResType: Joi.extractType<typeof TagController.schemas.response.patchTag>
-    public async patchTag(
-        req: AuthRequest & typeof this.PatchTagReqType,
-        res: Response & typeof this.PatchTagResType,
+    private PutTagReqType: Joi.extractType<typeof TagController.schemas.request.putTag>
+    private PutTagResType: Joi.extractType<typeof TagController.schemas.response.putTag>
+    public async putTag(
+        req: AuthRequest & typeof this.PutTagReqType,
+        res: Response & typeof this.PutTagResType,
         next: NextFunction
     ) {
         try {
             return res.status(200).json({
                 tag: {
-                    id: req.params.tagID
+                    id: req.body.tagID
                 }
             })
         } catch (err) {

@@ -9,22 +9,22 @@ const router = Router()
 const translationsController = new TranslationController()
 
 export default function translationsRouter() {
-    router.patch(
+    router.put(
         /*
             #swagger.tags = ['v1-Translations']
             #swagger.description = 'Update translation.'
             #swagger.parameters['body'] = {
                 in: 'body',
-                schema: { "$ref": "#/definitions/v1PatchTranslationReqBody" }
+                schema: { "$ref": "#/definitions/v1PutTranslationReqBody" }
             }
             #swagger.responses[200] = {
-                schema: { "$ref": "#/definitions/v1PatchTranslationRes" }
+                schema: { "$ref": "#/definitions/v1PutTranslationRes" }
             }
         */
-        '/:translationID',
-        validationMiddleware(TranslationController.schemas.request.patchTranslation),
+        '/',
+        validationMiddleware(TranslationController.schemas.request.putTranslation),
         authorizationMiddleware([PassportStrategy.google]),
-        translationsController.patchTranslation
+        translationsController.putTranslation
     )
 
     return router

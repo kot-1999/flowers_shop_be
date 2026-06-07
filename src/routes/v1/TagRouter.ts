@@ -26,22 +26,22 @@ export default function tagsRouter() {
         tagsController.getTags
     )
 
-    router.patch(
+    router.put(
         /*
             #swagger.tags = ['v1-Tags']
             #swagger.description = 'Update tag.'
             #swagger.parameters['body'] = {
                 in: 'body',
-                schema: { "$ref": "#/definitions/v1PatchTagReqBody" }
+                schema: { "$ref": "#/definitions/v1PutTagReqBody" }
             }
             #swagger.responses[200] = {
-                schema: { "$ref": "#/definitions/v1PatchTagRes" }
+                schema: { "$ref": "#/definitions/v1PutTagRes" }
             }
         */
-        '/:tagID',
-        validationMiddleware(TagController.schemas.request.patchTag),
+        '/',
+        validationMiddleware(TagController.schemas.request.putTag),
         authorizationMiddleware([PassportStrategy.google]),
-        tagsController.patchTag
+        tagsController.putTag
     )
 
     router.delete(

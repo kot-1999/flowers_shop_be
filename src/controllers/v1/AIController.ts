@@ -31,12 +31,9 @@ export class AIController extends AbstractController {
 
         response: {
             postTranslations: Joi.object({
-                translations: Joi.object({
-                    en: Joi.string().required(),
-                    ua: Joi.string().required(),
-                    de: Joi.string().required(),
-                    sk: Joi.string().required()
-                }).required()
+                translations: Joi.array().items(JoiCommon.object.translations)
+                    .min(1)
+                    .required()
             }),
 
             postGoodMetadata: Joi.object({
@@ -80,7 +77,7 @@ export class AIController extends AbstractController {
                         {
                             role: 'user',
                             content: JSON.stringify({
-                                text: req.body.text,
+                                text: req.body.text
                             })
                         }
                     ]

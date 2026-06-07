@@ -17,12 +17,9 @@ export class SelectionistController extends AbstractController {
                 }).required()
             }),
 
-            patchSelectionist: JoiCommon.object.request.keys({
-                params: Joi.object({
-                    selectionistID: JoiCommon.string.id.required()
-                }).required(),
-
+            putSelectionist: JoiCommon.object.request.keys({
                 body: Joi.object({
+                    selectionistID: JoiCommon.string.id.optional(),
                     name: Joi.string().optional(),
                     country: Joi.string().optional()
                 }).required()
@@ -45,7 +42,7 @@ export class SelectionistController extends AbstractController {
                     .required()
             }),
 
-            patchSelectionist: Joi.object({
+            putSelectionist: Joi.object({
                 selectionist: Joi.object({
                     id: JoiCommon.string.id.required()
                 }).required()
@@ -78,18 +75,18 @@ export class SelectionistController extends AbstractController {
         }
     }
 
-    private PatchSelectionistReqType: Joi.extractType<typeof SelectionistController.schemas.request.patchSelectionist>
-    private PatchSelectionistResType: Joi.extractType<typeof SelectionistController.schemas.response.patchSelectionist>
+    private PutSelectionistReqType: Joi.extractType<typeof SelectionistController.schemas.request.putSelectionist>
+    private PutSelectionistResType: Joi.extractType<typeof SelectionistController.schemas.response.putSelectionist>
 
-    public async patchSelectionist(
-        req: AuthRequest & typeof this.PatchSelectionistReqType,
-        res: Response & typeof this.PatchSelectionistResType,
+    public async putSelectionist(
+        req: AuthRequest & typeof this.PutSelectionistReqType,
+        res: Response & typeof this.PutSelectionistResType,
         next: NextFunction
     ) {
         try {
             return res.status(200).json({
                 selectionist: {
-                    id: req.params.selectionistID
+                    id: req.body.selectionistID
                 }
             })
         } catch (err) {

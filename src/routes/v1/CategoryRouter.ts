@@ -26,22 +26,22 @@ export default function categoriesRouter() {
         categoriesController.getCategories
     )
 
-    router.patch(
+    router.put(
         /*
             #swagger.tags = ['v1-Categories']
-            #swagger.description = 'Update category.'
+            #swagger.description = 'Update or create category.'
             #swagger.parameters['body'] = {
                 in: 'body',
-                schema: { "$ref": "#/definitions/v1PatchCategoryReqBody" }
+                schema: { "$ref": "#/definitions/v1PutCategoryReqBody" }
             }
             #swagger.responses[200] = {
-                schema: { "$ref": "#/definitions/v1PatchCategoryRes" }
+                schema: { "$ref": "#/definitions/v1PutCategoryRes" }
             }
         */
-        '/:categoryID',
-        validationMiddleware(CategoryController.schemas.request.patchCategory),
+        '/',
+        validationMiddleware(CategoryController.schemas.request.putCategory),
         authorizationMiddleware([PassportStrategy.google]),
-        categoriesController.patchCategory
+        categoriesController.putCategory
     )
 
     router.delete(

@@ -8,22 +8,16 @@ export class TranslationController extends AbstractController {
 
     public static readonly schemas = {
         request: {
-            patchTranslation: JoiCommon.object.request.keys({
-                params: Joi.object({
-                    translationID: JoiCommon.string.id.required()
-                }).required(),
-
+            putTranslation: JoiCommon.object.request.keys({
                 body: Joi.object({
-                    en: Joi.string().required(),
-                    ua: Joi.string().required(),
-                    de: Joi.string().required(),
-                    sk: Joi.string().required()
+                    translationID: JoiCommon.string.id.required(),
+                    translation: JoiCommon.object.translations.required()
                 }).required()
             })
         },
 
         response: {
-            patchTranslation: Joi.object({
+            putTranslation: Joi.object({
                 translation: Joi.object({
                     id: JoiCommon.string.id.required()
                 }).required()
@@ -35,18 +29,18 @@ export class TranslationController extends AbstractController {
         super()
     }
 
-    private PatchTranslationReqType: Joi.extractType<typeof TranslationController.schemas.request.patchTranslation>
-    private PatchTranslationResType: Joi.extractType<typeof TranslationController.schemas.response.patchTranslation>
+    private PutTranslationReqType: Joi.extractType<typeof TranslationController.schemas.request.putTranslation>
+    private PutTranslationResType: Joi.extractType<typeof TranslationController.schemas.response.putTranslation>
 
-    public async patchTranslation(
-        req: AuthRequest & typeof this.PatchTranslationReqType,
-        res: Response & typeof this.PatchTranslationResType,
+    public async putTranslation(
+        req: AuthRequest & typeof this.PutTranslationReqType,
+        res: Response & typeof this.PutTranslationResType,
         next: NextFunction
     ) {
         try {
             return res.status(200).json({
                 translation: {
-                    id: req.params.translationID
+                    id: req.body.translationID
                 }
             })
         } catch (err) {

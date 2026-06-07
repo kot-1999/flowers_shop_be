@@ -17,12 +17,9 @@ export class ItemTypeController extends AbstractController {
                 }).required()
             }),
 
-            patchItemType: JoiCommon.object.request.keys({
-                params: Joi.object({
-                    itemTypeID: JoiCommon.string.id.required()
-                }).required(),
-
+            putItemType: JoiCommon.object.request.keys({
                 body: Joi.object({
+                    itemTypeID: JoiCommon.string.id.optional(),
                     nameTID: JoiCommon.string.id.optional(),
                     weight: Joi.number().optional()
                 }).required()
@@ -45,7 +42,7 @@ export class ItemTypeController extends AbstractController {
                     .required()
             }),
 
-            patchItemType: Joi.object({
+            putItemType: Joi.object({
                 itemType: Joi.object({
                     id: JoiCommon.string.id.required()
                 }).required()
@@ -77,17 +74,17 @@ export class ItemTypeController extends AbstractController {
         }
     }
 
-    private PatchItemTypeReqType: Joi.extractType<typeof ItemTypeController.schemas.request.patchItemType>
-    private PatchItemTypeResType: Joi.extractType<typeof ItemTypeController.schemas.response.patchItemType>
-    public async patchItemType(
-        req: AuthRequest & typeof this.PatchItemTypeReqType,
-        res: Response & typeof this.PatchItemTypeResType,
+    private PutItemTypeReqType: Joi.extractType<typeof ItemTypeController.schemas.request.putItemType>
+    private PutItemTypeResType: Joi.extractType<typeof ItemTypeController.schemas.response.putItemType>
+    public async putItemType(
+        req: AuthRequest & typeof this.PutItemTypeReqType,
+        res: Response & typeof this.PutItemTypeResType,
         next: NextFunction
     ) {
         try {
             return res.status(200).json({
                 itemType: {
-                    id: req.params.itemTypeID
+                    id: req.body.itemTypeID
                 }
             })
         } catch (err) {

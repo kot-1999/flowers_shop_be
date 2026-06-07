@@ -42,26 +42,26 @@ const schemas: {[key: string]: {[key: string]: any}} = {
 
         // Category
         getCategories: CategoryController.schemas,
-        patchCategory: CategoryController.schemas,
+        putCategory: CategoryController.schemas,
         deleteCategory: CategoryController.schemas,
 
         // Item Type
         getItemTypes: ItemTypeController.schemas,
-        patchItemType: ItemTypeController.schemas,
+        putItemType: ItemTypeController.schemas,
         deleteItemType: ItemTypeController.schemas,
 
         // Selectionist
         getSelectionists: SelectionistController.schemas,
-        patchSelectionist: SelectionistController.schemas,
+        putSelectionist: SelectionistController.schemas,
         deleteSelectionist: SelectionistController.schemas,
 
         // Tag
         getTags: TagController.schemas,
-        patchTag: TagController.schemas,
+        putTag: TagController.schemas,
         deleteTag: TagController.schemas,
 
         // Translation
-        patchTranslation: TranslationController.schemas
+        putTranslation: TranslationController.schemas
 
     }
 }

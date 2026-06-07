@@ -15,12 +15,9 @@ export class CategoryController extends AbstractController {
                 }).required()
             }),
 
-            patchCategory: JoiCommon.object.request.keys({
-                params: Joi.object({
-                    categoryID: JoiCommon.string.id.required()
-                }).required(),
-
+            putCategory: JoiCommon.object.request.keys({
                 body: Joi.object({
+                    categoryID: JoiCommon.string.id.optional(),
                     nameTID: JoiCommon.string.id.optional(),
                     descriptionTID: JoiCommon.string.id.optional(),
                     coverImage: Joi.string().uri()
@@ -46,7 +43,7 @@ export class CategoryController extends AbstractController {
                     .required()
             }),
 
-            patchCategory: Joi.object({
+            putCategory: Joi.object({
                 category: Joi.object({
                     id: JoiCommon.string.id.required()
                 }).required()
@@ -78,17 +75,17 @@ export class CategoryController extends AbstractController {
         }
     }
 
-    private PatchCategoryReqType: Joi.extractType<typeof CategoryController.schemas.request.patchCategory>
-    private PatchCategoryResType: Joi.extractType<typeof CategoryController.schemas.response.patchCategory>
-    public async patchCategory(
-        req: AuthRequest & typeof this.PatchCategoryReqType,
-        res: Response & typeof this.PatchCategoryResType,
+    private PutCategoryReqType: Joi.extractType<typeof CategoryController.schemas.request.putCategory>
+    private PutCategoryResType: Joi.extractType<typeof CategoryController.schemas.response.putCategory>
+    public async putCategory(
+        req: AuthRequest & typeof this.PutCategoryReqType,
+        res: Response & typeof this.PutCategoryResType,
         next: NextFunction
     ) {
         try {
             return res.status(200).json({
                 category: {
-                    id: req.params.categoryID
+                    id: req.body.categoryID
                 }
             })
         } catch (err) {
