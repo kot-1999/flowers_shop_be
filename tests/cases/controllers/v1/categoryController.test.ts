@@ -1,17 +1,15 @@
+import { faker } from '@faker-js/faker';
 import { UserRole } from '@prisma/client';
 import { expect } from 'chai';
 import supertest from 'supertest';
-import { error } from 'winston';
 
 import app from '../../../../src/app';
 import { CategoryController } from '../../../../src/controllers/v1/CategoryController';
 import prisma from '../../../../src/services/Prisma';
 import CategoryGenerator from '../../../utils/CategoryGenerator';
 import { loginUserAndGetCookie } from '../../../utils/helpers';
-import {fake} from "sinon";
-import {faker} from "@faker-js/faker";
 
-const endpoint = (val = '') => '/api/v1/admin/categories' + val;
+const endpoint = (val = '') => '/api/v1/admin/categories/' + val;
 const publicEndpoint = '/api/v1/categories';
 
 const password = 'Test123';
@@ -140,5 +138,39 @@ describe(`PUT ${endpoint()}`, () => {
             });
 
         expect(res.statusCode).to.equal(404);
+    });
+});
+
+describe(`DELETE ${endpoint(':categoryID')}`, () => {
+    let sessionCookie: string;
+
+    before(async () => {
+        const admin = await prisma.user.findFirst({
+            where: {
+                role: UserRole.Admin,
+                deletedAt: null
+            }
+        });
+
+        sessionCookie = await loginUserAndGetCookie({
+            email: admin.email,
+            password
+        });
+    });
+
+    it('Should delete category (200)', async () => {
+        const categoryData = await prisma.category.findFirst({ where: { deletedAt: null } })
+        const res = await supertest(app)
+            .delete(endpoint(categoryData.id))
+            .set('Cookie', sessionCookie)
+        console.log(res.error)
+
+        expect(res.statusCode).to.equal(200);
+        expect(res.type).to.eq('application/json');
+
+        const validationResult
+            = CategoryController.schemas.response.deleteCategory.validate(res.body);
+
+        expect(validationResult.error).to.eq(undefined);
     });
 });
