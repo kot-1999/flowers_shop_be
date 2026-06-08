@@ -213,8 +213,7 @@ export class CategoryController extends AbstractController {
             ])
 
             const data: any = {
-                coverImage: body.coverImage ?? null,
-                deletedAt: body.restore ? null : category.deletedAt
+                coverImage: body.coverImage ?? null
             }
 
             if (body.categoryID && !category) {
@@ -250,7 +249,10 @@ export class CategoryController extends AbstractController {
                     where: {
                         id: body.categoryID
                     },
-                    data,
+                    data: {
+                        ...data,
+                        deletedAt: body.restore ? null : category.deletedAt
+                    },
                     select: {
                         id: true,
                         nameTID: true,
