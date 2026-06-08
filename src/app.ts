@@ -24,6 +24,7 @@ import logger from './services/Logger'
 import redis from './services/Redis'
 import { IConfig } from './types/config'
 import { NodeEnv } from './utils/enums';
+import languageMiddleware from "./middlewares/languageMiddleware";
 
 // Configs
 const cookieSessionConfig = config.get<IConfig['cookieSession']>('cookieSession')
@@ -83,6 +84,7 @@ app.use(passport.session())
 app.use(middleware.handle(i18next))
 
 // Routes initialization
+app.use(languageMiddleware)
 app.use('/api', authorizeRouters())
 app.get('/api/test/sentry', (req, res) => {
     res.status(200).json({ message: 'done' })
