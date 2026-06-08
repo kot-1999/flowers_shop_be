@@ -142,7 +142,7 @@ const options: IConfig = {
     seed: {
         grain: 100
     },
-    ollama: undefined
+    ollama: null
 }
 
 export default options

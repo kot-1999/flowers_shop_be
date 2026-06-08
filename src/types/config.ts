@@ -78,5 +78,5 @@ export interface IConfig {
   ollama: {
     url: string
     model: string
-  } | undefined
+  } | null
 }
