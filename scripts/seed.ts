@@ -1,16 +1,19 @@
 import { UserRole } from '@prisma/client';
 import config from 'config';
 
+import * as seedData from './seedData';
 import { EncryptionService } from '../src/services/Encryption';
 import logger from '../src/services/Logger';
 import prisma from '../src/services/Prisma';
 import { IConfig } from '../src/types/config';
+import CategoryGenerator from '../tests/utils/CategoryGenerator';
 import UserGenerator from '../tests/utils/UserGenerator';
 
 const seedConfig = config.get<IConfig['seed']>('seed')
 
 async function seed() {
     const users = [];
+    const categories = []
 
     // Generate plain objects
     for (let i = 0; i < seedConfig.grain; i++) {
@@ -31,6 +34,10 @@ async function seed() {
         }
     }
 
+    for (const category of seedData.categories) {
+        categories.push(CategoryGenerator.generateData(category))
+    }
+
     const promises: Promise<any>[] = [];
     const seededTables: string[] = [];
 
@@ -40,6 +47,23 @@ async function seed() {
             skipDuplicates: true
         }));
         seededTables.push('users');
+    }
+
+    if ((await prisma.category.count()) === 0) {
+        promises.push(Promise.all(categories.map((category) =>
+            prisma.category.create({
+                data: {
+                    ...category,
+                    name: {
+                        create: category.name
+                    },
+                    description: {
+                        create: category.description
+                    }
+                }
+            }))))
+
+        seededTables.push('categories')
     }
 
     await Promise.all(promises);

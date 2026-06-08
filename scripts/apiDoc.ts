@@ -42,6 +42,7 @@ const schemas: {[key: string]: {[key: string]: any}} = {
 
         // Category
         getCategories: CategoryController.schemas,
+        getAdminCategories: CategoryController.schemas,
         putCategory: CategoryController.schemas,
         deleteCategory: CategoryController.schemas,
 
