@@ -19,7 +19,14 @@ export class JoiCommon {
         email: Joi.string().email()
             .trim()
             .case('lower'),
-        token: Joi.string()
+        token: Joi.string(),
+        singleTranslation: Joi.object()
+            .pattern(
+                Joi.string().valid(...Object.values(Language)),
+                Joi.string().required()
+            )
+            .min(1)
+            .required()
     }
 
     static readonly number = {
