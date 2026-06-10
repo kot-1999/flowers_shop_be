@@ -72,6 +72,8 @@ model Translation {
   sk     String  @db.Text
   skSlug String? @db.Text
 
+  selectionistNames Selectionist[] @relation("SelectionistName")
+
   categoryNames        Category[] @relation("CategoryName")
   categoryDescriptions Category[] @relation("CategoryDescription")
 
@@ -201,8 +203,10 @@ model ItemType {
 model Selectionist {
   id String @id @default(uuid()) @db.Uuid
 
-  name    String
-  country String
+  country String?
+
+  nameTID String      @db.Uuid
+  name    Translation @relation("SelectionistName", fields: [nameTID], references: [id])
 
   goods Good[]
 
