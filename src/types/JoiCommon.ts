@@ -20,13 +20,7 @@ export class JoiCommon {
             .trim()
             .case('lower'),
         token: Joi.string(),
-        singleTranslation: Joi.object()
-            .pattern(
-                Joi.string().valid(...Object.values(Language)),
-                Joi.string().required()
-            )
-            .min(1)
-            .required()
+
     }
 
     static readonly number = {
@@ -40,6 +34,14 @@ export class JoiCommon {
             params: Joi.object(),
             headers: Joi.object()
         }),
+
+        singleTranslation: Joi.object()
+            .pattern(
+                Joi.string().valid(...Object.values(Language)),
+                Joi.string().required()
+            )
+            .min(1)
+            .required(),
 
         address: Joi.object({
             building: Joi.string().trim()
@@ -64,7 +66,20 @@ export class JoiCommon {
 
         }),
 
-        pagination: Joi.object({
+        paginatedQuery: Joi.object({
+            page: Joi.number()
+                .integer()
+                .min(1)
+                .default(1),
+
+            limit: Joi.number()
+                .integer()
+                .min(1)
+                .max(100)
+                .default(20)
+        }),
+
+        paginationRes: Joi.object({
             page: Joi.number()
                 .integer()
                 .min(1)

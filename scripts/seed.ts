@@ -7,6 +7,7 @@ import logger from '../src/services/Logger';
 import prisma from '../src/services/Prisma';
 import { IConfig } from '../src/types/config';
 import CategoryGenerator from '../tests/utils/CategoryGenerator';
+import ItemTypeGenerator from '../tests/utils/ItemTypeGenerator';
 import UserGenerator from '../tests/utils/UserGenerator';
 
 const seedConfig = config.get<IConfig['seed']>('seed')
@@ -14,6 +15,7 @@ const seedConfig = config.get<IConfig['seed']>('seed')
 async function seed() {
     const users = [];
     const categories = []
+    const itemTypes = [];
 
     // Generate plain objects
     for (let i = 0; i < seedConfig.grain; i++) {
@@ -36,6 +38,10 @@ async function seed() {
 
     for (const category of seedData.categories) {
         categories.push(CategoryGenerator.generateData(category))
+    }
+
+    for (const itemType of seedData.itemTypes) {
+        itemTypes.push(ItemTypeGenerator.generateData(itemType as any));
     }
 
     const promises: Promise<any>[] = [];
@@ -64,6 +70,20 @@ async function seed() {
             }))))
 
         seededTables.push('categories')
+    }
+
+    if ((await prisma.itemType.count()) === 0) {
+        promises.push(Promise.all(itemTypes.map((itemType) =>
+            prisma.itemType.create({
+                data: {
+                    ...itemType,
+                    name: {
+                        create: itemType.name
+                    }
+                }
+            }))));
+
+        seededTables.push('itemTypes');
     }
 
     await Promise.all(promises);

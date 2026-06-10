@@ -3,6 +3,7 @@ import { Category, Translation } from '@prisma/client';
 import dayjs from 'dayjs'
 
 import prisma from '../../src/services/Prisma'
+import { Language, Languages } from '../../src/utils/enums';
 
 export default class CategoryGenerator {
     public static generateCategory(categoryData: Partial<Category> & { name?: Partial<Translation>,  description?: Partial<Translation>} = {} = {}) {
@@ -26,19 +27,15 @@ export default class CategoryGenerator {
         return {
             id,
             coverImage: categoryData.coverImage ?? null,
-            name: categoryData.name ?? {
-                en: faker.commerce.department(),
-                ua: faker.commerce.department(),
-                sk: faker.commerce.department(),
-                de: faker.commerce.department()
-            },
+            name: categoryData.name ?? Object.fromEntries(Languages.map((lang: Language) => [
+                lang,
+                faker.commerce.department()
+            ])),
 
-            description: categoryData.description ?? {
-                en: faker.commerce.productDescription(),
-                ua: faker.commerce.productDescription(),
-                sk: faker.commerce.productDescription(),
-                de: faker.commerce.productDescription()
-            },
+            description: categoryData.description ?? Object.fromEntries(Languages.map((lang: Language) => [
+                lang,
+                faker.commerce.productDescription()
+            ])),
 
             createdAt: categoryData.createdAt ?? dayjs().toISOString(),
             updatedAt: categoryData.updatedAt ?? dayjs().toISOString(),

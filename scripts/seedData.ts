@@ -84,3 +84,50 @@ export const categories = [
         }
     }
 ]
+export const itemTypes = [
+    {
+        name: {
+            en: 'Young Plant',
+            ua: 'Молода рослина',
+            sk: 'Mladá rastlina',
+            de: 'Junge Pflanze'
+        },
+        weight: 30
+    },
+    {
+        name: {
+            en: 'Leaf',
+            ua: 'Листок',
+            sk: 'List',
+            de: 'Blatt'
+        },
+        weight: 5
+    },
+    {
+        name: {
+            en: 'Mature Plant',
+            ua: 'Доросла рослина',
+            sk: 'Dospelá rastlina',
+            de: 'Ausgewachsene Pflanze'
+        },
+        weight: 150
+    },
+    {
+        name: {
+            en: 'Rhizome',
+            ua: 'Кореневище',
+            sk: 'Podzemok',
+            de: 'Rhizom'
+        },
+        weight: 200
+    },
+    {
+        name: {
+            en: 'Cutting',
+            ua: 'Щепка',
+            sk: 'Odrezok',
+            de: 'Steckling'
+        },
+        weight: 100
+    }
+];
