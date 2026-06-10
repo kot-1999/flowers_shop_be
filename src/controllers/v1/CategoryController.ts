@@ -5,7 +5,6 @@ import Joi from 'joi';
 import prisma from '../../services/Prisma';
 import { AbstractController } from '../../types/AbstractController';
 import { JoiCommon } from '../../types/JoiCommon';
-import { Language } from '../../utils/enums';
 import { translationSelect } from '../../utils/helpers';
 import { IError } from '../../utils/IError';
 
@@ -57,8 +56,8 @@ export class CategoryController extends AbstractController {
                     id: JoiCommon.string.id.required(),
                     coverImage: Joi.string().allow(null),
 
-                    name: JoiCommon.string.singleTranslation,
-                    description: JoiCommon.string.singleTranslation
+                    name: JoiCommon.object.singleTranslation,
+                    description: JoiCommon.object.singleTranslation
                 }))
                     .required()
             }),
@@ -68,8 +67,8 @@ export class CategoryController extends AbstractController {
                     id: JoiCommon.string.id.required(),
                     coverImage: Joi.string().allow(null),
 
-                    name: JoiCommon.string.singleTranslation,
-                    description: JoiCommon.string.singleTranslation
+                    name: JoiCommon.object.translations,
+                    description: JoiCommon.object.translations
                 }))
                     .required()
             }),
@@ -269,7 +268,8 @@ export class CategoryController extends AbstractController {
                     }
                 })
             }
-            
+
+            // Delete old translations
             if (category) {
                 await Promise.all([
                     category.nameTID !== categoryResolved.nameTID
