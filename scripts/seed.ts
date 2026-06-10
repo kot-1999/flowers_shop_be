@@ -9,6 +9,7 @@ import { IConfig } from '../src/types/config';
 import CategoryGenerator from '../tests/utils/generators/CategoryGenerator';
 import ItemTypeGenerator from '../tests/utils/generators/ItemTypeGenerator';
 import SelectionistGenerator from '../tests/utils/generators/SelectionistGenerator';
+import TagGenerator from '../tests/utils/generators/TagGenerator';
 import UserGenerator from '../tests/utils/generators/UserGenerator';
 
 const seedConfig = config.get<IConfig['seed']>('seed')
@@ -18,12 +19,13 @@ async function seed() {
     const categories = []
     const itemTypes = [];
     const selectionists = []
+    const tags = []
 
     // Generate plain objects
     for (let i = 0; i < seedConfig.grain; i++) {
         if (i % 3 === 0) {
-            users.push(UserGenerator.generateData({ 
-                password: EncryptionService.hashSHA256('Test123'), 
+            users.push(UserGenerator.generateData({
+                password: EncryptionService.hashSHA256('Test123'),
                 role: UserRole.Admin
             }))
         } else if (i % 2 === 0) {
@@ -48,6 +50,10 @@ async function seed() {
 
     for (const itemType of seedData.itemTypes) {
         itemTypes.push(ItemTypeGenerator.generateData(itemType as any));
+    }
+
+    for (let i = 0; i < seedConfig.grain / 3; i++) {
+        tags.push(TagGenerator.generateData())
     }
 
     const promises: Promise<any>[] = [];
@@ -103,7 +109,21 @@ async function seed() {
                 }
             }))));
 
-        seededTables.push('itemTypes');
+        seededTables.push('selectionists');
+    }
+
+    if ((await prisma.tag.count()) === 0) {
+        promises.push(Promise.all(tags.map((tag) =>
+            prisma.tag.create({
+                data: {
+                    ...tag,
+                    name: {
+                        create: tag.name
+                    }
+                }
+            }))));
+
+        seededTables.push('tags');
     }
 
     await Promise.all(promises);
