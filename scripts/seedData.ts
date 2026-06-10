@@ -15,35 +15,35 @@ export const categories = [
     },
     {
         name: {
-            en: 'Roses',
-            ua: 'Троянди',
-            sk: 'Ruže',
-            de: 'Rosen'
+            en: 'Peonies',
+            ua: 'Півонії',
+            sk: 'Pivonky',
+            de: 'Pfingstrosen'
         },
         description: {
-            en: 'Elegant selection of premium roses',
-            ua: 'Вишуканий вибір преміальних троянд',
-            sk: 'Elegantný výber prémiových ruží',
-            de: 'Elegante Auswahl an Premium-Rosen'
+            en: 'Elegant selection of premium peonies',
+            ua: 'Вишуканий вибір преміальних півоній',
+            sk: 'Elegantný výber prémiových pivoniek',
+            de: 'Elegante Auswahl an Premium-Pfingstrosen'
         }
     },
     {
         name: {
-            en: 'Tulips',
-            ua: 'Тюльпани',
-            sk: 'Tulipány',
-            de: 'Tulpen'
+            en: 'Irises',
+            ua: 'Іриси',
+            sk: 'Kosatce',
+            de: 'Iris'
         },
         description: {
-            en: 'Fresh seasonal tulips in vibrant colors',
-            ua: 'Свіжі сезонні тюльпани яскравих кольорів',
-            sk: 'Čerstvé sezónne tulipány v žiarivých farbách',
-            de: 'Frische saisonale Tulpen in lebendigen Farben'
+            en: 'Beautiful irises in a variety of colors',
+            ua: 'Красиві іриси різноманітних кольорів',
+            sk: 'Krásne kosatce v rôznych farbách',
+            de: 'Wunderschöne Iris in verschiedenen Farben'
         }
     },
     {
         name: {
-            en: 'Orchids',
+            en: 'Пеліргонії',
             ua: 'Орхідеї',
             sk: 'Orchidey',
             de: 'Orchideen'
