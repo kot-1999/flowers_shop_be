@@ -1,7 +1,9 @@
+import { UserRole } from '@prisma/client';
 import { Router } from 'express'
 
 import { ItemTypeController } from '../../controllers/v1/ItemTypeController'
 import authorizationMiddleware from '../../middlewares/authorizationMiddleware'
+import permissionMiddleware from '../../middlewares/permissionMiddleware';
 import validationMiddleware from '../../middlewares/validationMiddleware'
 import { PassportStrategy } from '../../utils/enums'
 
@@ -21,9 +23,10 @@ export default function itemTypesRouter() {
                 schema: { "$ref": "#/definitions/v1GetItemTypesRes" }
             }
         */
-        '/',
+        '/admin/item-types',
         validationMiddleware(ItemTypeController.schemas.request.getItemTypes),
         authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
         itemTypesController.getItemTypes
     )
 
@@ -39,9 +42,10 @@ export default function itemTypesRouter() {
                 schema: { "$ref": "#/definitions/v1PutItemTypeRes" }
             }
         */
-        '/',
+        '/admin/item-types',
         validationMiddleware(ItemTypeController.schemas.request.putItemType),
         authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
         itemTypesController.putItemType
     )
 
@@ -57,9 +61,10 @@ export default function itemTypesRouter() {
                 schema: { "$ref": "#/definitions/v1DeleteItemTypeRes" }
             }
         */
-        '/:itemTypeID',
+        '/admin/item-types/:itemTypeID',
         validationMiddleware(ItemTypeController.schemas.request.deleteItemType),
         authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
         itemTypesController.deleteItemType
     )
 

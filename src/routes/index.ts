@@ -26,7 +26,7 @@ export default function authorizeRouters() {
     router.use('/v1/tags', tagRouter())
     router.use('/v1/translations', translationRouter())
     router.use('/v1/selectionists', selectionistRouter())
-    router.use('/v1/item-types', itemTypeRouter())
+    router.use('/v1', itemTypeRouter())
     router.use('/v1', categoryRouter())
     router.use('/v1/ai', aiRouter())
 
