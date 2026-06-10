@@ -48,7 +48,7 @@ export class UsersController extends AbstractController {
             getUsers: Joi.object({
                 users: Joi.array().items(this.userSchema.required())
                     .required(),
-                pagination: Joi.object({
+                paginationRes: Joi.object({
                     page: Joi.number().required(),
                     limit: Joi.number().required(),
                     totalCount: Joi.number().required()
@@ -129,7 +129,7 @@ export class UsersController extends AbstractController {
 
             return res.status(200).json({
                 users: [],
-                pagination: {
+                paginationRes: {
                     page: 1,
                     limit: 20,
                     totalCount: 0
