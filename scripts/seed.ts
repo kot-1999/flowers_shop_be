@@ -6,9 +6,10 @@ import { EncryptionService } from '../src/services/Encryption';
 import logger from '../src/services/Logger';
 import prisma from '../src/services/Prisma';
 import { IConfig } from '../src/types/config';
-import CategoryGenerator from '../tests/utils/CategoryGenerator';
-import ItemTypeGenerator from '../tests/utils/ItemTypeGenerator';
-import UserGenerator from '../tests/utils/UserGenerator';
+import CategoryGenerator from '../tests/utils/generators/CategoryGenerator';
+import ItemTypeGenerator from '../tests/utils/generators/ItemTypeGenerator';
+import SelectionistGenerator from '../tests/utils/generators/SelectionistGenerator';
+import UserGenerator from '../tests/utils/generators/UserGenerator';
 
 const seedConfig = config.get<IConfig['seed']>('seed')
 
@@ -16,6 +17,7 @@ async function seed() {
     const users = [];
     const categories = []
     const itemTypes = [];
+    const selectionists = []
 
     // Generate plain objects
     for (let i = 0; i < seedConfig.grain; i++) {
@@ -34,6 +36,10 @@ async function seed() {
                 role: UserRole.NotRegistered
             }))
         }
+    }
+
+    for (let i = 0; i < seedConfig.grain / 4; i++) {
+        selectionists.push(SelectionistGenerator.generateData())
     }
 
     for (const category of seedData.categories) {
@@ -79,6 +85,20 @@ async function seed() {
                     ...itemType,
                     name: {
                         create: itemType.name
+                    }
+                }
+            }))));
+
+        seededTables.push('itemTypes');
+    }
+
+    if ((await prisma.selectionist.count()) === 0) {
+        promises.push(Promise.all(selectionists.map((selectionist) =>
+            prisma.selectionist.create({
+                data: {
+                    ...selectionist,
+                    name: {
+                        create: selectionist.name
                     }
                 }
             }))));
