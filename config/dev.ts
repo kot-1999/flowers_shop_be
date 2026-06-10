@@ -148,7 +148,7 @@ const options: IConfig = {
         }
     },
     seed: {
-        grain: 100
+        grain: 300
     },
     ollama: process.env.OLLAMA_URL && process.env.MODEL ? {
         url: process.env.OLLAMA_URL,
