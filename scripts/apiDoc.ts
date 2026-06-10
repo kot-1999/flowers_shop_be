@@ -58,6 +58,7 @@ const schemas: {[key: string]: {[key: string]: any}} = {
 
         // Tag
         getTags: TagController.schemas,
+        getAdminTags: TagController.schemas,
         putTag: TagController.schemas,
         deleteTag: TagController.schemas,
 

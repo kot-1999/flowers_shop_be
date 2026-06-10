@@ -1,7 +1,9 @@
+import { UserRole } from '@prisma/client';
 import { Router } from 'express'
 
 import { TagController } from '../../controllers/v1/TagController'
 import authorizationMiddleware from '../../middlewares/authorizationMiddleware'
+import permissionMiddleware from '../../middlewares/permissionMiddleware';
 import validationMiddleware from '../../middlewares/validationMiddleware'
 import { PassportStrategy } from '../../utils/enums'
 
@@ -21,9 +23,28 @@ export default function tagsRouter() {
                 schema: { "$ref": "#/definitions/v1GetTagsRes" }
             }
         */
-        '/',
+        '/tags',
         validationMiddleware(TagController.schemas.request.getTags),
         tagsController.getTags
+    )
+
+    router.get(
+        /*
+            #swagger.tags = ['v1-Tags']
+            #swagger.description = 'Get admin tags.'
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1GetAdminTagsReqBody" }
+            }
+            #swagger.responses[200] = {
+                schema: { "$ref": "#/definitions/v1GetAdminTagsRes" }
+            }
+        */
+        '/admin/tags',
+        validationMiddleware(TagController.schemas.request.getAdminTags),
+        authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
+        tagsController.getAdminTags
     )
 
     router.put(
@@ -38,9 +59,10 @@ export default function tagsRouter() {
                 schema: { "$ref": "#/definitions/v1PutTagRes" }
             }
         */
-        '/',
+        '/admin/tags',
         validationMiddleware(TagController.schemas.request.putTag),
         authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
         tagsController.putTag
     )
 
@@ -56,9 +78,10 @@ export default function tagsRouter() {
                 schema: { "$ref": "#/definitions/v1DeleteTagRes" }
             }
         */
-        '/:tagID',
+        '/admin/:tagID',
         validationMiddleware(TagController.schemas.request.deleteTag),
         authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
         tagsController.deleteTag
     )
 
