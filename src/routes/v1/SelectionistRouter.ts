@@ -1,7 +1,9 @@
+import { UserRole } from '@prisma/client';
 import { Router } from 'express'
 
 import { SelectionistController } from '../../controllers/v1/SelectionistController'
 import authorizationMiddleware from '../../middlewares/authorizationMiddleware'
+import permissionMiddleware from '../../middlewares/permissionMiddleware';
 import validationMiddleware from '../../middlewares/validationMiddleware'
 import { PassportStrategy } from '../../utils/enums'
 
@@ -21,7 +23,7 @@ export default function selectionistsRouter() {
                schema: { "$ref": "#/definitions/v1GetSelectionistsRes" }
            }
        */
-        '/',
+        '/selectionists',
         validationMiddleware(SelectionistController.schemas.request.getSelectionists),
         selectionistsController.getSelectionists
     )
@@ -38,9 +40,10 @@ export default function selectionistsRouter() {
                 schema: { "$ref": "#/definitions/v1PutSelectionistRes" }
             }
         */
-        '/',
+        '/admin/selectionists',
         validationMiddleware(SelectionistController.schemas.request.putSelectionist),
         authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
         selectionistsController.putSelectionist
     )
 
@@ -56,9 +59,10 @@ export default function selectionistsRouter() {
                schema: { "$ref": "#/definitions/v1DeleteSelectionistRes" }
            }
        */
-        '/:selectionistID',
+        '/admin/selectionists.:selectionistID',
         validationMiddleware(SelectionistController.schemas.request.deleteSelectionist),
         authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
         selectionistsController.deleteSelectionist
     )
 
