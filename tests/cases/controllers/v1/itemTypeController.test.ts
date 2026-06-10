@@ -6,8 +6,8 @@ import supertest from 'supertest';
 import app from '../../../../src/app';
 import { ItemTypeController } from '../../../../src/controllers/v1/ItemTypeController';
 import prisma from '../../../../src/services/Prisma';
+import ItemTypeGenerator from '../../../utils/generators/ItemTypeGenerator';
 import { loginUserAndGetCookie } from '../../../utils/helpers';
-import ItemTypeGenerator from '../../../utils/ItemTypeGenerator';
 
 const endpoint = (val = '') => '/api/v1/admin/item-types/' + val;
 const password = 'Test123';

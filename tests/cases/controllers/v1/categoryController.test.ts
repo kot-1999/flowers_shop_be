@@ -6,7 +6,7 @@ import supertest from 'supertest';
 import app from '../../../../src/app';
 import { CategoryController } from '../../../../src/controllers/v1/CategoryController';
 import prisma from '../../../../src/services/Prisma';
-import CategoryGenerator from '../../../utils/CategoryGenerator';
+import CategoryGenerator from '../../../utils/generators/CategoryGenerator';
 import { loginUserAndGetCookie } from '../../../utils/helpers';
 
 const endpoint = (val = '') => '/api/v1/admin/categories/' + val;
@@ -163,7 +163,6 @@ describe(`DELETE ${endpoint(':categoryID')}`, () => {
         const res = await supertest(app)
             .delete(endpoint(categoryData.id))
             .set('Cookie', sessionCookie)
-        console.log(res.error)
 
         expect(res.statusCode).to.equal(200);
         expect(res.type).to.eq('application/json');
