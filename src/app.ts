@@ -12,10 +12,11 @@ import passport from 'passport'
 import { RedisStore as RedisRateLimitStore } from 'rate-limit-redis'
 import swaggerUi from 'swagger-ui-express'
 
-import errorMiddleware from './middlewares/errorMiddleware' // eslint-disable-next-line import/order
+import errorMiddleware from './middlewares/errorMiddleware'  
+import languageMiddleware from './middlewares/languageMiddleware';
+// eslint-disable-next-line import/order
 import authorizeRouters from './routes'
 
-// Initialize services
 import './services/Passport'
 import './services/Prisma'
 
@@ -24,7 +25,6 @@ import logger from './services/Logger'
 import redis from './services/Redis'
 import { IConfig } from './types/config'
 import { NodeEnv } from './utils/enums';
-import languageMiddleware from "./middlewares/languageMiddleware";
 
 // Configs
 const cookieSessionConfig = config.get<IConfig['cookieSession']>('cookieSession')

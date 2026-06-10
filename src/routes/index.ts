@@ -30,7 +30,6 @@ export default function authorizeRouters() {
     router.use('/v1', categoryRouter())
     router.use('/v1/ai', aiRouter())
 
-
     // Other
     router.put(
         /*
