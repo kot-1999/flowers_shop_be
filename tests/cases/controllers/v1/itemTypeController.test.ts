@@ -75,7 +75,6 @@ describe(`GET ${endpoint()}`, () => {
             .query({
                 search: 'SpecialTestItem'
             });
-        console.log(item, res.body.itemTypes, await prisma.translation.findFirst({ where: { id: item.nameTID } }))
         expect(res.statusCode).to.equal(200);
 
         const found = res.body.itemTypes.some((t: any) => t.id === item.id);
