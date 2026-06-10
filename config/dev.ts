@@ -153,7 +153,7 @@ const options: IConfig = {
     ollama: process.env.OLLAMA_URL && process.env.MODEL ? {
         url: process.env.OLLAMA_URL,
         model: process.env.MODEL
-    } : undefined
+    } : null
 
 }
 export default options
