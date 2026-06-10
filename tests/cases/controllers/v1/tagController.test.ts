@@ -58,7 +58,7 @@ describe(`GET ${publicEndpoint}`, () => {
     })
 })
 
-describe(`GET ${adminEndpoint}`, () => {
+describe(`GET ${adminEndpoint()}`, () => {
     let sessionCookie: string
 
     before(async () => {

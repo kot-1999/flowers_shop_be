@@ -75,7 +75,7 @@ describe(`GET ${endpoint()}`, () => {
             .query({
                 search: 'SpecialTestItem'
             });
-
+        console.log(item, res.error)
         expect(res.statusCode).to.equal(200);
 
         const found = res.body.itemTypes.some((t: any) => t.id === item.id);
