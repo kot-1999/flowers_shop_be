@@ -118,8 +118,6 @@ export class TagController extends AbstractController {
                 prisma.tag.findMany({
                     select: {
                         id: true,
-                        updatedAt: true,
-                        createdAt: true,
                         name: {
                             select: { [language as string]: true }
                         }
@@ -179,6 +177,8 @@ export class TagController extends AbstractController {
                 prisma.tag.findMany({
                     select: {
                         id: true,
+                        createdAt: true,
+                        updatedAt: true,
                         name: {
                             select: translationSelect
                         }
@@ -253,7 +253,7 @@ export class TagController extends AbstractController {
             }
 
             const data: any = {
-                deletedAt: body.restore ? null : tag.deletedAt
+                deletedAt: body.restore || !tag ? null : tag.deletedAt
             }
 
             if (body.nameTID) {

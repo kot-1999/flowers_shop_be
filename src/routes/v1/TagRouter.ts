@@ -78,7 +78,7 @@ export default function tagsRouter() {
                 schema: { "$ref": "#/definitions/v1DeleteTagRes" }
             }
         */
-        '/admin/:tagID',
+        '/admin/tags/:tagID',
         validationMiddleware(TagController.schemas.request.deleteTag),
         authorizationMiddleware([PassportStrategy.google]),
         permissionMiddleware([UserRole.Admin]),
