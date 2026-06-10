@@ -45,7 +45,11 @@ export class ItemTypeController extends AbstractController {
                 itemTypes: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id.required(),
                     name: JoiCommon.object.translations,
-                    weight: Joi.number().required()
+                    weight: Joi.number().required(),
+                    createdAt: Joi.date().iso()
+                        .required(),
+                    updatedAt: Joi.date().iso()
+                        .required()
                 }))
                     .required(),
                 pagination: JoiCommon.object.paginationRes
