@@ -60,7 +60,8 @@ export class SelectionistController extends AbstractController {
             putSelectionist: Joi.object({
                 selectionist: Joi.object({
                     id: JoiCommon.string.id.required()
-                }).required()
+                }).required(),
+                message: Joi.string().required()
             }),
 
             deleteSelectionist: Joi.object({
