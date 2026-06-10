@@ -31,6 +31,7 @@ export enum Language {
     sk = 'sk',
     de = 'de'
 }
+export const Languages = Object.values(Language) as Language[]
 
 const LOCALES_PATH = path.resolve(process.cwd(), 'locales');
 
