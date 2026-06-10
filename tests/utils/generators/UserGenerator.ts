@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 import { User, UserRole } from '@prisma/client'
 import dayjs from 'dayjs'
 
-import prisma from '../../src/services/Prisma'
+import prisma from '../../../src/services/Prisma'
 
 export default class UserGenerator {
     public static generateUser(userData: Partial<User> = {}): Promise<User> {
