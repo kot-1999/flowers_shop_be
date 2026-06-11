@@ -11,7 +11,7 @@ import { Language, NodeEnv } from '../src/utils/enums';
 
 const options: IConfig = {
     app: {
-        name: 'BE-project-01',
+        name: 'Flower Shop',
         port: process.env.PORT as string,
         env: process.env.NODE_ENV as NodeEnv,
         frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3001'
@@ -141,7 +141,8 @@ const options: IConfig = {
     },
     seed: {
         grain: 100
-    }
+    },
+    ollama: null
 }
 
 export default options

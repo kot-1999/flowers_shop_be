@@ -6,7 +6,13 @@ import j2s from 'joi-to-swagger'
 import swaggerAutogen from 'swagger-autogen'
 
 import { FileUpload } from '../src/controllers/FileUpload';
+import { AIController } from '../src/controllers/v1/AIController';
 import { AuthorizationController as UserAuthorizationController } from '../src/controllers/v1/AuthorizationController'
+import { CategoryController } from '../src/controllers/v1/CategoryController';
+import { GoodController } from '../src/controllers/v1/GoodController';
+import { ItemTypeController } from '../src/controllers/v1/ItemTypeController';
+import { SelectionistController } from '../src/controllers/v1/SelectionistController';
+import { TagController } from '../src/controllers/v1/TagController';
 
 /**
  * Link all endpoints to their schemas
@@ -28,7 +34,41 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         me: UserAuthorizationController.schemas,
 
         // File Upload
-        putFile: FileUpload.schemas
+        putFile: FileUpload.schemas,
+
+        // AI
+        postTranslations: AIController.schemas,
+        postGoodMetadata: AIController.schemas,
+
+        // Category
+        getCategories: CategoryController.schemas,
+        getAdminCategories: CategoryController.schemas,
+        putCategory: CategoryController.schemas,
+        deleteCategory: CategoryController.schemas,
+
+        // Item Type
+        getItemTypes: ItemTypeController.schemas,
+        putItemType: ItemTypeController.schemas,
+        deleteItemType: ItemTypeController.schemas,
+
+        // Selectionist
+        getSelectionists: SelectionistController.schemas,
+        putSelectionist: SelectionistController.schemas,
+        deleteSelectionist: SelectionistController.schemas,
+
+        // Tag
+        getTags: TagController.schemas,
+        getAdminTags: TagController.schemas,
+        putTag: TagController.schemas,
+        deleteTag: TagController.schemas,
+
+        // Good
+        getGoods: GoodController.schemas,
+        getGood: GoodController.schemas,
+        postGood: GoodController.schemas,
+        patchGood: GoodController.schemas,
+        deleteGood: GoodController.schemas
+
     }
 }
 

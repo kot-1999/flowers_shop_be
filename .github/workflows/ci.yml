@@ -63,7 +63,7 @@ jobs:
         run: npm install --legacy-peer-deps
       # Run tests
       - name: Run tests
-        run: npm run test
+        run: npm run local:prestart:test && npm run test
       - name: Run type check
         run: npm run type:check
       - name: Stop and Clean Up

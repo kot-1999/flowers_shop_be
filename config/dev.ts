@@ -11,7 +11,7 @@ const isProd = process.env.NODE_ENV === NodeEnv.Prod
 
 const options: IConfig = {
     app: {
-        name: 'BE-project-01',
+        name: 'Flower Shop',
         port: process.env.PORT as string,
         env: process.env.NODE_ENV as NodeEnv,
         frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3001'
@@ -148,7 +148,12 @@ const options: IConfig = {
         }
     },
     seed: {
-        grain: 100
-    }
+        grain: 300
+    },
+    ollama: process.env.OLLAMA_URL && process.env.MODEL ? {
+        url: process.env.OLLAMA_URL,
+        model: process.env.MODEL
+    } : null
+
 }
 export default options

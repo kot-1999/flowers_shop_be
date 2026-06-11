@@ -74,5 +74,9 @@ export interface IConfig {
   },
   seed: {
     grain: number
-  }
+  },
+  ollama: {
+    url: string
+    model: string
+  } | null
 }

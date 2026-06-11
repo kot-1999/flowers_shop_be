@@ -1,5 +1,11 @@
 import { Router } from 'express'
 
+import aiRouter from './v1/AIRouter'
+import categoryRouter from './v1/CategoryRouter'
+import goodRouter from './v1/GoodRouter'
+import itemTypeRouter from './v1/ItemTypeRouter'
+import selectionistRouter from './v1/SelectionistRouter'
+import tagRouter from './v1/TagRouter'
 import userAuthorizationRouter from './v1/UserAuthorizationRouter'
 import userRouter from './v1/UserRouter'
 import { FileUpload } from '../controllers/FileUpload';
@@ -17,6 +23,12 @@ export default function authorizeRouters() {
     // v1
     router.use('/v1/authorization',userAuthorizationRouter())
     router.use('/v1/user', userRouter())
+    router.use('/v1/ai', aiRouter())
+    router.use('/v1', tagRouter())
+    router.use('/v1', selectionistRouter())
+    router.use('/v1', itemTypeRouter())
+    router.use('/v1', categoryRouter())
+    router.use('/v1', goodRouter())
 
     // Other
     router.put(
