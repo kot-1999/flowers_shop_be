@@ -1,4 +1,4 @@
-import { Country } from '@prisma/client';
+import { Country, Selectionist } from '@prisma/client';
 import dayjs from 'dayjs';
 import { AuthRequest, NextFunction, Response, Request } from 'express';
 import Joi from 'joi';
@@ -127,7 +127,10 @@ export class SelectionistController extends AbstractController {
             ])
 
             return res.status(200).json({
-                selectionists,
+                selectionists: selectionists.map((selectionist: Selectionist) => ({
+                    ...selectionist,
+                    country: req.t(selectionist.country as string)
+                })),
                 pagination: {
                     page: query.page,
                     limit: query.limit,

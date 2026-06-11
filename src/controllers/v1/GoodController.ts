@@ -429,7 +429,11 @@ export class GoodController extends AbstractController {
                 goods: goods.map((good: any) => ({
                     ...good,
                     tags: good.tags.map((item: any) => ({ ...item.tag })),
-                    pricings: good.pricings.map((item: any) => ({ ...item.pricing }))
+                    pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
+                    selectionist: {
+                        ...good.selectionist,
+                        country: req.t(good.selectionist.country)
+                    }
                 })),
                 pagination: {
                     page: query.page,
@@ -528,7 +532,11 @@ export class GoodController extends AbstractController {
                 good: {
                     ...good,
                     tags: good.tags.map((item: any) => ({ ...item.tag })),
-                    pricings: good.pricings.map((item: any) => ({ ...item.pricing }))
+                    pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
+                    selectionist: {
+                        ...good.selectionist,
+                        country: req.t(good.selectionist.country)
+                    }
                 }
             })
         } catch (err) {
