@@ -1,4 +1,4 @@
-import { Faker, en, de, sk, uk } from '@faker-js/faker';
+import { Faker, en, de, sk, uk, faker } from '@faker-js/faker';
 
 import { Language } from '../../src/utils/enums';
 
@@ -28,6 +28,42 @@ export default class LocalizedFaker {
         default:
             return en;
         }
+    }
+
+    private static fallbackString(wordCount: number): string {
+
+        let res = ''
+        
+        for (let i = 0; i < wordCount; i++) {
+            res += faker.string.alpha({
+                length: {
+                    min: 4,
+                    max: 9 
+                }
+            });
+        }
+        return res
+    }
+
+    public static safeCall(
+        fn: Function,
+        wordCount: number = 3
+    ): string {
+        const run = (f: Function): any => {
+            try {
+                return f();
+            } catch {
+                return null;
+            }
+        };
+
+        const result = run(fn);
+
+        if (result) {
+            return result;
+        }
+
+        return this.fallbackString(wordCount);
     }
 
     public static get(language: Language): Faker {
