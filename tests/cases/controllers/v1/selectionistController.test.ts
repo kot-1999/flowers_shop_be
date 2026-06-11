@@ -102,6 +102,8 @@ describe(`PUT ${endpoint()}`, () => {
     it('Should create selectionist (200)', async () => {
         const data = SelectionistGenerator.generateData();
 
+        delete data.name.id
+
         const res = await supertest(app)
             .put(endpoint())
             .set('Cookie', sessionCookie)
@@ -140,13 +142,16 @@ describe(`PUT ${endpoint()}`, () => {
     });
 
     it('Selectionist does not exist (404)', async () => {
+        const name = SelectionistGenerator.generateData().name
+        delete name.id
+
         const res = await supertest(app)
             .put(endpoint())
             .set('Cookie', sessionCookie)
             .send({
                 selectionistID: faker.string.uuid(),
                 country: Country.Slovenia,
-                nameTranslations: SelectionistGenerator.generateData().name
+                nameTranslations: name
             });
 
         expect(res.statusCode).to.equal(404);

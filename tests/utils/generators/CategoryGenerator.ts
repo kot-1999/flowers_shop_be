@@ -28,15 +28,21 @@ export default class CategoryGenerator {
         return {
             id,
             coverImage: categoryData.coverImage ?? null,
-            name: categoryData.name ?? Object.fromEntries(Languages.map((lang: Language) => [
-                lang,
-                LocalizedFaker.safeCall(LocalizedFaker.get(lang).commerce.department)
-            ])),
+            name: categoryData.name ?? {
+                id: faker.string.uuid(),
+                ...Object.fromEntries(Languages.map((lang: Language) => [
+                    lang,
+                    LocalizedFaker.safeCall(LocalizedFaker.get(lang).commerce.department)
+                ]))
+            },
 
-            description: categoryData.description ?? Object.fromEntries(Languages.map((lang: Language) => [
-                lang,
-                LocalizedFaker.safeCall(LocalizedFaker.get(lang).commerce.productDescription)
-            ])),
+            description: categoryData.description ?? {
+                id: faker.string.uuid(),
+                ...Object.fromEntries(Languages.map((lang: Language) => [
+                    lang,
+                    LocalizedFaker.safeCall(LocalizedFaker.get(lang).commerce.productDescription)
+                ]))
+            },
 
             createdAt: categoryData.createdAt ?? dayjs().toISOString(),
             updatedAt: categoryData.updatedAt ?? dayjs().toISOString(),

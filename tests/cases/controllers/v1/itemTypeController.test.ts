@@ -103,6 +103,8 @@ describe(`PUT ${endpoint()}`, () => {
     it('Should create item type (200)', async () => {
         const data = ItemTypeGenerator.generateData();
 
+        delete data.name.id
+
         const res = await supertest(app)
             .put(endpoint())
             .set('Cookie', sessionCookie)
@@ -141,12 +143,14 @@ describe(`PUT ${endpoint()}`, () => {
     });
 
     it('Should return 404 when item type does not exist', async () => {
+        const name = ItemTypeGenerator.generateData().name
+        delete name.id
         const res = await supertest(app)
             .put(endpoint())
             .set('Cookie', sessionCookie)
             .send({
                 itemTypeID: faker.string.uuid(),
-                nameTranslations: ItemTypeGenerator.generateData().name,
+                nameTranslations: name,
                 weight: 10
             });
 
@@ -189,9 +193,7 @@ describe(`DELETE ${endpoint(':itemTypeID')}`, () => {
     });
 
     it('Should delete item type (200)', async () => {
-        const itemType = await prisma.itemType.findFirst({
-            where: { deletedAt: null }
-        });
+        const itemType = await ItemTypeGenerator.generateItemType()
 
         const res = await supertest(app)
             .delete(endpoint(itemType.id))
@@ -206,6 +208,18 @@ describe(`DELETE ${endpoint(':itemTypeID')}`, () => {
         expect(validationResult.error).to.eq(undefined);
     });
 
+    it('Item appears in pricings (403)', async () => {
+        const itemType = await prisma.itemType.findFirst({
+            where: { deletedAt: null }
+        });
+
+        const res = await supertest(app)
+            .delete(endpoint(itemType.id))
+            .set('Cookie', sessionCookie);
+
+        expect(res.statusCode).to.equal(403);
+    });
+
     it('Should return 404 when item type does not exist', async () => {
         const res = await supertest(app)
             .delete(endpoint(faker.string.uuid()))
@@ -213,30 +227,4 @@ describe(`DELETE ${endpoint(':itemTypeID')}`, () => {
 
         expect(res.statusCode).to.equal(404);
     });
-
-    // TODO: Add test after pricing will be implemented
-    // it('Should return 403 when item type is used in pricing', async () => {
-    //     const itemType = await prisma.itemType.findFirst({
-    //         where: { deletedAt: null }
-    //     });
-    //
-    //     const pricing = await prisma.pricing.findFirst({
-    //         where: { deletedAt: null }
-    //     });
-    //
-    //     if (!pricing) return;
-    //
-    //     await prisma.pricing.update({
-    //         where: { id: pricing.id },
-    //         data: {
-    //             itemTypeID: itemType.id
-    //         }
-    //     });
-    //
-    //     const res = await supertest(app)
-    //         .delete(endpoint(itemType.id))
-    //         .set('Cookie', sessionCookie);
-    //
-    //     expect(res.statusCode).to.equal(403);
-    // });
 });

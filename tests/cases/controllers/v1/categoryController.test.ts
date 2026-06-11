@@ -75,6 +75,8 @@ describe(`PUT ${endpoint()}`, () => {
 
     it('Should create category (200)', async () => {
         const categoryData = CategoryGenerator.generateData()
+        delete categoryData.name.id
+        delete categoryData.description.id
         const res = await supertest(app)
             .put(endpoint())
             .set('Cookie', sessionCookie)
@@ -93,6 +95,8 @@ describe(`PUT ${endpoint()}`, () => {
     it('Should update category (200)', async () => {
         const categoryData = await prisma.category.findFirst()
         const categoryData2 = CategoryGenerator.generateData()
+
+        delete categoryData2.description.id
 
         const res = await supertest(app)
             .put(endpoint())

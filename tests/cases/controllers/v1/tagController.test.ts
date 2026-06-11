@@ -135,6 +135,8 @@ describe(`PUT ${adminEndpoint()}`, () => {
     it('Should create tag (200)', async () => {
         const tagData = TagGenerator.generateData()
 
+        delete tagData.name.id
+
         const res = await supertest(app)
             .put(adminEndpoint())
             .set('Cookie', sessionCookie)
@@ -158,6 +160,8 @@ describe(`PUT ${adminEndpoint()}`, () => {
         })
 
         const newData = TagGenerator.generateData()
+
+        delete newData.name.id
 
         const res = await supertest(app)
             .put(adminEndpoint())
@@ -200,12 +204,15 @@ describe(`PUT ${adminEndpoint()}`, () => {
     })
 
     it('Should return 404 for missing tag', async () => {
+        const name = TagGenerator.generateData().name
+        delete name.id
+
         const res = await supertest(app)
             .put(adminEndpoint())
             .set('Cookie', sessionCookie)
             .send({
                 tagID: faker.string.uuid(),
-                nameTranslations: TagGenerator.generateData().name
+                nameTranslations: name
             })
 
         expect(res.statusCode).to.equal(404)

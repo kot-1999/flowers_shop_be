@@ -25,10 +25,13 @@ export default class ItemTypeGenerator {
         return {
             id,
             name: data.name ?? data.name
-                ?? Object.fromEntries(Languages.map((lang: Language) => [
-                    lang,
-                    faker.commerce.product()
-                ])),
+                ?? {
+                    id: faker.string.uuid(),
+                    ...Object.fromEntries(Languages.map((lang: Language) => [
+                        lang,
+                        faker.commerce.product()
+                    ]))
+                },
             weight: data.weight ?? faker.number.int({
                 min: 1,
                 max: 999 

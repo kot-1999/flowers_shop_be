@@ -25,10 +25,13 @@ export default class TagGenerator {
         return {
             id,
 
-            name: data.name ?? Object.fromEntries(Languages.map((lang: Language) => [
-                lang,
-                LocalizedFaker.safeCall(LocalizedFaker.get(lang).commerce.productAdjective, 2)
-            ])),
+            name: data.name ?? {
+                id: faker.string.uuid(),
+                ...Object.fromEntries(Languages.map((lang: Language) => [
+                    lang,
+                    LocalizedFaker.safeCall(LocalizedFaker.get(lang).commerce.productAdjective, 2)
+                ]))
+            },
 
             createdAt: data.createdAt ?? new Date(),
             updatedAt: data.updatedAt ?? new Date(),

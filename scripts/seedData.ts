@@ -1,12 +1,16 @@
+import {faker} from "@faker-js/faker";
+
 export const categories = [
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Violets',
             ua: 'Фіалки',
             sk: 'Fialky',
             de: 'Veilchen'
         },
         description: {
+            id: faker.string.uuid(),
             en: 'Selection of best African violets',
             ua: 'Вибір найкращих фіалок',
             sk: 'Výber najlepších afrických fialiek',
@@ -15,12 +19,14 @@ export const categories = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Peonies',
             ua: 'Півонії',
             sk: 'Pivonky',
             de: 'Pfingstrosen'
         },
         description: {
+            id: faker.string.uuid(),
             en: 'Elegant selection of premium peonies',
             ua: 'Вишуканий вибір преміальних півоній',
             sk: 'Elegantný výber prémiových pivoniek',
@@ -29,12 +35,14 @@ export const categories = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Irises',
             ua: 'Іриси',
             sk: 'Kosatce',
             de: 'Iris'
         },
         description: {
+            id: faker.string.uuid(),
             en: 'Beautiful irises in a variety of colors',
             ua: 'Красиві іриси різноманітних кольорів',
             sk: 'Krásne kosatce v rôznych farbách',
@@ -43,12 +51,14 @@ export const categories = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Пеліргонії',
             ua: 'Орхідеї',
             sk: 'Orchidey',
             de: 'Orchideen'
         },
         description: {
+            id: faker.string.uuid(),
             en: 'Exotic orchids for refined interiors',
             ua: 'Екзотичні орхідеї для вишуканих інтер’єрів',
             sk: 'Exotické orchidey pre elegantné interiéry',
@@ -57,12 +67,14 @@ export const categories = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Lilies',
             ua: 'Лілії',
             sk: 'Ľalie',
             de: 'Lilien'
         },
         description: {
+            id: faker.string.uuid(),
             en: 'Fragrant lilies perfect for any occasion',
             ua: 'Ароматні лілії для будь-якої нагоди',
             sk: 'Voňavé ľalie vhodné na každú príležitosť',
@@ -71,12 +83,14 @@ export const categories = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Succulents',
             ua: 'Сукуленти',
             sk: 'Sukulenty',
             de: 'Sukkulenten'
         },
         description: {
+            id: faker.string.uuid(),
             en: 'Low-maintenance succulents for modern spaces',
             ua: 'Невибагливі сукуленти для сучасних просторів',
             sk: 'Nenáročné sukulenty pre moderné priestory',
@@ -87,6 +101,7 @@ export const categories = [
 export const itemTypes = [
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Young Plant',
             ua: 'Молода рослина',
             sk: 'Mladá rastlina',
@@ -96,6 +111,7 @@ export const itemTypes = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Leaf',
             ua: 'Листок',
             sk: 'List',
@@ -105,6 +121,7 @@ export const itemTypes = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Mature Plant',
             ua: 'Доросла рослина',
             sk: 'Dospelá rastlina',
@@ -114,6 +131,7 @@ export const itemTypes = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Rhizome',
             ua: 'Кореневище',
             sk: 'Podzemok',
@@ -123,6 +141,7 @@ export const itemTypes = [
     },
     {
         name: {
+            id: faker.string.uuid(),
             en: 'Cutting',
             ua: 'Щепка',
             sk: 'Odrezok',

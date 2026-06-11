@@ -35,10 +35,13 @@ export default class SelectionistGenerator {
                 ) ?? null,
             name:
                 data.name ?? data.name
-                ?? Object.fromEntries(Languages.map((lang: Language) => [
-                    lang,
-                    LocalizedFaker.get(lang).person.fullName()
-                ])),
+                ?? {
+                    id: faker.string.uuid(),
+                    ...Object.fromEntries(Languages.map((lang: Language) => [
+                        lang,
+                        LocalizedFaker.get(lang).person.fullName()
+                    ]))
+                },
             createdAt: data.createdAt ?? new Date(),
             updatedAt: data.updatedAt ?? new Date(),
             deletedAt: data.deletedAt ?? null
