@@ -6,7 +6,6 @@ import goodRouter from './v1/GoodRouter'
 import itemTypeRouter from './v1/ItemTypeRouter'
 import selectionistRouter from './v1/SelectionistRouter'
 import tagRouter from './v1/TagRouter'
-import translationRouter from './v1/TranslationRouter'
 import userAuthorizationRouter from './v1/UserAuthorizationRouter'
 import userRouter from './v1/UserRouter'
 import { FileUpload } from '../controllers/FileUpload';
@@ -26,7 +25,6 @@ export default function authorizeRouters() {
     router.use('/v1/user', userRouter())
     router.use('/v1/ai', aiRouter())
     router.use('/v1', tagRouter())
-    router.use('/v1/translations', translationRouter())
     router.use('/v1', selectionistRouter())
     router.use('/v1', itemTypeRouter())
     router.use('/v1', categoryRouter())

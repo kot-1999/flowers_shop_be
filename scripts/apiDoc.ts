@@ -13,7 +13,6 @@ import { GoodController } from '../src/controllers/v1/GoodController';
 import { ItemTypeController } from '../src/controllers/v1/ItemTypeController';
 import { SelectionistController } from '../src/controllers/v1/SelectionistController';
 import { TagController } from '../src/controllers/v1/TagController';
-import { TranslationController } from '../src/controllers/v1/TranslationController';
 
 /**
  * Link all endpoints to their schemas
@@ -62,9 +61,6 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         getAdminTags: TagController.schemas,
         putTag: TagController.schemas,
         deleteTag: TagController.schemas,
-
-        // Translation
-        putTranslation: TranslationController.schemas,
 
         // Good
         getGoods: GoodController.schemas,
