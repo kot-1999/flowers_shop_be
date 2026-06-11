@@ -2,12 +2,12 @@ import { Router } from 'express'
 
 import aiRouter from './v1/AIRouter'
 import categoryRouter from './v1/CategoryRouter'
+import goodRouter from './v1/GoodRouter'
 import itemTypeRouter from './v1/ItemTypeRouter'
 import selectionistRouter from './v1/SelectionistRouter'
 import tagRouter from './v1/TagRouter'
 import translationRouter from './v1/TranslationRouter'
 import userAuthorizationRouter from './v1/UserAuthorizationRouter'
-import goodRouter from './v1/GoodRouter'
 import userRouter from './v1/UserRouter'
 import { FileUpload } from '../controllers/FileUpload';
 import authorizationMiddleware from '../middlewares/authorizationMiddleware';
