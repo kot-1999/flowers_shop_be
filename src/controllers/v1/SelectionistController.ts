@@ -129,7 +129,7 @@ export class SelectionistController extends AbstractController {
             return res.status(200).json({
                 selectionists: selectionists.map((selectionist: Selectionist) => ({
                     ...selectionist,
-                    country: req.t(selectionist.country as string)
+                    country: selectionist.country ? req.t(selectionist.country as string) : null
                 })),
                 pagination: {
                     page: query.page,

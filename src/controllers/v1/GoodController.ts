@@ -432,7 +432,7 @@ export class GoodController extends AbstractController {
                     pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
                     selectionist: {
                         ...good.selectionist,
-                        country: req.t(good.selectionist.country)
+                        country: good.selectionist.country ? req.t(good.selectionist.country) : null
                     }
                 })),
                 pagination: {
@@ -535,7 +535,7 @@ export class GoodController extends AbstractController {
                     pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
                     selectionist: {
                         ...good.selectionist,
-                        country: req.t(good.selectionist.country)
+                        country: good.selectionist.country ? req.t(good.selectionist.country) : null
                     }
                 }
             })
