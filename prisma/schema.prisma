@@ -109,7 +109,6 @@ model Category {
 model Good {
   id String @id @default(uuid()) @db.Uuid
 
-  amount Int       @db.Integer
   state  GoodState
   photos String[]
 
@@ -125,7 +124,7 @@ model Good {
   selectionistID String       @db.Uuid
   selectionist   Selectionist @relation(fields: [selectionistID], references: [id])
 
-  pricing     GoodPricing[]
+  pricings    GoodPricing[]
   tags        GoodTag[]
   basketItems BasketItem[]
 
@@ -146,6 +145,8 @@ model Pricing {
   id String @id @default(uuid()) @db.Uuid
 
   price Decimal @db.Decimal(10, 2)
+
+  quantity Int @db.Integer
 
   itemTypeID String   @db.Uuid
   itemType   ItemType @relation(fields: [itemTypeID], references: [id])
