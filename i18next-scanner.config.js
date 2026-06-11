@@ -27,7 +27,7 @@ module.exports = {
             jsonIndent: 1
         },
 
-        sort: true,
+        sort: false,
         removeUnusedKeys: false,
 
         defaultValue: (lng, ns, key) => key
