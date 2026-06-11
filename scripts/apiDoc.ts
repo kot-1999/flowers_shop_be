@@ -9,6 +9,7 @@ import { FileUpload } from '../src/controllers/FileUpload';
 import { AIController } from '../src/controllers/v1/AIController';
 import { AuthorizationController as UserAuthorizationController } from '../src/controllers/v1/AuthorizationController'
 import { CategoryController } from '../src/controllers/v1/CategoryController';
+import { GoodController } from '../src/controllers/v1/GoodController';
 import { ItemTypeController } from '../src/controllers/v1/ItemTypeController';
 import { SelectionistController } from '../src/controllers/v1/SelectionistController';
 import { TagController } from '../src/controllers/v1/TagController';
@@ -63,7 +64,14 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         deleteTag: TagController.schemas,
 
         // Translation
-        putTranslation: TranslationController.schemas
+        putTranslation: TranslationController.schemas,
+
+        // Good
+        getGoods: GoodController.schemas,
+        getGood: GoodController.schemas,
+        postGood: GoodController.schemas,
+        patchGood: GoodController.schemas,
+        deleteGood: GoodController.schemas
 
     }
 }
