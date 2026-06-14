@@ -56,8 +56,8 @@ export class CategoryController extends AbstractController {
                     id: JoiCommon.string.id.required(),
                     coverImage: Joi.string().allow(null),
 
-                    name: JoiCommon.object.singleTranslation,
-                    description: JoiCommon.object.singleTranslation
+                    name: JoiCommon.object.singleTranslationWithSlug.required(),
+                    description: JoiCommon.object.singleTranslation.required()
                 }))
                     .required()
             }),
@@ -110,7 +110,8 @@ export class CategoryController extends AbstractController {
                     coverImage: true,
                     name: {
                         select: {
-                            [language as string]: true
+                            [language as string]: true,
+                            [language + 'Slug']: true
                         }
                     },
                     description: {
