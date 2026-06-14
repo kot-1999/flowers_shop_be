@@ -19,28 +19,31 @@ Input:
 
 Output:
 {
-  "translations": {
-    "en": string[],
-    "ua": string[],
-    "de": string[],
-    "sk": string[]
-  }
+  "translations": Array<{
+    "en": string,
+    "ua": string,
+    "de": string,
+    "sk": string
+  }>
 }
 
-CRITICAL RULES:
+STRICT BEHAVIOR RULES:
 
-- Input is an array of strings.
-- Output MUST preserve the same length and order.
-- translations.en[i] corresponds exactly to text[i].
-- translations.ua[i] corresponds exactly to text[i].
-- translations.de[i] corresponds exactly to text[i].
-- translations.sk[i] corresponds exactly to text[i].
+- Output MUST always be an ARRAY, even if input has only 1 item.
+- Output array length MUST exactly equal input array length.
+- Each translations[i] corresponds exactly to text[i].
 
-- NEVER merge or split items.
-- NEVER reorder items.
-- NEVER drop items.
-- NEVER return a single string.
-- NEVER return objects per item.
+- NEVER return a single object.
+- NEVER flatten the array into an object.
+- NEVER merge items.
+- NEVER change structure based on input size.
+
+INDEX MAPPING RULES:
+
+- translations[i].en corresponds to text[i]
+- translations[i].ua corresponds to text[i]
+- translations[i].de corresponds to text[i]
+- translations[i].sk corresponds to text[i]
 
 LANGUAGE RULES:
 
@@ -55,13 +58,14 @@ OUTPUT RULES:
 - No markdown.
 - No explanations.
 - No extra fields.
-- Translate naturally and professionally.
-- Keep ecommerce wording concise.
-- Preserve flower names and botanical names accurately.
-- Return valid JSON only.
-- Never return markdown.
-- Never explain your reasoning.
-- Never add additional fields.
+- No object flattening.
+- No structural simplification.
+- Always return array format for translations.
+
+TRANSLATION STYLE:
+
+- Natural, professional, ecommerce-friendly.
+- Preserve botanical/product naming accuracy.
 
 ========================
 OPERATION: GOOD_METADATA
