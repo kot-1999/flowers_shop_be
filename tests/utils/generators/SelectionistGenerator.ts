@@ -2,8 +2,8 @@ import { faker } from '@faker-js/faker'
 import { Country, Selectionist, Translation } from '@prisma/client'
 
 import prisma from '../../../src/services/Prisma'
-import { Language, Languages } from '../../../src/utils/enums';
-import LocalizedFaker from '../LocalizedFaker';
+import { Language, Languages } from '../../../src/utils/enums'
+import LocalizedFaker from '../LocalizedFaker'
 
 export default class SelectionistGenerator {
     public static generateSelectionist(data: Partial<Selectionist> & {

@@ -5,8 +5,8 @@ import passport from 'passport'
 import { Profile, Strategy as GoogleStrategy, VerifyCallback } from 'passport-google-oauth20'
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt'
 
-import { EncryptionService } from './Encryption';
-import logger from './Logger';
+import { EncryptionService } from './Encryption'
+import logger from './Logger'
 import prisma from './Prisma'
 import { IConfig } from '../types/config'
 import { JwtAudience, PassportStrategy } from '../utils/enums'

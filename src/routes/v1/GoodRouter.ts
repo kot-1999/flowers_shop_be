@@ -1,14 +1,14 @@
-import { UserRole } from '@prisma/client';
-import { Router } from 'express';
+import { UserRole } from '@prisma/client'
+import { Router } from 'express'
 
-import { GoodController } from '../../controllers/v1/GoodController';
-import authorizationMiddleware from '../../middlewares/authorizationMiddleware';
-import permissionMiddleware from '../../middlewares/permissionMiddleware';
-import validationMiddleware from '../../middlewares/validationMiddleware';
-import { PassportStrategy } from '../../utils/enums';
+import { GoodController } from '../../controllers/v1/GoodController'
+import authorizationMiddleware from '../../middlewares/authorizationMiddleware'
+import permissionMiddleware from '../../middlewares/permissionMiddleware'
+import validationMiddleware from '../../middlewares/validationMiddleware'
+import { PassportStrategy } from '../../utils/enums'
 
-const router = Router();
-const goodsController = new GoodController();
+const router = Router()
+const goodsController = new GoodController()
 
 export default function goodsRouter() {
     router.get(
@@ -26,7 +26,7 @@ export default function goodsRouter() {
         '/goods',
         validationMiddleware(GoodController.schemas.request.getGoods),
         goodsController.getGoods
-    );
+    )
 
     router.get(
         /*
@@ -43,7 +43,7 @@ export default function goodsRouter() {
         '/goods/:goodID',
         validationMiddleware(GoodController.schemas.request.getGood),
         goodsController.getGood
-    );
+    )
 
     router.post(
         /*
@@ -62,7 +62,7 @@ export default function goodsRouter() {
         authorizationMiddleware([PassportStrategy.google]),
         permissionMiddleware([UserRole.Admin]),
         goodsController.postGood
-    );
+    )
 
     router.patch(
         /*
@@ -81,7 +81,7 @@ export default function goodsRouter() {
         authorizationMiddleware([PassportStrategy.google]),
         permissionMiddleware([UserRole.Admin]),
         goodsController.patchGood
-    );
+    )
 
     router.delete(
         /*
@@ -100,7 +100,7 @@ export default function goodsRouter() {
         authorizationMiddleware([PassportStrategy.google]),
         permissionMiddleware([UserRole.Admin]),
         goodsController.deleteGood
-    );
+    )
 
-    return router;
+    return router
 }

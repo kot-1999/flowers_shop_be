@@ -37,6 +37,7 @@ export default [{
     "function-paren-newline": ["error", "multiline"],
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "indent": ["error", 4],
+    'semi': ['error', 'never'],
     "wrap-iife": ["error", "inside"],
     "quotes": ["error", "single", { "avoidEscape": true }],
     "max-len": ["error", {

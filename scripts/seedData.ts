@@ -1,4 +1,4 @@
-import {faker} from "@faker-js/faker";
+import { faker } from '@faker-js/faker'
 
 export const categories = [
     {
@@ -149,4 +149,4 @@ export const itemTypes = [
         },
         weight: 100
     }
-];
+]

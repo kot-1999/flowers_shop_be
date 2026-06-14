@@ -1,5 +1,5 @@
 import { UserRole } from '@prisma/client'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 import { Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 

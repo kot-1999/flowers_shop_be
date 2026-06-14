@@ -2,7 +2,7 @@ import config from 'config'
 import crypto from 'crypto-js'
 
 import { IConfig } from '../types/config'
-import { IError } from '../utils/IError';
+import { IError } from '../utils/IError'
 
 const encryptionConfig = config.get<IConfig['encryption']>('encryption')
 

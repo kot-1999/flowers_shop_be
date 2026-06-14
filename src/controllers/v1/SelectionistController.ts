@@ -1,13 +1,13 @@
-import { Country, Selectionist } from '@prisma/client';
-import dayjs from 'dayjs';
-import { AuthRequest, NextFunction, Response, Request } from 'express';
-import Joi from 'joi';
+import { Country, Selectionist } from '@prisma/client'
+import dayjs from 'dayjs'
+import { AuthRequest, NextFunction, Response, Request } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { slugify, translationSelect } from '../../utils/helpers';
-import { IError } from '../../utils/IError';
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { slugify, translationSelect } from '../../utils/helpers'
+import { IError } from '../../utils/IError'
 
 export class SelectionistController extends AbstractController {
 
@@ -92,7 +92,7 @@ export class SelectionistController extends AbstractController {
             }
 
             if (query.search) {
-                const terms = slugify(query.search).split('-');
+                const terms = slugify(query.search).split('-')
 
                 where.name = {
                     AND: terms.map((term: string) => ({
@@ -100,7 +100,7 @@ export class SelectionistController extends AbstractController {
                             contains: term
                         }
                     }))
-                };
+                }
             }
 
             const [selectionists, count] = await Promise.all([

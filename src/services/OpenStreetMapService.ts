@@ -1,6 +1,6 @@
-import { TFunction } from 'i18next';
+import { TFunction } from 'i18next'
 
-import { IError } from '../utils/IError';
+import { IError } from '../utils/IError'
 
 interface NominatimPlace {
     place_id: number;
@@ -33,7 +33,7 @@ export class OpenStreetMapService {
      * @description Base endpoint for OpenStreetMap Nominatim API
      * @private
      */
-    private static BASE_URL = 'https://nominatim.openstreetmap.org/search';
+    private static BASE_URL = 'https://nominatim.openstreetmap.org/search'
 
     /**
      * @method search
@@ -54,20 +54,20 @@ export class OpenStreetMapService {
                 format: 'json',
                 addressdetails: '1',
                 limit: '1'
-            });
+            })
 
         const response = await fetch(url, {
             headers: {
                 // REQUIRED by Nominatim policy
                 'User-Agent': 'restaurant-app/1.0 (dev@app.com)'
             }
-        });
+        })
 
         if (!response.ok) {
-            throw new IError(400,  t('errors.notFound', { search }));
+            throw new IError(400,  t('errors.notFound', { search }))
         }
 
-        const data = (await response.json()) as NominatimPlace[];
+        const data = (await response.json()) as NominatimPlace[]
 
         if (!data.length) {
             return null
@@ -96,19 +96,19 @@ export class OpenStreetMapService {
             city: address.city,
             postalcode: address.postcode,
             country: address.country
-        });
+        })
 
-        const url = `${this.BASE_URL}?${params.toString()}`;
+        const url = `${this.BASE_URL}?${params.toString()}`
 
         const response = await fetch(url, {
             headers: { 'User-Agent': 'restaurant-app/1.0 (dev@app.com)' } // REQUIRED by Nominatim
-        });
+        })
 
         if (!response.ok) {
             throw new IError(400, t('Could not find address'))
         }
 
-        const data = (await response.json()) as NominatimPlace[];
+        const data = (await response.json()) as NominatimPlace[]
 
         if (!data.length) {
             return null

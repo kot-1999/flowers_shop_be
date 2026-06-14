@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 import { Constants } from '../utils/Constants'
-import { Language, Languages } from '../utils/enums';
+import { Language, Languages } from '../utils/enums'
 
 export class JoiCommon {
     static readonly string = {

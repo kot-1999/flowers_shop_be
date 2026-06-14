@@ -1,12 +1,12 @@
-import dayjs from 'dayjs';
-import { AuthRequest, NextFunction, Response } from 'express';
-import Joi from 'joi';
+import dayjs from 'dayjs'
+import { AuthRequest, NextFunction, Response } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { translationSelect } from '../../utils/helpers';
-import { IError } from '../../utils/IError';
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { translationSelect } from '../../utils/helpers'
+import { IError } from '../../utils/IError'
 
 export class CategoryController extends AbstractController {
 
@@ -98,8 +98,8 @@ export class CategoryController extends AbstractController {
         next: NextFunction
     ) {
         try {
-            const language = req.headers['accept-language'];
-            const { query } = req;
+            const language = req.headers['accept-language']
+            const { query } = req
 
             const categories = await prisma.category.findMany({
                 where: {
@@ -143,8 +143,8 @@ export class CategoryController extends AbstractController {
         next: NextFunction
     ) {
         try {
-            const language = req.headers['accept-language'];
-            const { query } = req;
+            const language = req.headers['accept-language']
+            const { query } = req
 
             const categories = await prisma.category.findMany({
                 select: {

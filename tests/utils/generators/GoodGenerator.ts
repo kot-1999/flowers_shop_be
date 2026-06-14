@@ -1,14 +1,14 @@
-import { faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker'
 import { Good, GoodState, Translation } from '@prisma/client'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 
-import CategoryGenerator from './CategoryGenerator';
-import ItemTypeGenerator from './ItemTypeGenerator';
-import SelectionistGenerator from './SelectionistGenerator';
-import TagGenerator from './TagGenerator';
-import prisma from '../../../src/services/Prisma';
-import { Language, Languages } from '../../../src/utils/enums';
-import LocalizedFaker from '../LocalizedFaker';
+import CategoryGenerator from './CategoryGenerator'
+import ItemTypeGenerator from './ItemTypeGenerator'
+import SelectionistGenerator from './SelectionistGenerator'
+import TagGenerator from './TagGenerator'
+import prisma from '../../../src/services/Prisma'
+import { Language, Languages } from '../../../src/utils/enums'
+import LocalizedFaker from '../LocalizedFaker'
 
 const rand = (min: number, max: number) =>
     Math.floor(Math.random() * (max - min + 1)) + min
@@ -22,7 +22,7 @@ export class GoodGenerator {
         tagIDs?: string[]
     } = {}) {
 
-        const payload = await GoodGenerator.generateData(data);
+        const payload = await GoodGenerator.generateData(data)
 
         return prisma.good.create({
             data: {
@@ -68,7 +68,7 @@ export class GoodGenerator {
                     }))
                 }
             }
-        });
+        })
     }
 
     static async generateData(data: Partial<Good> & {

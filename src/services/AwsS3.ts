@@ -5,11 +5,11 @@ import {
     CreateBucketCommand,
     HeadBucketCommand, PutObjectCommand, PutBucketCorsCommand
 } from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import config from 'config';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import config from 'config'
 
-import logger from './Logger';
-import { IConfig } from '../types/config';
+import logger from './Logger'
+import { IConfig } from '../types/config'
 
 /**
  * @class AwsS3
@@ -43,7 +43,7 @@ class AwsS3 {
     private s3Config
     
     constructor(s3Config: IConfig['s3']) {
-        this.s3Config = s3Config;
+        this.s3Config = s3Config
 
         this.s3 = new S3Client(this.s3Config)
 

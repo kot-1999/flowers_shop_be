@@ -1,28 +1,28 @@
-import { UserRole } from '@prisma/client';
-import config from 'config';
+import { UserRole } from '@prisma/client'
+import config from 'config'
 
-import * as seedData from './seedData';
-import { EncryptionService } from '../src/services/Encryption';
-import logger from '../src/services/Logger';
-import prisma from '../src/services/Prisma';
-import { IConfig } from '../src/types/config';
-import CategoryGenerator from '../tests/utils/generators/CategoryGenerator';
-import { GoodGenerator } from '../tests/utils/generators/GoodGenerator';
-import ItemTypeGenerator from '../tests/utils/generators/ItemTypeGenerator';
-import SelectionistGenerator from '../tests/utils/generators/SelectionistGenerator';
-import TagGenerator from '../tests/utils/generators/TagGenerator';
-import UserGenerator from '../tests/utils/generators/UserGenerator';
+import * as seedData from './seedData'
+import { EncryptionService } from '../src/services/Encryption'
+import logger from '../src/services/Logger'
+import prisma from '../src/services/Prisma'
+import { IConfig } from '../src/types/config'
+import CategoryGenerator from '../tests/utils/generators/CategoryGenerator'
+import { GoodGenerator } from '../tests/utils/generators/GoodGenerator'
+import ItemTypeGenerator from '../tests/utils/generators/ItemTypeGenerator'
+import SelectionistGenerator from '../tests/utils/generators/SelectionistGenerator'
+import TagGenerator from '../tests/utils/generators/TagGenerator'
+import UserGenerator from '../tests/utils/generators/UserGenerator'
 
 const seedConfig = config.get<IConfig['seed']>('seed')
 
-const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
 
-const pickRandom = (arr: any[], count: number) => [...arr].sort(() => Math.random() - 0.5).slice(0, count);
+const pickRandom = (arr: any[], count: number) => [...arr].sort(() => Math.random() - 0.5).slice(0, count)
 
 async function seed() {
-    const users: any[] = [];
+    const users: any[] = []
     const categories: any[] = []
-    const itemTypes: any[] = [];
+    const itemTypes: any[] = []
     const selectionists: any[] = []
     const tags: any[] = []
     const goods: any[] = []
@@ -55,7 +55,7 @@ async function seed() {
     }
 
     for (const itemType of seedData.itemTypes) {
-        itemTypes.push(ItemTypeGenerator.generateData(itemType as any));
+        itemTypes.push(ItemTypeGenerator.generateData(itemType as any))
     }
 
     for (let i = 0; i < seedConfig.grain / 3; i++) {
@@ -66,7 +66,7 @@ async function seed() {
         const goodsCount = rand(
             Math.floor(seedConfig.grain / 4),
             seedConfig.grain
-        );
+        )
 
         const categoryGoods = await Promise.all(Array.from({ length: goodsCount }, () =>
             GoodGenerator.generateData({
@@ -77,9 +77,9 @@ async function seed() {
                 tagIDs: pickRandom(tags, rand(1, Math.min(3, tags.length))).map((t) => t.id),
 
                 itemTypeIDs: pickRandom(itemTypes, rand(1, Math.min(3, itemTypes.length))).map((i) => i.id)
-            })));
+            })))
 
-        goods.push(...categoryGoods);
+        goods.push(...categoryGoods)
     }
 
     // Map all translations
@@ -112,25 +112,25 @@ async function seed() {
         }))
     })
     
-    const seededTables: string[] = [];
+    const seededTables: string[] = []
     
     await prisma.$transaction(async (tx: any) => {
-        const seededTables: string[] = [];
+        const seededTables: string[] = []
 
         if ((await tx.translation.count()) === 0) {
             await tx.translation.createMany({
                 data: translations,
                 skipDuplicates: true
-            });
-            seededTables.push('translations');
+            })
+            seededTables.push('translations')
         }
 
         if ((await tx.user.count()) === 0) {
             await tx.user.createMany({
                 data: users,
                 skipDuplicates: true
-            });
-            seededTables.push('users');
+            })
+            seededTables.push('users')
         }
         if ((await tx.category.count()) === 0) {
             await tx.category.createMany({
@@ -139,9 +139,9 @@ async function seed() {
                     nameTID: name.id,
                     descriptionTID: description.id
                 }))
-            });
+            })
 
-            seededTables.push('categories');
+            seededTables.push('categories')
         }
 
         if ((await tx.itemType.count()) === 0) {
@@ -150,9 +150,9 @@ async function seed() {
                     ...rest,
                     nameTID: name.id
                 }))
-            });
+            })
 
-            seededTables.push('itemTypes');
+            seededTables.push('itemTypes')
         }
 
         if ((await tx.selectionist.count()) === 0) {
@@ -161,9 +161,9 @@ async function seed() {
                     ...rest,
                     nameTID: name.id
                 }))
-            });
+            })
 
-            seededTables.push('selectionists');
+            seededTables.push('selectionists')
         }
 
         if ((await tx.tag.count()) === 0) {
@@ -172,9 +172,9 @@ async function seed() {
                     ...rest,
                     nameTID: name.id
                 }))
-            });
+            })
 
-            seededTables.push('tags');
+            seededTables.push('tags')
         }
 
         if ((await tx.pricing.count()) === 0) {
@@ -185,9 +185,9 @@ async function seed() {
                     quantity: item.quantity,
                     itemTypeID: item.itemTypeID
                 }))
-            });
+            })
 
-            seededTables.push('pricings');
+            seededTables.push('pricings')
         }
 
         // throw new Error('TEST' + seededTables)
@@ -208,38 +208,38 @@ async function seed() {
                     updatedAt: good.updatedAt,
                     deletedAt: good.deletedAt
                 }))
-            });
+            })
 
-            seededTables.push('goods');
+            seededTables.push('goods')
         }
 
         if ((await tx.goodTag.count()) === 0) {
             await tx.goodTag.createMany({
                 data: goodTags
-            });
+            })
 
-            seededTables.push('goodTags');
+            seededTables.push('goodTags')
         }
 
         if ((await tx.goodPricing.count()) === 0) {
             await tx.goodPricing.createMany({
                 data: goodPricings
-            });
+            })
 
-            seededTables.push('goodPricings');
+            seededTables.push('goodPricings')
         }
 
         logger.info(`Seeded tables: ${
             seededTables.length > 0 ? seededTables.join(', ') : 'none'
-        }`);
-    });
+        }`)
+    })
      
-    logger.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`);
+    logger.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`)
 }
 
 seed().catch((error) => {
-    logger.error('Seeding failed:', error);
-    process.exit(1);
-});
+    logger.error('Seeding failed:', error)
+    process.exit(1)
+})
 
-export default seed;
+export default seed

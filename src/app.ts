@@ -4,7 +4,7 @@ import * as path from 'node:path'
 import config from 'config'
 import { RedisStore as RedisSessionStore } from 'connect-redis'
 import express from 'express'
-import rateLimit from 'express-rate-limit';
+import rateLimit from 'express-rate-limit'
 import session from 'express-session'
 import helmet from 'helmet'
 import middleware from 'i18next-http-middleware'
@@ -13,7 +13,7 @@ import { RedisStore as RedisRateLimitStore } from 'rate-limit-redis'
 import swaggerUi from 'swagger-ui-express'
 
 import errorMiddleware from './middlewares/errorMiddleware'  
-import languageMiddleware from './middlewares/languageMiddleware';
+import languageMiddleware from './middlewares/languageMiddleware'
 // eslint-disable-next-line import/order
 import authorizeRouters from './routes'
 
@@ -24,7 +24,7 @@ import  i18next from './services/I18n'
 import logger from './services/Logger'
 import redis from './services/Redis'
 import { IConfig } from './types/config'
-import { NodeEnv } from './utils/enums';
+import { NodeEnv } from './utils/enums'
 
 // Configs
 const cookieSessionConfig = config.get<IConfig['cookieSession']>('cookieSession')
@@ -54,7 +54,7 @@ if (appConfig.env !== NodeEnv.Test) {
         }),
         handler: (req, res) => {
             logger.warn(`Rate limit exceeded for IP: ${req.ip}`)
-            res.status(429).json({ error: 'Too many requests' });
+            res.status(429).json({ error: 'Too many requests' })
         }
     }))
 }

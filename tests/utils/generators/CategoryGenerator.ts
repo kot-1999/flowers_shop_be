@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker'
-import { Category, Translation } from '@prisma/client';
+import { Category, Translation } from '@prisma/client'
 import dayjs from 'dayjs'
 
 import prisma from '../../../src/services/Prisma'
-import { Language, Languages } from '../../../src/utils/enums';
-import LocalizedFaker from '../LocalizedFaker';
+import { Language, Languages } from '../../../src/utils/enums'
+import LocalizedFaker from '../LocalizedFaker'
 
 export default class CategoryGenerator {
     public static generateCategory(categoryData: Partial<Category> & { name?: Partial<Translation>,  description?: Partial<Translation>} = {} = {}) {

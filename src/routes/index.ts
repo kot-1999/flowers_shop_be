@@ -8,11 +8,11 @@ import selectionistRouter from './v1/SelectionistRouter'
 import tagRouter from './v1/TagRouter'
 import userAuthorizationRouter from './v1/UserAuthorizationRouter'
 import userRouter from './v1/UserRouter'
-import { FileUpload } from '../controllers/FileUpload';
-import authorizationMiddleware from '../middlewares/authorizationMiddleware';
-import validationMiddleware from '../middlewares/validationMiddleware';
+import { FileUpload } from '../controllers/FileUpload'
+import authorizationMiddleware from '../middlewares/authorizationMiddleware'
+import validationMiddleware from '../middlewares/validationMiddleware'
 import logger from '../services/Logger'
-import { PassportStrategy } from '../utils/enums';
+import { PassportStrategy } from '../utils/enums'
 
 const fileUpload = new FileUpload()
 

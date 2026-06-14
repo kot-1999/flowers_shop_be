@@ -1,12 +1,12 @@
-import { GoodState } from '@prisma/client';
-import dayjs from 'dayjs';
-import { AuthRequest, NextFunction, Response } from 'express';
-import Joi from 'joi';
+import { GoodState } from '@prisma/client'
+import dayjs from 'dayjs'
+import { AuthRequest, NextFunction, Response } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { slugify, translationSelect } from '../../utils/helpers';
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { slugify, translationSelect } from '../../utils/helpers'
 import { IError } from '../../utils/IError'
 
 const enum Action {
@@ -711,8 +711,8 @@ export class GoodController extends AbstractController {
         try {
             const { body, params } = req
 
-            const existingPricings = body.pricings?.filter((p) => p.pricingID) ?? [];
-            const newPricings = body.pricings?.filter((p) => !p.pricingID) ?? [];
+            const existingPricings = body.pricings?.filter((p) => p.pricingID) ?? []
+            const newPricings = body.pricings?.filter((p) => !p.pricingID) ?? []
 
             const good = await prisma.good.findFirst({
                 where: {
@@ -896,7 +896,7 @@ export class GoodController extends AbstractController {
                             }
                         }
                     }))
-            ]);
+            ])
 
             return res.status(200).json({
                 good: { id: updated.id },

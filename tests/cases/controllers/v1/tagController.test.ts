@@ -1,14 +1,14 @@
-import { faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker'
 import { UserRole } from '@prisma/client'
 import { expect } from 'chai'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 import supertest from 'supertest'
 
 import app from '../../../../src/app'
 import { TagController } from '../../../../src/controllers/v1/TagController'
 import prisma from '../../../../src/services/Prisma'
-import { Language, Languages } from '../../../../src/utils/enums';
-import TagGenerator from '../../../utils/generators/TagGenerator';
+import { Language, Languages } from '../../../../src/utils/enums'
+import TagGenerator from '../../../utils/generators/TagGenerator'
 import { loginUserAndGetCookie } from '../../../utils/helpers'
 
 const publicEndpoint = '/api/v1/tags'

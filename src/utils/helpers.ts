@@ -1,6 +1,6 @@
-import { Language } from './enums';
+import { Language } from './enums'
 
-export const translationSelect = Object.fromEntries(Object.values(Language).map((lang) => [lang, true]));
+export const translationSelect = Object.fromEntries(Object.values(Language).map((lang) => [lang, true]))
 
 export function slugify(text: string): string {
     return text

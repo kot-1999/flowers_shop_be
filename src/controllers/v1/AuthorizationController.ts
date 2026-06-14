@@ -1,16 +1,16 @@
-import { UserRole } from '@prisma/client';
-import config from 'config';
-import dayjs from 'dayjs';
+import { UserRole } from '@prisma/client'
+import config from 'config'
+import dayjs from 'dayjs'
 import { Request, Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 
 import emailService from '../../services/Email'
 import { EncryptionService } from '../../services/Encryption'
 import { JwtService } from '../../services/Jwt'
-import logger from '../../services/Logger';
+import logger from '../../services/Logger'
 import prisma from '../../services/Prisma'
 import { AbstractController } from '../../types/AbstractController'
-import { IConfig } from '../../types/config';
+import { IConfig } from '../../types/config'
 import { JoiCommon } from '../../types/JoiCommon'
 import { EmailType, JwtAudience } from '../../utils/enums'
 import { IError } from '../../utils/IError'
@@ -329,23 +329,23 @@ export class AuthorizationController extends AbstractController {
             await new Promise<void>((resolve, reject) => {
                 req.logout((err) => {
                     if (err) {
-                        return reject(err);
+                        return reject(err)
                     }
 
-                    resolve();
-                });
-            });
+                    resolve()
+                })
+            })
 
             // Destroy the session after logout
             await new Promise<void>((resolve, reject) => {
                 req.session.destroy((err) => {
                     if (err) {
-                        return reject(err);
+                        return reject(err)
                     }
 
-                    resolve();
-                });
-            });
+                    resolve()
+                })
+            })
 
             res
                 .clearCookie('connect.sid')

@@ -6,7 +6,7 @@ import { compile, compiledFunction } from 'html-to-text'
 import nodemailer from 'nodemailer'
 import Mail from 'nodemailer/lib/mailer'
 
-import logger from './Logger';
+import logger from './Logger'
 import { IConfig } from '../types/config'
 import { EmailDataType } from '../types/types'
 import { EmailType } from '../utils/enums'

@@ -3,7 +3,7 @@ import { Tag, Translation } from '@prisma/client'
 
 import prisma from '../../../src/services/Prisma'
 import { Language, Languages } from '../../../src/utils/enums'
-import LocalizedFaker from '../LocalizedFaker';
+import LocalizedFaker from '../LocalizedFaker'
 
 export default class TagGenerator {
     public static generateTag(data: Partial<Tag> & { name?: Partial<Translation> } = {}) {

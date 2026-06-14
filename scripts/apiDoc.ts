@@ -5,14 +5,14 @@ import Joi from 'joi'
 import j2s from 'joi-to-swagger'
 import swaggerAutogen from 'swagger-autogen'
 
-import { FileUpload } from '../src/controllers/FileUpload';
-import { AIController } from '../src/controllers/v1/AIController';
+import { FileUpload } from '../src/controllers/FileUpload'
+import { AIController } from '../src/controllers/v1/AIController'
 import { AuthorizationController as UserAuthorizationController } from '../src/controllers/v1/AuthorizationController'
-import { CategoryController } from '../src/controllers/v1/CategoryController';
-import { GoodController } from '../src/controllers/v1/GoodController';
-import { ItemTypeController } from '../src/controllers/v1/ItemTypeController';
-import { SelectionistController } from '../src/controllers/v1/SelectionistController';
-import { TagController } from '../src/controllers/v1/TagController';
+import { CategoryController } from '../src/controllers/v1/CategoryController'
+import { GoodController } from '../src/controllers/v1/GoodController'
+import { ItemTypeController } from '../src/controllers/v1/ItemTypeController'
+import { SelectionistController } from '../src/controllers/v1/SelectionistController'
+import { TagController } from '../src/controllers/v1/TagController'
 
 /**
  * Link all endpoints to their schemas
@@ -225,4 +225,4 @@ if (!fs.existsSync(apiDocDir)) {
     fs.mkdirSync(apiDocDir)
 }
 
-swaggerAutogen()(path.join(apiDocDir, outFile), [path.join(__dirname, '../src/routes/*.ts')], doc);
+swaggerAutogen()(path.join(apiDocDir, outFile), [path.join(__dirname, '../src/routes/*.ts')], doc)

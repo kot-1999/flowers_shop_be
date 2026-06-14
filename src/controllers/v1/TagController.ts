@@ -1,11 +1,11 @@
-import { AuthRequest, NextFunction, Response } from 'express';
-import Joi from 'joi';
+import { AuthRequest, NextFunction, Response } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { slugify, translationSelect } from '../../utils/helpers';
-import { IError } from '../../utils/IError';
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { slugify, translationSelect } from '../../utils/helpers'
+import { IError } from '../../utils/IError'
 
 export class TagController extends AbstractController {
 
@@ -95,7 +95,7 @@ export class TagController extends AbstractController {
     ) {
         try {
             const { query } = req
-            const skip = (query.page - 1) * query.limit;
+            const skip = (query.page - 1) * query.limit
             const language = req.headers['accept-language']
 
             const where: any = {
@@ -156,7 +156,7 @@ export class TagController extends AbstractController {
     ) {
         try {
             const { query } = req
-            const skip = (query.page - 1) * query.limit;
+            const skip = (query.page - 1) * query.limit
             const language = req.headers['accept-language']
 
             const where: any = { }

@@ -1,9 +1,9 @@
-import config from 'config';
+import config from 'config'
 import { Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 
 import { AbstractController } from '../../types/AbstractController'
-import { IConfig } from '../../types/config';
+import { IConfig } from '../../types/config'
 import { JoiCommon } from '../../types/JoiCommon'
 
 const ollamaConfig = config.get<IConfig['ollama']>('ollama')
