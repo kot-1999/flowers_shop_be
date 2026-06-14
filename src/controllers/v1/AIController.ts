@@ -57,12 +57,12 @@ export class AIController extends AbstractController {
         try {
             if (!ollamaConfig) {
                 return res.status(200).json({
-                    translations: {
+                    translations: [{
                         en: 'en: ' + req.body.text,
                         ua: 'ua: ' + req.body.text,
                         de: 'de: ' + req.body.text,
                         sk: 'sk: ' + req.body.text
-                    }
+                    }]
                 })
             }
 
