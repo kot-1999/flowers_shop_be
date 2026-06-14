@@ -25,7 +25,7 @@ export class ItemTypeController extends AbstractController {
                 body: Joi.object({
                     itemTypeID: JoiCommon.string.id.optional(),
                     nameTID: JoiCommon.string.id.optional(),
-                    nameTranslations: JoiCommon.object.translations,
+                    nameTranslations: JoiCommon.object.translationsReq,
                     weight: Joi.number().min(1)
                         .description('Weight in gramms')
                         .required()
@@ -44,7 +44,7 @@ export class ItemTypeController extends AbstractController {
             getItemTypes: Joi.object({
                 itemTypes: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id.required(),
-                    name: JoiCommon.object.translations,
+                    name: JoiCommon.object.translationsRes,
                     weight: Joi.number().required(),
                     createdAt: Joi.date().iso()
                         .required(),

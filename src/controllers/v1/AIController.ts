@@ -31,7 +31,7 @@ export class AIController extends AbstractController {
 
         response: {
             postTranslations: Joi.object({
-                translations: Joi.array().items(JoiCommon.object.translations)
+                translations: Joi.array().items(JoiCommon.object.translationsRes)
                     .min(1)
                     .required()
             }),

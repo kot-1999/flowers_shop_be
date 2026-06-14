@@ -31,9 +31,9 @@ export class CategoryController extends AbstractController {
                     categoryID: JoiCommon.string.id.optional(),
 
                     nameTID: JoiCommon.string.id.optional(),
-                    nameTranslations: JoiCommon.object.translations,
+                    nameTranslations: JoiCommon.object.translationsReq,
                     descriptionTID: JoiCommon.string.id.optional(),
-                    descriptionTranslations: JoiCommon.object.translations,
+                    descriptionTranslations: JoiCommon.object.translationsReq,
                     coverImage: Joi.string()
                         .allow(null)
                         .optional(),
@@ -67,8 +67,8 @@ export class CategoryController extends AbstractController {
                     id: JoiCommon.string.id.required(),
                     coverImage: Joi.string().allow(null),
 
-                    name: JoiCommon.object.translations,
-                    description: JoiCommon.object.translations
+                    name: JoiCommon.object.translationsRes,
+                    description: JoiCommon.object.translationsRes
                 }))
                     .required()
             }),

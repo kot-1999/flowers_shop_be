@@ -118,9 +118,17 @@ export class JoiCommon {
                 .required()
         }),
 
-        translations: Joi.object(Object.fromEntries(Object.values(Language).map((lang) => [
+        translationsReq: Joi.object(Object.fromEntries(Object.values(Language).map((lang) => [
             lang,
             Joi.string().required()
-        ])))
+        ]))),
+
+        translationsRes: Joi.object(Object.fromEntries(Object.values(Language).map((lang) => [
+            lang,
+            Joi.string().required()
+        ]))).keys({
+            id: Joi.string().uuid()
+                .required()
+        })
     }
 }

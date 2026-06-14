@@ -26,7 +26,7 @@ export class SelectionistController extends AbstractController {
                 body: Joi.object({
                     selectionistID: JoiCommon.string.id.optional(),
                     nameTID: Joi.string().optional(),
-                    nameTranslations: JoiCommon.object.translations,
+                    nameTranslations: JoiCommon.object.translationsReq,
                     country: Joi.string().valid(...Object.values(Country))
                         .optional()
                 }).or('nameTranslations', 'nameTID')
@@ -44,7 +44,7 @@ export class SelectionistController extends AbstractController {
             getSelectionists: Joi.object({
                 selectionists: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id.required(),
-                    name: JoiCommon.object.singleTranslation,
+                    name: JoiCommon.object.translationsRes.required(),
                     country: Joi.string().valid(...Object.values(Country))
                         .allow(null)
                         .required(),

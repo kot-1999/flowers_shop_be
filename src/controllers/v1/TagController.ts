@@ -33,7 +33,7 @@ export class TagController extends AbstractController {
                 body: Joi.object({
                     tagID: JoiCommon.string.id.optional(),
                     nameTID: JoiCommon.string.id.optional(),
-                    nameTranslations: JoiCommon.object.translations,
+                    nameTranslations: JoiCommon.object.translationsReq,
                     restore: Joi.boolean().default(false)
                 }).or('nameTranslations', 'nameTID')
                     .required()
@@ -59,11 +59,14 @@ export class TagController extends AbstractController {
                 tags: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id.required(),
 
-                    name: JoiCommon.object.translations.required(),
+                    name: JoiCommon.object.translationsRes.required(),
 
                     createdAt: Joi.date().iso()
                         .required(),
                     updatedAt: Joi.date().iso()
+                        .required(),
+                    deletedAt: Joi.date().iso()
+                        .allow(null)
                         .required()
                 }))
                     .required(),
@@ -179,6 +182,7 @@ export class TagController extends AbstractController {
                         id: true,
                         createdAt: true,
                         updatedAt: true,
+                        deletedAt: true,
                         name: {
                             select: translationSelect
                         }

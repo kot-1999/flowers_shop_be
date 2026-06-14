@@ -59,9 +59,9 @@ export class GoodController extends AbstractController {
                         .max(10)
                         .required(),
 
-                    nameTranslations: JoiCommon.object.translations.required(),
+                    nameTranslations: JoiCommon.object.translationsReq.required(),
 
-                    descriptionTranslations: JoiCommon.object.translations.required(),
+                    descriptionTranslations: JoiCommon.object.translationsReq.required(),
 
                     action: Joi.string().valid(Action.Show, Action.Hide)
                         .optional()
@@ -106,9 +106,9 @@ export class GoodController extends AbstractController {
                         .max(10)
                         .optional(),
 
-                    nameTranslations: JoiCommon.object.translations.optional(),
+                    nameTranslations: JoiCommon.object.translationsReq.optional(),
 
-                    descriptionTranslations: JoiCommon.object.translations.optional(),
+                    descriptionTranslations: JoiCommon.object.translationsReq.optional(),
 
                     action: Joi.string().valid(Action.Show, Action.Hide)
                         .optional(),
@@ -215,20 +215,20 @@ export class GoodController extends AbstractController {
                     }),
                     selectionist: Joi.object({
                         id: JoiCommon.string.id,
-                        name: JoiCommon.object.singleTranslation.required(),
+                        name: JoiCommon.object.translationsRes.required(),
                         country: Joi.string().allow(null)
                             .required()
                     }).required(),
 
-                    name: JoiCommon.object.translations.required(),
-                    description: JoiCommon.object.translations.required(),
+                    name: JoiCommon.object.translationsRes.required(),
+                    description: JoiCommon.object.translationsRes.required(),
 
                     state: Joi.string().valid(...Object.values(GoodState))
                         .required(),
 
                     tags: Joi.array().items(Joi.object({
                         id: JoiCommon.string.id,
-                        name: JoiCommon.object.translations.required()
+                        name: JoiCommon.object.translationsRes.required()
                     }))
                         .required(),
 
@@ -312,6 +312,19 @@ export class GoodController extends AbstractController {
                     some: {
                         tagID: {
                             in: query.tagIDs
+                        }
+                    },
+                    every: {
+                        tag: {
+                            deletedAt: null
+                        }
+                    }
+                }
+            } else {
+                where.tags = {
+                    every: {
+                        tag: {
+                            deletedAt: null
                         }
                     }
                 }
