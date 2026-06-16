@@ -151,8 +151,7 @@ export class GoodController extends AbstractController {
                 goods: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id,
 
-                    photos: Joi.array().items(Joi.string().uri()
-                        .required())
+                    photos: Joi.array().items(Joi.string())
                         .required(),
 
                     name: JoiCommon.object.singleTranslation.required(),
@@ -209,7 +208,7 @@ export class GoodController extends AbstractController {
             getGood: Joi.object({
                 good: Joi.object({
                     id: JoiCommon.string.id,
-                    photos: Joi.array().items(Joi.string().uri()
+                    photos: Joi.array().items(Joi.string()
                         .required())
                         .required(),
                     category: Joi.object({
