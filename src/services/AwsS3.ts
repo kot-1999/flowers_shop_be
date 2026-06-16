@@ -39,7 +39,7 @@ class AwsS3 {
      * @param {IConfig['s3']} s3Config - S3 configuration (region, endpoint, credentials)
      */
 
-    private bucketName = 'rest-images-test-uat-bucket-temp-1'
+    private bucketName = 'flower-images-test-uat-bucket-temp-1'
     private s3Config
     
     constructor(s3Config: IConfig['s3']) {
@@ -49,7 +49,7 @@ class AwsS3 {
 
         this.s3ForPresign = new S3Client({
             ...this.s3Config,
-            endpoint: this.s3Config.endpoint.replace('rustfs_dev', 'localhost')
+            endpoint: this.s3Config.endpoint.replace('localstack_dev', 'localhost')
         })
     }
 
@@ -135,7 +135,7 @@ class AwsS3 {
      * @returns {Promise<string>}
      */
     public async getPublicUrl(key: string) {
-        return `${this.s3Config.endpoint.replace('rustfs_dev', 'localhost')}/${this.bucketName}/${key}`
+        return `${this.s3Config.endpoint.replace('localstack_dev', 'localhost')}/${this.bucketName}/${key}`
     }
 
     /**
@@ -147,7 +147,7 @@ class AwsS3 {
      *
      * @returns {Promise<string>} Public URL of uploaded file
      */
-    public async uploadFile(filePath: string, keyPrefix: 'banner' | 'menu') {
+    public async uploadFile(filePath: string, keyPrefix: 'image') {
         const fs = await import('fs')
         const path = await import('path')
 
@@ -163,7 +163,10 @@ class AwsS3 {
             ContentType: this.getContentType(filename)
         }))
 
-        return this.getPublicUrl(key)
+        return {
+            key,
+            url: this.getPublicUrl(key)
+        }
     }
 
     /**
