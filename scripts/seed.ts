@@ -1,7 +1,7 @@
 import { UserRole } from '@prisma/client'
 import config from 'config'
 
-import * as seedData from './seedData'
+import * as seedData from './seedData/seedData'
 import { EncryptionService } from '../src/services/Encryption'
 import logger from '../src/services/Logger'
 import prisma from '../src/services/Prisma'

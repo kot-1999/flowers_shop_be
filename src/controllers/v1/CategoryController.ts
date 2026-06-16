@@ -68,7 +68,15 @@ export class CategoryController extends AbstractController {
                     coverImage: Joi.string().allow(null),
 
                     name: JoiCommon.object.translationsRes,
-                    description: JoiCommon.object.translationsRes
+                    description: JoiCommon.object.translationsRes,
+
+                    createdAt: Joi.date().iso()
+                        .required(),
+                    updatedAt: Joi.date().iso()
+                        .required(),
+                    deletedAt: Joi.date().iso()
+                        .allow(null)
+                        .required()
                 }))
                     .required()
             }),
@@ -151,6 +159,7 @@ export class CategoryController extends AbstractController {
                     id: true,
                     coverImage: true,
                     createdAt: true,
+                    updatedAt: true,
                     deletedAt: true,
                     name: {
                         select: translationSelect
@@ -237,7 +246,7 @@ export class CategoryController extends AbstractController {
             }
             
             if (body.descriptionTID) {
-                data.descriptionTID = { connect: { id: body.descriptionTID } }
+                data.description = { connect: { id: body.descriptionTID } }
             } else {
                 data.description = {
                     create: body.descriptionTranslations
