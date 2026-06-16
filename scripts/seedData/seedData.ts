@@ -48,55 +48,55 @@ export const categories = [
             sk: 'Krásne kosatce v rôznych farbách',
             de: 'Wunderschöne Iris in verschiedenen Farben'
         }
-    },
-    {
-        name: {
-            id: faker.string.uuid(),
-            en: 'Пеліргонії',
-            ua: 'Орхідеї',
-            sk: 'Orchidey',
-            de: 'Orchideen'
-        },
-        description: {
-            id: faker.string.uuid(),
-            en: 'Exotic orchids for refined interiors',
-            ua: 'Екзотичні орхідеї для вишуканих інтер’єрів',
-            sk: 'Exotické orchidey pre elegantné interiéry',
-            de: 'Exotische Orchideen für stilvolle Innenräume'
-        }
-    },
-    {
-        name: {
-            id: faker.string.uuid(),
-            en: 'Lilies',
-            ua: 'Лілії',
-            sk: 'Ľalie',
-            de: 'Lilien'
-        },
-        description: {
-            id: faker.string.uuid(),
-            en: 'Fragrant lilies perfect for any occasion',
-            ua: 'Ароматні лілії для будь-якої нагоди',
-            sk: 'Voňavé ľalie vhodné na každú príležitosť',
-            de: 'Duftende Lilien für jeden Anlass'
-        }
-    },
-    {
-        name: {
-            id: faker.string.uuid(),
-            en: 'Succulents',
-            ua: 'Сукуленти',
-            sk: 'Sukulenty',
-            de: 'Sukkulenten'
-        },
-        description: {
-            id: faker.string.uuid(),
-            en: 'Low-maintenance succulents for modern spaces',
-            ua: 'Невибагливі сукуленти для сучасних просторів',
-            sk: 'Nenáročné sukulenty pre moderné priestory',
-            de: 'Pflegeleichte Sukkulenten für moderne Räume'
-        }
     }
+    // {
+    //     name: {
+    //         id: faker.string.uuid(),
+    //         en: 'Пеліргонії',
+    //         ua: 'Орхідеї',
+    //         sk: 'Orchidey',
+    //         de: 'Orchideen'
+    //     },
+    //     description: {
+    //         id: faker.string.uuid(),
+    //         en: 'Exotic orchids for refined interiors',
+    //         ua: 'Екзотичні орхідеї для вишуканих інтер’єрів',
+    //         sk: 'Exotické orchidey pre elegantné interiéry',
+    //         de: 'Exotische Orchideen für stilvolle Innenräume'
+    //     }
+    // },
+    // {
+    //     name: {
+    //         id: faker.string.uuid(),
+    //         en: 'Lilies',
+    //         ua: 'Лілії',
+    //         sk: 'Ľalie',
+    //         de: 'Lilien'
+    //     },
+    //     description: {
+    //         id: faker.string.uuid(),
+    //         en: 'Fragrant lilies perfect for any occasion',
+    //         ua: 'Ароматні лілії для будь-якої нагоди',
+    //         sk: 'Voňavé ľalie vhodné na každú príležitosť',
+    //         de: 'Duftende Lilien für jeden Anlass'
+    //     }
+    // },
+    // {
+    //     name: {
+    //         id: faker.string.uuid(),
+    //         en: 'Succulents',
+    //         ua: 'Сукуленти',
+    //         sk: 'Sukulenty',
+    //         de: 'Sukkulenten'
+    //     },
+    //     description: {
+    //         id: faker.string.uuid(),
+    //         en: 'Low-maintenance succulents for modern spaces',
+    //         ua: 'Невибагливі сукуленти для сучасних просторів',
+    //         sk: 'Nenáročné sukulenty pre moderné priestory',
+    //         de: 'Pflegeleichte Sukkulenten für moderne Räume'
+    //     }
+    // }
 ]
 export const itemTypes = [
     {
