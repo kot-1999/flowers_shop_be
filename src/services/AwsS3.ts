@@ -132,9 +132,9 @@ class AwsS3 {
      * @description Builds a public URL for accessing an uploaded object
      *
      * @param {string} key - S3 object key
-     * @returns {Promise<string>}
+     * @returns {string}
      */
-    public async getPublicUrl(key: string) {
+    public getPublicUrl(key: string) {
         return `${this.s3Config.endpoint.replace('localstack_dev', 'localhost')}/${this.bucketName}/${key}`
     }
 

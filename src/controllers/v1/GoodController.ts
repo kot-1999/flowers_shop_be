@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { AuthRequest, NextFunction, Response } from 'express'
 import Joi from 'joi'
 
+import s3Service from '../../services/AwsS3'
 import prisma from '../../services/Prisma'
 import { AbstractController } from '../../types/AbstractController'
 import { JoiCommon } from '../../types/JoiCommon'
@@ -150,7 +151,8 @@ export class GoodController extends AbstractController {
                 goods: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id,
 
-                    photos: Joi.array().items(Joi.string())
+                    photos: Joi.array().items(Joi.string().uri()
+                        .required())
                         .required(),
 
                     name: JoiCommon.object.singleTranslation.required(),
@@ -207,7 +209,8 @@ export class GoodController extends AbstractController {
             getGood: Joi.object({
                 good: Joi.object({
                     id: JoiCommon.string.id,
-                    photos: Joi.array().items(Joi.string())
+                    photos: Joi.array().items(Joi.string().uri()
+                        .required())
                         .required(),
                     category: Joi.object({
                         id: JoiCommon.string.id,
@@ -441,6 +444,7 @@ export class GoodController extends AbstractController {
             return res.status(200).json({
                 goods: goods.map((good: any) => ({
                     ...good,
+                    photos: good.photos.map((photoKey: string) => s3Service.getPublicUrl(photoKey)),
                     tags: good.tags.map((item: any) => ({ ...item.tag })),
                     pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
                     selectionist: {
@@ -544,6 +548,7 @@ export class GoodController extends AbstractController {
             return res.status(200).json({
                 good: {
                     ...good,
+                    photos: good.photos.map((photoKey: string) => s3Service.getPublicUrl(photoKey)),
                     tags: good.tags.map((item: any) => ({ ...item.tag })),
                     pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
                     selectionist: {
