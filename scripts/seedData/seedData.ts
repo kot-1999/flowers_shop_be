@@ -52,7 +52,7 @@ export const categories = [
     // {
     //     name: {
     //         id: faker.string.uuid(),
-    //         en: 'Пеліргонії',
+    //         en: 'Pelargonies',
     //         ua: 'Орхідеї',
     //         sk: 'Orchidey',
     //         de: 'Orchideen'

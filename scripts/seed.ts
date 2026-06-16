@@ -1,7 +1,11 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import { UserRole } from '@prisma/client'
 import config from 'config'
 
 import * as seedData from './seedData/seedData'
+import s3Service from '../src/services/AwsS3'
 import { EncryptionService } from '../src/services/Encryption'
 import logger from '../src/services/Logger'
 import prisma from '../src/services/Prisma'
@@ -17,7 +21,13 @@ const seedConfig = config.get<IConfig['seed']>('seed')
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
 
-const pickRandom = (arr: any[], count: number) => [...arr].sort(() => Math.random() - 0.5).slice(0, count)
+const pickRandom = (arr: any[], max: number, min: number = 0) => [...arr].sort(() => Math.random() - 0.5).slice(min, max)
+
+const imagesDirs = [
+    path.join(__dirname, 'seedData/photos/Violets'),
+    path.join(__dirname, 'seedData/photos/Peonies'),
+    path.join(__dirname, 'seedData/photos/Irises')
+]
 
 async function seed() {
     const users: any[] = []
@@ -26,6 +36,25 @@ async function seed() {
     const selectionists: any[] = []
     const tags: any[] = []
     const goods: any[] = []
+    const images: {
+        [key: string]: string[]
+    } = {
+        [imagesDirs[0]]: [],
+        [imagesDirs[1]]: [],
+        [imagesDirs[2]]: []
+    }
+
+    if ((await prisma.good.count()) === 0) {
+        for (const imgDir of imagesDirs) {
+            for (const file of fs.readdirSync(imgDir)) {
+                const result = await s3Service.uploadFile(
+                    path.join(imgDir, file),
+                    'image'
+                )
+                images[imgDir].push(result.key)
+            }
+        }
+    }
 
     // Generate plain objects
     for (let i = 0; i < seedConfig.grain; i++) {
@@ -62,6 +91,7 @@ async function seed() {
         tags.push(TagGenerator.generateData())
     }
 
+    let index = 0
     for (const category of categories) {
         const goodsCount = rand(
             Math.floor(seedConfig.grain / 4),
@@ -71,7 +101,7 @@ async function seed() {
         const categoryGoods = await Promise.all(Array.from({ length: goodsCount }, () =>
             GoodGenerator.generateData({
                 categoryID: category.id,
-
+                photos: pickRandom(images[imagesDirs[index]], 7, 1),
                 selectionistID: selectionists[Math.floor(Math.random() * selectionists.length)].id,
 
                 tagIDs: pickRandom(tags, rand(1, Math.min(3, tags.length))).map((t) => t.id),
@@ -80,6 +110,7 @@ async function seed() {
             })))
 
         goods.push(...categoryGoods)
+        index += 1
     }
 
     // Map all translations
