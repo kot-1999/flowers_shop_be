@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import { AuthRequest, NextFunction, Response } from 'express'
 import Joi from 'joi'
 
+import s3Service from '../../services/AwsS3'
 import prisma from '../../services/Prisma'
 import { AbstractController } from '../../types/AbstractController'
 import { JoiCommon } from '../../types/JoiCommon'
@@ -136,7 +137,10 @@ export class CategoryController extends AbstractController {
             })
             
             return res.status(200).json({
-                categories
+                categories: categories.map((category: any) => ({
+                    ...category,
+                    coverImage: category.coverImage ?s3Service.getPublicUrl(category.coverImage) : null
+                }))
             })
         } catch (err) {
             return next(err)
@@ -179,7 +183,10 @@ export class CategoryController extends AbstractController {
             })
 
             return res.status(200).json({
-                categories
+                categories: categories.map((category: any) => ({
+                    ...category,
+                    coverImage: category.coverImage ?s3Service.getPublicUrl(category.coverImage) : null
+                }))
             })
         } catch (err) {
             return next(err)
