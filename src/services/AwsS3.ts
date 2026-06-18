@@ -107,7 +107,7 @@ class AwsS3 {
      * }>}
      */
     public async getUploadUrl(filename: string, contentType: string) {
-        const key = `restaurants/${randomUUID()}-${filename}`
+        const key = `image/${randomUUID()}-${filename}`
 
         const command = new PutObjectCommand({
             Bucket: this.bucketName,
