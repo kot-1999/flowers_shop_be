@@ -59,7 +59,7 @@ export default function selectionistsRouter() {
                schema: { "$ref": "#/definitions/v1DeleteSelectionistRes" }
            }
        */
-        '/admin/selectionists.:selectionistID',
+        '/admin/selectionists/:selectionistID',
         validationMiddleware(SelectionistController.schemas.request.deleteSelectionist),
         authorizationMiddleware([PassportStrategy.google]),
         permissionMiddleware([UserRole.Admin]),
