@@ -17,6 +17,7 @@ export class SelectionistController extends AbstractController {
                 query: JoiCommon.object.paginatedQuery.keys({
                     search: Joi.string().allow('')
                         .optional(),
+                    categoryID: JoiCommon.string.id.optional(),
                     sort: Joi.string().valid('asc', 'desc')
                         .default('asc')
                 }).required()
@@ -89,6 +90,14 @@ export class SelectionistController extends AbstractController {
 
             const where: any = {
                 deletedAt: null
+            }
+
+            if (query.categoryID) {
+                where.goods = {
+                    some: {
+                        categoryID: query.categoryID
+                    }
+                }
             }
 
             if (query.search) {

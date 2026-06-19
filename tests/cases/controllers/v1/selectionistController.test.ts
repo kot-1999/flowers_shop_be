@@ -80,6 +80,27 @@ describe(`GET ${publicEndpoint()}`, () => {
 
         expect(found).to.eq(true)
     })
+
+    it('Should categoryID search filtering', async () => {
+        const category = await prisma.category.findFirst({ where: { deletedAt: null } })
+
+        const res = await supertest(app)
+            .get(publicEndpoint())
+            .set('Cookie', sessionCookie)
+            .set('accept-language', 'en')
+            .query({
+                categoryID: category.id,
+                page: 1,
+                limit: 10
+            })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.type).to.eq('application/json')
+
+        const validationResult = SelectionistController.schemas.response.getSelectionists.validate(res.body)
+
+        expect(validationResult.error).to.eq(undefined)
+    })
 })
 
 describe(`PUT ${endpoint()}`, () => {

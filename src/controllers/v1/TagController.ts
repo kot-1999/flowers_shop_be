@@ -15,6 +15,7 @@ export class TagController extends AbstractController {
                 query: JoiCommon.object.paginatedQuery.keys({
                     search: Joi.string().allow('')
                         .optional(),
+                    categoryID: JoiCommon.string.id.optional(),
                     sort: Joi.string()
                         .valid('asc', 'desc')
                         .default('asc')
@@ -24,6 +25,7 @@ export class TagController extends AbstractController {
                 query: JoiCommon.object.paginatedQuery.keys({
                     search: Joi.string().allow('')
                         .optional(),
+                    categoryID: JoiCommon.string.id.optional(),
                     sort: Joi.string()
                         .valid('asc', 'desc')
                         .default('asc')
@@ -114,6 +116,16 @@ export class TagController extends AbstractController {
                             contains: term
                         }
                     }))
+                }
+            }
+
+            if (query.categoryID) {
+                where.goods = {
+                    some: {
+                        good: {
+                            categoryID: query.categoryID
+                        }
+                    }
                 }
             }
 
