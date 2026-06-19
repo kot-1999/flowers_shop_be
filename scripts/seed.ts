@@ -30,6 +30,9 @@ const imagesDirs = [
 ]
 
 async function seed() {
+
+    setTimeout(() => {}, 10000)
+
     const users: any[] = []
     const categories: any[] = []
     const itemTypes: any[] = []
