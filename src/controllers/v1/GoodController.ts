@@ -35,7 +35,7 @@ export class GoodController extends AbstractController {
                         .allow('')
                         .optional(),
 
-                    sortBy: Joi.string().valid('createdAt', 'name', 'selectionist', 'state')
+                    sortBy: Joi.string().valid('createdAt', 'name', 'selectionist', 'state', 'random')
                         .default('createdAt'),
                     sortOrder: Joi.string()
                         .valid('asc', 'desc')
@@ -69,7 +69,7 @@ export class GoodController extends AbstractController {
                         .default(Action.Show),
 
                     photos: Joi.array().items(Joi.string())
-                        .max(5)
+                        .max(20)
                         .unique()
                         .required(),
 
@@ -115,7 +115,7 @@ export class GoodController extends AbstractController {
                         .optional(),
 
                     photos: Joi.array().items(Joi.string())
-                        .max(5)
+                        .max(20)
                         .unique()
                         .optional(),
 
@@ -154,7 +154,7 @@ export class GoodController extends AbstractController {
                     photos: Joi.array().items(Joi.string())
                         .required(),
 
-                    name: JoiCommon.object.singleTranslation.required(),
+                    name: JoiCommon.object.singleTranslationWithSlug.required(),
                     description: JoiCommon.object.singleTranslation.required(),
 
                     state: Joi.string().valid(...Object.values(GoodState))
@@ -357,6 +357,8 @@ export class GoodController extends AbstractController {
                         [`${language}Slug`]: query.sortOrder
                     }
                 }
+            } else if (query.sortBy === 'random') {
+                orderBy._raw = 'RANDOM()'
             } else {
                 orderBy[query.sortBy] = query.sortOrder
             }
@@ -376,7 +378,8 @@ export class GoodController extends AbstractController {
 
                         name: {
                             select: {
-                                [language]: true
+                                [language]: true,
+                                [language + 'Slug']: true
                             }
                         },
 
@@ -414,6 +417,11 @@ export class GoodController extends AbstractController {
                         },
 
                         pricings: {
+                            where: {
+                                pricing: {
+                                    deletedAt: null
+                                }
+                            },
                             select: {
                                 pricing: {
                                     select: {
@@ -517,6 +525,11 @@ export class GoodController extends AbstractController {
                     },
 
                     pricings: {
+                        where: {
+                            pricing: {
+                                deletedAt: null
+                            }
+                        },
                         select: {
                             pricing: {
                                 select: {
@@ -870,52 +883,78 @@ export class GoodController extends AbstractController {
                 }
             }
 
-            const [updated] = await prisma.$transaction([
-                prisma.good.update({
-                    where: {
-                        id: params.goodID
-                    },
-                    data: {
-                        ...updateData,
-                        pricings: {
-                            create: newPricings.map((p) => ({
-                                pricing: {
-                                    create: {
-                                        price: p.price,
-                                        quantity: p.quantity,
-                                        itemType: {
-                                            connect: {
-                                                id: p.itemTypeID
+            let updated: { id: string }
+            await prisma.$transaction(async (tx: any) => {
+
+                if (body.pricings?.length) {
+                    const pricings = body.pricings?.filter((p) => !!p.pricingID) ?? []
+
+                    await tx.pricing.updateMany({
+                        where: {
+                            goods: {
+                                some: {
+                                    goodID: params.goodID
+                                }
+                            },
+                            id: {
+                                notIn: pricings.map((pricing) => pricing.pricingID)
+                            }
+                        },
+                        data: {
+                            deletedAt: dayjs().toISOString()
+                        }
+                    })
+                }
+
+                const [tmpUpdate] = await Promise.all([
+                    tx.good.update({
+                        where: {
+                            id: params.goodID
+                        },
+                        data: {
+                            ...updateData,
+                            pricings: {
+                                create: newPricings.map((p) => ({
+                                    pricing: {
+                                        create: {
+                                            price: p.price,
+                                            quantity: p.quantity,
+                                            itemType: {
+                                                connect: {
+                                                    id: p.itemTypeID
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            }))
-                        }
-                    },
-                    select: {
-                        id: true
-                    }
-                }),
-
-                ...existingPricings.map((existingPricing) =>
-                    prisma.pricing.update({
-                        where: {
-                            id: existingPricing.pricingID
+                                }))
+                            }
                         },
-                        data: {
-                            price: existingPricing.price,
-                            quantity: existingPricing.quantity,
-                            itemType: {
-                                connect: {
-                                    id: existingPricing.itemTypeID
+                        select: {
+                            id: true
+                        }
+                    }),
+
+                    ...existingPricings.map((existingPricing) =>
+                        tx.pricing.update({
+                            where: {
+                                id: existingPricing.pricingID
+                            },
+                            data: {
+                                price: existingPricing.price,
+                                quantity: existingPricing.quantity,
+                                itemType: {
+                                    connect: {
+                                        id: existingPricing.itemTypeID
+                                    }
                                 }
                             }
-                        }
-                    }))
-            ])
+                        }))
+                ])
+                updated = tmpUpdate
+            })
 
             return res.status(200).json({
+                // @ts-ignore
                 good: { id: updated.id },
                 message: req.t('Good updated')
             })
