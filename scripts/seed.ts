@@ -30,16 +30,17 @@ const imagesDirs = [
 ]
 
 async function seed() {
+    try {
+   
+        setTimeout(() => {}, 10000)
 
-    setTimeout(() => {}, 10000)
-
-    const users: any[] = []
-    const categories: any[] = []
-    const itemTypes: any[] = []
-    const selectionists: any[] = []
-    const tags: any[] = []
-    const goods: any[] = []
-    const images: {
+        const users: any[] = []
+        const categories: any[] = []
+        const itemTypes: any[] = []
+        const selectionists: any[] = []
+        const tags: any[] = []
+        const goods: any[] = []
+        const images: {
         [key: string]: string[]
     } = {
         [imagesDirs[0]]: [],
@@ -47,228 +48,233 @@ async function seed() {
         [imagesDirs[2]]: []
     }
 
-    if ((await prisma.good.count()) === 0) {
-        for (const imgDir of imagesDirs) {
-            for (const file of fs.readdirSync(imgDir)) {
-                const result = await s3Service.uploadFile(
-                    path.join(imgDir, file),
-                    'image'
-                )
-                images[imgDir].push(result.key)
+        if ((await prisma.good.count()) === 0) {
+            for (const imgDir of imagesDirs) {
+                for (const file of fs.readdirSync(imgDir)) {
+                    const result = await s3Service.uploadFile(
+                        path.join(imgDir, file),
+                        'image'
+                    )
+                    images[imgDir].push(result.key)
+                }
             }
         }
-    }
 
-    // Generate plain objects
-    for (let i = 0; i < seedConfig.grain; i++) {
-        if (i % 3 === 0) {
-            users.push(UserGenerator.generateData({
-                password: EncryptionService.hashSHA256('Test123'),
-                role: UserRole.Admin
-            }))
-        } else if (i % 2 === 0) {
-            users.push(UserGenerator.generateData({
-                password: EncryptionService.hashSHA256('Test123'),
-                role: UserRole.User
-            }))
-        } else {
-            users.push(UserGenerator.generateData({
-                role: UserRole.NotRegistered
-            }))
+        // Generate plain objects
+        for (let i = 0; i < seedConfig.grain; i++) {
+            if (i % 3 === 0) {
+                users.push(UserGenerator.generateData({
+                    password: EncryptionService.hashSHA256('Test123'),
+                    role: UserRole.Admin
+                }))
+            } else if (i % 2 === 0) {
+                users.push(UserGenerator.generateData({
+                    password: EncryptionService.hashSHA256('Test123'),
+                    role: UserRole.User
+                }))
+            } else {
+                users.push(UserGenerator.generateData({
+                    role: UserRole.NotRegistered
+                }))
+            }
         }
-    }
 
-    for (let i = 0; i < seedConfig.grain / 4; i++) {
-        selectionists.push(SelectionistGenerator.generateData())
-    }
+        for (let i = 0; i < seedConfig.grain / 4; i++) {
+            selectionists.push(SelectionistGenerator.generateData())
+        }
 
-    for (const category of seedData.categories) {
-        categories.push(CategoryGenerator.generateData(category))
-    }
+        for (const category of seedData.categories) {
+            categories.push(CategoryGenerator.generateData(category))
+        }
 
-    for (const itemType of seedData.itemTypes) {
-        itemTypes.push(ItemTypeGenerator.generateData(itemType as any))
-    }
+        for (const itemType of seedData.itemTypes) {
+            itemTypes.push(ItemTypeGenerator.generateData(itemType as any))
+        }
 
-    for (let i = 0; i < seedConfig.grain / 3; i++) {
-        tags.push(TagGenerator.generateData())
-    }
+        for (let i = 0; i < seedConfig.grain / 3; i++) {
+            tags.push(TagGenerator.generateData())
+        }
 
-    let index = 0
-    for (const category of categories) {
-        const goodsCount = rand(
-            Math.floor(seedConfig.grain / 4),
-            seedConfig.grain
-        )
+        let index = 0
+        for (const category of categories) {
+            const goodsCount = rand(
+                Math.floor(seedConfig.grain / 4),
+                seedConfig.grain
+            )
 
-        const categoryGoods = await Promise.all(Array.from({ length: goodsCount }, () =>
-            GoodGenerator.generateData({
-                categoryID: category.id,
-                photos: pickRandom(images[imagesDirs[index]], 7, 1),
-                selectionistID: selectionists[Math.floor(Math.random() * selectionists.length)].id,
+            const categoryGoods = await Promise.all(Array.from({ length: goodsCount }, () =>
+                GoodGenerator.generateData({
+                    categoryID: category.id,
+                    photos: pickRandom(images[imagesDirs[index]], 7, 1),
+                    selectionistID: selectionists[Math.floor(Math.random() * selectionists.length)].id,
 
-                tagIDs: pickRandom(tags, rand(1, Math.min(3, tags.length))).map((t) => t.id),
+                    tagIDs: pickRandom(tags, rand(1, Math.min(3, tags.length))).map((t) => t.id),
 
-                itemTypeIDs: pickRandom(itemTypes, rand(1, Math.min(3, itemTypes.length))).map((i) => i.id)
-            })))
+                    itemTypeIDs: pickRandom(itemTypes, rand(1, Math.min(3, itemTypes.length))).map((i) => i.id)
+                })))
 
-        goods.push(...categoryGoods)
-        index += 1
-    }
+            goods.push(...categoryGoods)
+            index += 1
+        }
 
-    // Map all translations
+        // Map all translations
 
-    const translations: any[] = []
-    const pricings: any[] = []
-    const goodTags: any[] = []
-    const goodPricings: any[] = []
+        const translations: any[] = []
+        const pricings: any[] = []
+        const goodTags: any[] = []
+        const goodPricings: any[] = []
     
-    categories.forEach((item) => {
-        translations.push(item.name)
-        translations.push(item.description)
-    })
-    itemTypes.forEach((item) => translations.push(item.name))
-    selectionists.forEach((item) => translations.push(item.name))
-    tags.forEach((item) => translations.push(item.name))
-    goods.forEach((item) => {
-        translations.push(item.name)
-        translations.push(item.description)
-        item.pricings.forEach((pricing: any) => {
-            pricings.push(pricing)
-            goodPricings.push({
-                goodID: item.id,
-                pricingID: pricing.id
-            })
+        categories.forEach((item) => {
+            translations.push(item.name)
+            translations.push(item.description)
         })
-        item.tagIDs.forEach((tagID: string) => goodTags.push({
-            tagID,
-            goodID: item.id
-        }))
-    })
+        itemTypes.forEach((item) => translations.push(item.name))
+        selectionists.forEach((item) => translations.push(item.name))
+        tags.forEach((item) => translations.push(item.name))
+        goods.forEach((item) => {
+            translations.push(item.name)
+            translations.push(item.description)
+            item.pricings.forEach((pricing: any) => {
+                pricings.push(pricing)
+                goodPricings.push({
+                    goodID: item.id,
+                    pricingID: pricing.id
+                })
+            })
+            item.tagIDs.forEach((tagID: string) => goodTags.push({
+                tagID,
+                goodID: item.id
+            }))
+        })
     
-    const seededTables: string[] = []
-    
-    await prisma.$transaction(async (tx: any) => {
         const seededTables: string[] = []
+    
+        await prisma.$transaction(async (tx: any) => {
+            const seededTables: string[] = []
 
-        if ((await tx.translation.count()) === 0) {
-            await tx.translation.createMany({
-                data: translations,
-                skipDuplicates: true
-            })
-            seededTables.push('translations')
-        }
+            if ((await tx.translation.count()) === 0) {
+                await tx.translation.createMany({
+                    data: translations,
+                    skipDuplicates: true
+                })
+                seededTables.push('translations')
+            }
 
-        if ((await tx.user.count()) === 0) {
-            await tx.user.createMany({
-                data: users,
-                skipDuplicates: true
-            })
-            seededTables.push('users')
-        }
-        if ((await tx.category.count()) === 0) {
-            await tx.category.createMany({
-                data: categories.map(({ name, description, ...rest }) => ({
-                    ...rest,
-                    nameTID: name.id,
-                    descriptionTID: description.id
-                }))
-            })
+            if ((await tx.user.count()) === 0) {
+                await tx.user.createMany({
+                    data: users,
+                    skipDuplicates: true
+                })
+                seededTables.push('users')
+            }
+            if ((await tx.category.count()) === 0) {
+                await tx.category.createMany({
+                    data: categories.map(({ name, description, ...rest }) => ({
+                        ...rest,
+                        nameTID: name.id,
+                        descriptionTID: description.id
+                    }))
+                })
 
-            seededTables.push('categories')
-        }
+                seededTables.push('categories')
+            }
 
-        if ((await tx.itemType.count()) === 0) {
-            await tx.itemType.createMany({
-                data: itemTypes.map(({ name, ...rest }) => ({
-                    ...rest,
-                    nameTID: name.id
-                }))
-            })
+            if ((await tx.itemType.count()) === 0) {
+                await tx.itemType.createMany({
+                    data: itemTypes.map(({ name, ...rest }) => ({
+                        ...rest,
+                        nameTID: name.id
+                    }))
+                })
 
-            seededTables.push('itemTypes')
-        }
+                seededTables.push('itemTypes')
+            }
 
-        if ((await tx.selectionist.count()) === 0) {
-            await tx.selectionist.createMany({
-                data: selectionists.map(({ name, ...rest }) => ({
-                    ...rest,
-                    nameTID: name.id
-                }))
-            })
+            if ((await tx.selectionist.count()) === 0) {
+                await tx.selectionist.createMany({
+                    data: selectionists.map(({ name, ...rest }) => ({
+                        ...rest,
+                        nameTID: name.id
+                    }))
+                })
 
-            seededTables.push('selectionists')
-        }
+                seededTables.push('selectionists')
+            }
 
-        if ((await tx.tag.count()) === 0) {
-            await tx.tag.createMany({
-                data: tags.map(({ name, ...rest }) => ({
-                    ...rest,
-                    nameTID: name.id
-                }))
-            })
+            if ((await tx.tag.count()) === 0) {
+                await tx.tag.createMany({
+                    data: tags.map(({ name, ...rest }) => ({
+                        ...rest,
+                        nameTID: name.id
+                    }))
+                })
 
-            seededTables.push('tags')
-        }
+                seededTables.push('tags')
+            }
 
-        if ((await tx.pricing.count()) === 0) {
-            await tx.pricing.createMany({
-                data: pricings.map((item) => ({
-                    id: item.id,
-                    price: item.price,
-                    quantity: item.quantity,
-                    itemTypeID: item.itemTypeID
-                }))
-            })
+            if ((await tx.pricing.count()) === 0) {
+                await tx.pricing.createMany({
+                    data: pricings.map((item) => ({
+                        id: item.id,
+                        price: item.price,
+                        quantity: item.quantity,
+                        itemTypeID: item.itemTypeID
+                    }))
+                })
 
-            seededTables.push('pricings')
-        }
+                seededTables.push('pricings')
+            }
 
-        // throw new Error('TEST' + seededTables)
+            // throw new Error('TEST' + seededTables)
 
-        if ((await tx.good.count()) === 0) {
-            await tx.good.createMany({
-                data: goods.map((good) => ({
-                    id: good.id,
-                    state: good.state,
-                    photos: good.photos,
+            if ((await tx.good.count()) === 0) {
+                await tx.good.createMany({
+                    data: goods.map((good) => ({
+                        id: good.id,
+                        state: good.state,
+                        photos: good.photos,
 
-                    nameTID: good.name.id,
-                    descriptionTID: good.description.id,
-                    categoryID: good.categoryID,
-                    selectionistID: good.selectionistID,
+                        nameTID: good.name.id,
+                        descriptionTID: good.description.id,
+                        categoryID: good.categoryID,
+                        selectionistID: good.selectionistID,
 
-                    createdAt: good.createdAt,
-                    updatedAt: good.updatedAt,
-                    deletedAt: good.deletedAt
-                }))
-            })
+                        createdAt: good.createdAt,
+                        updatedAt: good.updatedAt,
+                        deletedAt: good.deletedAt
+                    }))
+                })
 
-            seededTables.push('goods')
-        }
+                seededTables.push('goods')
+            }
 
-        if ((await tx.goodTag.count()) === 0) {
-            await tx.goodTag.createMany({
-                data: goodTags
-            })
+            if ((await tx.goodTag.count()) === 0) {
+                await tx.goodTag.createMany({
+                    data: goodTags
+                })
 
-            seededTables.push('goodTags')
-        }
+                seededTables.push('goodTags')
+            }
 
-        if ((await tx.goodPricing.count()) === 0) {
-            await tx.goodPricing.createMany({
-                data: goodPricings
-            })
+            if ((await tx.goodPricing.count()) === 0) {
+                await tx.goodPricing.createMany({
+                    data: goodPricings
+                })
 
-            seededTables.push('goodPricings')
-        }
+                seededTables.push('goodPricings')
+            }
 
-        logger.info(`Seeded tables: ${
-            seededTables.length > 0 ? seededTables.join(', ') : 'none'
-        }`)
-    })
+            logger.info(`Seeded tables: ${
+                seededTables.length > 0 ? seededTables.join(', ') : 'none'
+            }`)
+        })
      
-    logger.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`)
+        logger.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`)
+    } catch (err: any) {
+        // eslint disable-next-line
+        console.log(err)
+        throw err
+    }
 }
 
 seed().catch((error) => {
