@@ -41,7 +41,7 @@ class AwsS3 {
 
     private bucketName = 'flower-images-test-uat-bucket-temp-1'
     private s3Config
-    
+
     constructor(s3Config: IConfig['s3']) {
         this.s3Config = s3Config
 
@@ -87,17 +87,8 @@ class AwsS3 {
      */
     private async ensureBucketExists() {
         try {
-            await this.s3.send(new HeadBucketCommand({
-                Bucket: this.bucketName
-            }))
-            return
-        } catch (err: any) {
-            // ONLY create if bucket truly doesn't exist
-            if (err?.name !== 'NotFound' && err?.$metadata?.httpStatusCode !== 404) {
-                // bucket exists OR other issue → don't try to recreate
-                return
-            }
-
+            await this.s3.send(new HeadBucketCommand({ Bucket: this.bucketName }))
+        } catch {
             await this.s3.send(new CreateBucketCommand({ Bucket: this.bucketName }))
         }
     }
@@ -157,7 +148,6 @@ class AwsS3 {
      * @returns {Promise<string>} Public URL of uploaded file
      */
     public async uploadFile(filePath: string, keyPrefix: 'image') {
-        await this.ensureBucketExists()
         const fs = await import('fs')
         const path = await import('path')
 
