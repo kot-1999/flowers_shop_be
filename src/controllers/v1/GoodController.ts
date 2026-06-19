@@ -159,7 +159,10 @@ export class GoodController extends AbstractController {
 
                     state: Joi.string().valid(...Object.values(GoodState))
                         .required(),
-
+                    category: Joi.object({
+                        id: JoiCommon.string.id,
+                        name: JoiCommon.object.singleTranslation.required()
+                    }).required(),
                     createdAt: Joi.date().iso()
                         .required(),
                     updatedAt: Joi.date().iso()
@@ -211,15 +214,16 @@ export class GoodController extends AbstractController {
                     photos: Joi.array().items(Joi.string()
                         .required())
                         .required(),
-                    category: Joi.object({
-                        id: JoiCommon.string.id,
-                        name: JoiCommon.object.singleTranslation.required()
-                    }),
                     selectionist: Joi.object({
                         id: JoiCommon.string.id,
                         name: JoiCommon.object.translationsRes.required(),
                         country: Joi.string().allow(null)
                             .required()
+                    }).required(),
+
+                    category: Joi.object({
+                        id: JoiCommon.string.id,
+                        name: JoiCommon.object.translationsRes.required()
                     }).required(),
 
                     name: JoiCommon.object.translationsRes.required(),
@@ -389,6 +393,17 @@ export class GoodController extends AbstractController {
                             }
                         },
 
+                        category: {
+                            select: {
+                                id: true,
+                                name: {
+                                    select: {
+                                        [language]: true
+                                    }
+                                }
+                            }
+                        },
+
                         tags: {
                             select: {
                                 tag: {
@@ -499,6 +514,15 @@ export class GoodController extends AbstractController {
 
                     description: {
                         select: translationSelect
+                    },
+
+                    category: {
+                        select: {
+                            id: true,
+                            name: {
+                                select: translationSelect
+                            }
+                        }
                     },
 
                     tags: {
