@@ -31,8 +31,6 @@ const imagesDirs = [
 
 async function seed() {
 
-    await s3Service
-
     const users: any[] = []
     const categories: any[] = []
     const itemTypes: any[] = []
@@ -46,18 +44,23 @@ async function seed() {
         [imagesDirs[1]]: [],
         [imagesDirs[2]]: []
     }
-
-    if ((await prisma.good.count()) === 0) {
-        for (const imgDir of imagesDirs) {
-            for (const file of fs.readdirSync(imgDir)) {
-                const result = await s3Service.uploadFile(
-                    path.join(imgDir, file),
-                    'image'
-                )
-                images[imgDir].push(result.key)
+    try {
+        if ((await prisma.good.count()) === 0) {
+            for (const imgDir of imagesDirs) {
+                for (const file of fs.readdirSync(imgDir)) {
+                    const result = await s3Service.uploadFile(
+                        path.join(imgDir, file),
+                        'image'
+                    )
+                    images[imgDir].push(result.key)
+                }
             }
         }
+
+    } catch (err) {
+        console.error(err)
     }
+
 
     // Generate plain objects
     for (let i = 0; i < seedConfig.grain; i++) {
