@@ -88,8 +88,10 @@ class AwsS3 {
     private async ensureBucketExists() {
         try {
             await this.s3.send(new HeadBucketCommand({ Bucket: this.bucketName }))
+            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         } catch {
             await this.s3.send(new CreateBucketCommand({ Bucket: this.bucketName }))
+            console.log('??????????????????????????????')
         }
     }
 
