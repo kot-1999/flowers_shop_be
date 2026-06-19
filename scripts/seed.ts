@@ -30,6 +30,9 @@ const imagesDirs = [
 ]
 
 async function seed() {
+
+    await s3Service
+
     const users: any[] = []
     const categories: any[] = []
     const itemTypes: any[] = []

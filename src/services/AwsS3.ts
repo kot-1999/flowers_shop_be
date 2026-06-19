@@ -190,14 +190,10 @@ class AwsS3 {
 }
 
 const s3Config = config.get<IConfig['s3']>('s3')
-let s3Service
+const s3Service = new AwsS3(s3Config)
 
-(async () => {
-
-    s3Service = new AwsS3(s3Config)
-    await s3Service.init()
-        .then(() => logger.info('S3 bucket was initialized'))
-        .catch((err: Error) => logger.error('S3 bucket initialization failed: ', err))
-})
+s3Service.init()
+    .then(() =>  logger.info('S3 bucket was initialized'))
+    .catch((err) => logger.error('S3 bucket initialization failed: ', err))
 
 export default s3Service
