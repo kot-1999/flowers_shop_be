@@ -5,7 +5,7 @@ import { UserRole } from '@prisma/client'
 import config from 'config'
 
 import * as seedData from './seedData/seedData'
-import s3Service from '../src/services/AwsS3'
+import s3Service, { s3Ready } from '../src/services/AwsS3'
 import { EncryptionService } from '../src/services/Encryption'
 import logger from '../src/services/Logger'
 import prisma from '../src/services/Prisma'
@@ -31,9 +31,7 @@ const imagesDirs = [
 
 async function seed() {
     try {
-   
-        setTimeout(() => {}, 10000)
-
+        await s3Ready
         const users: any[] = []
         const categories: any[] = []
         const itemTypes: any[] = []
