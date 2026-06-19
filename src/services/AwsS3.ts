@@ -87,8 +87,17 @@ class AwsS3 {
      */
     private async ensureBucketExists() {
         try {
-            await this.s3.send(new HeadBucketCommand({ Bucket: this.bucketName }))
-        } catch {
+            await this.s3.send(new HeadBucketCommand({
+                Bucket: this.bucketName
+            }))
+            return
+        } catch (err: any) {
+            // ONLY create if bucket truly doesn't exist
+            if (err?.name !== 'NotFound' && err?.$metadata?.httpStatusCode !== 404) {
+                // bucket exists OR other issue → don't try to recreate
+                return
+            }
+
             await this.s3.send(new CreateBucketCommand({ Bucket: this.bucketName }))
         }
     }
