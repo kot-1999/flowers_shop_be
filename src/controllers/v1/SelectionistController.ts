@@ -1,13 +1,13 @@
-import { Country, Selectionist } from '@prisma/client';
-import dayjs from 'dayjs';
-import { AuthRequest, NextFunction, Response, Request } from 'express';
-import Joi from 'joi';
+import { Country, Selectionist } from '@prisma/client'
+import dayjs from 'dayjs'
+import { AuthRequest, NextFunction, Response, Request } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { slugify, translationSelect } from '../../utils/helpers';
-import { IError } from '../../utils/IError';
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { slugify, translationSelect } from '../../utils/helpers'
+import { IError } from '../../utils/IError'
 
 export class SelectionistController extends AbstractController {
 
@@ -17,6 +17,7 @@ export class SelectionistController extends AbstractController {
                 query: JoiCommon.object.paginatedQuery.keys({
                     search: Joi.string().allow('')
                         .optional(),
+                    categoryID: JoiCommon.string.id.optional(),
                     sort: Joi.string().valid('asc', 'desc')
                         .default('asc')
                 }).required()
@@ -26,7 +27,7 @@ export class SelectionistController extends AbstractController {
                 body: Joi.object({
                     selectionistID: JoiCommon.string.id.optional(),
                     nameTID: Joi.string().optional(),
-                    nameTranslations: JoiCommon.object.translations,
+                    nameTranslations: JoiCommon.object.translationsReq,
                     country: Joi.string().valid(...Object.values(Country))
                         .optional()
                 }).or('nameTranslations', 'nameTID')
@@ -44,7 +45,7 @@ export class SelectionistController extends AbstractController {
             getSelectionists: Joi.object({
                 selectionists: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id.required(),
-                    name: JoiCommon.object.singleTranslation,
+                    name: JoiCommon.object.translationsRes.required(),
                     country: Joi.string().valid(...Object.values(Country))
                         .allow(null)
                         .required(),
@@ -91,8 +92,16 @@ export class SelectionistController extends AbstractController {
                 deletedAt: null
             }
 
+            if (query.categoryID) {
+                where.goods = {
+                    some: {
+                        categoryID: query.categoryID
+                    }
+                }
+            }
+
             if (query.search) {
-                const terms = slugify(query.search).split('-');
+                const terms = slugify(query.search).split('-')
 
                 where.name = {
                     AND: terms.map((term: string) => ({
@@ -100,7 +109,7 @@ export class SelectionistController extends AbstractController {
                             contains: term
                         }
                     }))
-                };
+                }
             }
 
             const [selectionists, count] = await Promise.all([

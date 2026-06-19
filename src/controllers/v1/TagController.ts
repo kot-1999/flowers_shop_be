@@ -1,11 +1,11 @@
-import { AuthRequest, NextFunction, Response } from 'express';
-import Joi from 'joi';
+import { AuthRequest, NextFunction, Response } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { slugify, translationSelect } from '../../utils/helpers';
-import { IError } from '../../utils/IError';
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { slugify, translationSelect } from '../../utils/helpers'
+import { IError } from '../../utils/IError'
 
 export class TagController extends AbstractController {
 
@@ -15,6 +15,7 @@ export class TagController extends AbstractController {
                 query: JoiCommon.object.paginatedQuery.keys({
                     search: Joi.string().allow('')
                         .optional(),
+                    categoryID: JoiCommon.string.id.optional(),
                     sort: Joi.string()
                         .valid('asc', 'desc')
                         .default('asc')
@@ -24,6 +25,7 @@ export class TagController extends AbstractController {
                 query: JoiCommon.object.paginatedQuery.keys({
                     search: Joi.string().allow('')
                         .optional(),
+                    categoryID: JoiCommon.string.id.optional(),
                     sort: Joi.string()
                         .valid('asc', 'desc')
                         .default('asc')
@@ -33,7 +35,7 @@ export class TagController extends AbstractController {
                 body: Joi.object({
                     tagID: JoiCommon.string.id.optional(),
                     nameTID: JoiCommon.string.id.optional(),
-                    nameTranslations: JoiCommon.object.translations,
+                    nameTranslations: JoiCommon.object.translationsReq,
                     restore: Joi.boolean().default(false)
                 }).or('nameTranslations', 'nameTID')
                     .required()
@@ -59,11 +61,14 @@ export class TagController extends AbstractController {
                 tags: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id.required(),
 
-                    name: JoiCommon.object.translations.required(),
+                    name: JoiCommon.object.translationsRes.required(),
 
                     createdAt: Joi.date().iso()
                         .required(),
                     updatedAt: Joi.date().iso()
+                        .required(),
+                    deletedAt: Joi.date().iso()
+                        .allow(null)
                         .required()
                 }))
                     .required(),
@@ -95,7 +100,7 @@ export class TagController extends AbstractController {
     ) {
         try {
             const { query } = req
-            const skip = (query.page - 1) * query.limit;
+            const skip = (query.page - 1) * query.limit
             const language = req.headers['accept-language']
 
             const where: any = {
@@ -111,6 +116,16 @@ export class TagController extends AbstractController {
                             contains: term
                         }
                     }))
+                }
+            }
+
+            if (query.categoryID) {
+                where.goods = {
+                    some: {
+                        good: {
+                            categoryID: query.categoryID
+                        }
+                    }
                 }
             }
 
@@ -156,7 +171,7 @@ export class TagController extends AbstractController {
     ) {
         try {
             const { query } = req
-            const skip = (query.page - 1) * query.limit;
+            const skip = (query.page - 1) * query.limit
             const language = req.headers['accept-language']
 
             const where: any = { }
@@ -179,6 +194,7 @@ export class TagController extends AbstractController {
                         id: true,
                         createdAt: true,
                         updatedAt: true,
+                        deletedAt: true,
                         name: {
                             select: translationSelect
                         }

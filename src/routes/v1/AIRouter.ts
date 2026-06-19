@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { AIController } from '../../controllers/v1/AIController';
+import { AIController } from '../../controllers/v1/AIController'
 import authorizationMiddleware from '../../middlewares/authorizationMiddleware'
 import validationMiddleware from '../../middlewares/validationMiddleware'
 import { PassportStrategy } from '../../utils/enums'

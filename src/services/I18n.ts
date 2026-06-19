@@ -1,11 +1,11 @@
-import path from 'node:path';
+import path from 'node:path'
 
-import config from 'config';
+import config from 'config'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import middleware from 'i18next-http-middleware'
 
-import { IConfig } from '../types/config';
+import { IConfig } from '../types/config'
 
 const i18nConfig = config.get<IConfig['i18n']>('i18n')
 

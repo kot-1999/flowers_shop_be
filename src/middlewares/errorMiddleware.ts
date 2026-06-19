@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
-import { ValidationErrorItem } from 'joi';
+import { ValidationErrorItem } from 'joi'
 
-import logger from '../services/Logger';
+import logger from '../services/Logger'
 import { IError } from '../utils/IError'
 
 export default function errorMiddleware(err: Error, req: Request, res: Response, _next: NextFunction) {

@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import process from 'node:process';
+import process from 'node:process'
 
 import { Request } from 'express'
 import { ExtractJwt } from 'passport-jwt'

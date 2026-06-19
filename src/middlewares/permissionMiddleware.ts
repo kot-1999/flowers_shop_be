@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client'
 import { AuthRequest, NextFunction, Response } from 'express'
 
 import { IError } from '../utils/IError'

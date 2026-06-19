@@ -1,13 +1,13 @@
 import 'dotenv/config'
 
-import path from 'node:path';
-import process from 'node:process';
+import path from 'node:path'
+import process from 'node:process'
 
 import { Request } from 'express'
 import { ExtractJwt } from 'passport-jwt'
 
 import { IConfig } from '../src/types/config'
-import { Language, NodeEnv } from '../src/utils/enums';
+import { Language, NodeEnv } from '../src/utils/enums'
 
 const options: IConfig = {
     app: {

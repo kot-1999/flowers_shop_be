@@ -1,12 +1,13 @@
-import dayjs from 'dayjs';
-import { AuthRequest, NextFunction, Response } from 'express';
-import Joi from 'joi';
+import dayjs from 'dayjs'
+import { AuthRequest, NextFunction, Response } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { translationSelect } from '../../utils/helpers';
-import { IError } from '../../utils/IError';
+import s3Service from '../../services/AwsS3'
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { translationSelect } from '../../utils/helpers'
+import { IError } from '../../utils/IError'
 
 export class CategoryController extends AbstractController {
 
@@ -31,9 +32,9 @@ export class CategoryController extends AbstractController {
                     categoryID: JoiCommon.string.id.optional(),
 
                     nameTID: JoiCommon.string.id.optional(),
-                    nameTranslations: JoiCommon.object.translations,
+                    nameTranslations: JoiCommon.object.translationsReq,
                     descriptionTID: JoiCommon.string.id.optional(),
-                    descriptionTranslations: JoiCommon.object.translations,
+                    descriptionTranslations: JoiCommon.object.translationsReq,
                     coverImage: Joi.string()
                         .allow(null)
                         .optional(),
@@ -56,8 +57,8 @@ export class CategoryController extends AbstractController {
                     id: JoiCommon.string.id.required(),
                     coverImage: Joi.string().allow(null),
 
-                    name: JoiCommon.object.singleTranslation,
-                    description: JoiCommon.object.singleTranslation
+                    name: JoiCommon.object.singleTranslationWithSlug.required(),
+                    description: JoiCommon.object.singleTranslation.required()
                 }))
                     .required()
             }),
@@ -67,8 +68,16 @@ export class CategoryController extends AbstractController {
                     id: JoiCommon.string.id.required(),
                     coverImage: Joi.string().allow(null),
 
-                    name: JoiCommon.object.translations,
-                    description: JoiCommon.object.translations
+                    name: JoiCommon.object.translationsRes,
+                    description: JoiCommon.object.translationsRes,
+
+                    createdAt: Joi.date().iso()
+                        .required(),
+                    updatedAt: Joi.date().iso()
+                        .required(),
+                    deletedAt: Joi.date().iso()
+                        .allow(null)
+                        .required()
                 }))
                     .required()
             }),
@@ -98,8 +107,8 @@ export class CategoryController extends AbstractController {
         next: NextFunction
     ) {
         try {
-            const language = req.headers['accept-language'];
-            const { query } = req;
+            const language = req.headers['accept-language']
+            const { query } = req
 
             const categories = await prisma.category.findMany({
                 where: {
@@ -110,7 +119,8 @@ export class CategoryController extends AbstractController {
                     coverImage: true,
                     name: {
                         select: {
-                            [language as string]: true
+                            [language as string]: true,
+                            [language + 'Slug']: true
                         }
                     },
                     description: {
@@ -127,7 +137,10 @@ export class CategoryController extends AbstractController {
             })
             
             return res.status(200).json({
-                categories
+                categories: categories.map((category: any) => ({
+                    ...category,
+                    coverImage: category.coverImage ?s3Service.getPublicUrl(category.coverImage) : null
+                }))
             })
         } catch (err) {
             return next(err)
@@ -142,14 +155,15 @@ export class CategoryController extends AbstractController {
         next: NextFunction
     ) {
         try {
-            const language = req.headers['accept-language'];
-            const { query } = req;
+            const language = req.headers['accept-language']
+            const { query } = req
 
             const categories = await prisma.category.findMany({
                 select: {
                     id: true,
                     coverImage: true,
                     createdAt: true,
+                    updatedAt: true,
                     deletedAt: true,
                     name: {
                         select: translationSelect
@@ -169,7 +183,10 @@ export class CategoryController extends AbstractController {
             })
 
             return res.status(200).json({
-                categories
+                categories: categories.map((category: any) => ({
+                    ...category,
+                    coverImage: category.coverImage ?s3Service.getPublicUrl(category.coverImage) : null
+                }))
             })
         } catch (err) {
             return next(err)
@@ -236,7 +253,7 @@ export class CategoryController extends AbstractController {
             }
             
             if (body.descriptionTID) {
-                data.descriptionTID = { connect: { id: body.descriptionTID } }
+                data.description = { connect: { id: body.descriptionTID } }
             } else {
                 data.description = {
                     create: body.descriptionTranslations

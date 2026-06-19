@@ -1,9 +1,9 @@
-import config from 'config';
+import config from 'config'
 import { Response, NextFunction, AuthRequest } from 'express'
 import Joi from 'joi'
 
 import { AbstractController } from '../../types/AbstractController'
-import { IConfig } from '../../types/config';
+import { IConfig } from '../../types/config'
 import { JoiCommon } from '../../types/JoiCommon'
 
 const ollamaConfig = config.get<IConfig['ollama']>('ollama')
@@ -31,7 +31,7 @@ export class AIController extends AbstractController {
 
         response: {
             postTranslations: Joi.object({
-                translations: Joi.array().items(JoiCommon.object.translations)
+                translations: Joi.array().items(JoiCommon.object.translationsRes)
                     .min(1)
                     .required()
             }),
@@ -57,12 +57,12 @@ export class AIController extends AbstractController {
         try {
             if (!ollamaConfig) {
                 return res.status(200).json({
-                    translations: {
+                    translations: [{
                         en: 'en: ' + req.body.text,
                         ua: 'ua: ' + req.body.text,
                         de: 'de: ' + req.body.text,
                         sk: 'sk: ' + req.body.text
-                    }
+                    }]
                 })
             }
 

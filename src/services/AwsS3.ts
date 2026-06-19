@@ -5,11 +5,11 @@ import {
     CreateBucketCommand,
     HeadBucketCommand, PutObjectCommand, PutBucketCorsCommand
 } from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import config from 'config';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import config from 'config'
 
-import logger from './Logger';
-import { IConfig } from '../types/config';
+import logger from './Logger'
+import { IConfig } from '../types/config'
 
 /**
  * @class AwsS3
@@ -39,17 +39,17 @@ class AwsS3 {
      * @param {IConfig['s3']} s3Config - S3 configuration (region, endpoint, credentials)
      */
 
-    private bucketName = 'rest-images-test-uat-bucket-temp-1'
+    private bucketName = 'flower-images-test-uat-bucket-temp-1'
     private s3Config
-    
+
     constructor(s3Config: IConfig['s3']) {
-        this.s3Config = s3Config;
+        this.s3Config = s3Config
 
         this.s3 = new S3Client(this.s3Config)
 
         this.s3ForPresign = new S3Client({
             ...this.s3Config,
-            endpoint: this.s3Config.endpoint.replace('rustfs_dev', 'localhost')
+            endpoint: this.s3Config.endpoint.replace('localstack_dev', 'localhost')
         })
     }
 
@@ -107,7 +107,7 @@ class AwsS3 {
      * }>}
      */
     public async getUploadUrl(filename: string, contentType: string) {
-        const key = `restaurants/${randomUUID()}-${filename}`
+        const key = `image/${randomUUID()}-${filename}`
 
         const command = new PutObjectCommand({
             Bucket: this.bucketName,
@@ -132,10 +132,10 @@ class AwsS3 {
      * @description Builds a public URL for accessing an uploaded object
      *
      * @param {string} key - S3 object key
-     * @returns {Promise<string>}
+     * @returns {string}
      */
-    public async getPublicUrl(key: string) {
-        return `${this.s3Config.endpoint.replace('rustfs_dev', 'localhost')}/${this.bucketName}/${key}`
+    public getPublicUrl(key: string) {
+        return `${this.s3Config.endpoint.replace('localstack_dev', 'localhost')}/${this.bucketName}/${key}`
     }
 
     /**
@@ -147,7 +147,7 @@ class AwsS3 {
      *
      * @returns {Promise<string>} Public URL of uploaded file
      */
-    public async uploadFile(filePath: string, keyPrefix: 'banner' | 'menu') {
+    public async uploadFile(filePath: string, keyPrefix: 'image') {
         const fs = await import('fs')
         const path = await import('path')
 
@@ -163,7 +163,10 @@ class AwsS3 {
             ContentType: this.getContentType(filename)
         }))
 
-        return this.getPublicUrl(key)
+        return {
+            key,
+            url: this.getPublicUrl(key)
+        }
     }
 
     /**
@@ -189,7 +192,7 @@ class AwsS3 {
 const s3Config = config.get<IConfig['s3']>('s3')
 const s3Service = new AwsS3(s3Config)
 
-s3Service.init()
+export const s3Ready = s3Service.init()
     .then(() =>  logger.info('S3 bucket was initialized'))
     .catch((err) => logger.error('S3 bucket initialization failed: ', err))
 

@@ -1,7 +1,7 @@
-import { UserRole } from '@prisma/client';
-import { NextFunction, OptionalAuthRequest } from 'express';
+import { UserRole } from '@prisma/client'
+import { NextFunction, OptionalAuthRequest } from 'express'
 
-import { IError } from '../utils/IError';
+import { IError } from '../utils/IError'
 
 export default function roleMiddleware(allowedRoles: UserRole[]) {
     return (req: OptionalAuthRequest, res: Response, next: NextFunction) => {

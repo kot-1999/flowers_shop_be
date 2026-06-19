@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import passport from 'passport'
 
 import { PassportStrategy } from '../utils/enums'
-import { IError } from '../utils/IError';
+import { IError } from '../utils/IError'
 
 export default function authorizationMiddleware(allowedStrategies: PassportStrategy[]) {
     return (req: Request, res: Response, next: NextFunction) => {

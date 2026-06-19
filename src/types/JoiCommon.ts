@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 import { Constants } from '../utils/Constants'
-import { Language } from '../utils/enums';
+import { Language, Languages } from '../utils/enums'
 
 export class JoiCommon {
     static readonly string = {
@@ -42,6 +42,27 @@ export class JoiCommon {
             )
             .min(1)
             .required(),
+
+        singleTranslationWithSlug: Joi.object(Object.fromEntries([
+            ...Languages.map((lang) => [lang, Joi.string()]),
+            ...Languages.map((lang) => [`${lang}Slug`, Joi.string()])
+        ]))
+            .pattern(
+                Joi.string().valid(
+                    ...Languages,
+                    ...Languages.map((lang) => `${lang}Slug`)
+                ),
+                Joi.string()
+            )
+            .or(...Languages) // at least one language value
+            .or(...Languages.map((lang) => `${lang}Slug`)) // at least one slug
+            .min(2)
+            .max(Languages.length * 2),
+
+        translationsWithSlug: Joi.object(Object.fromEntries(Object.values(Language).flatMap((lang) => [
+            [lang, Joi.string().required()],
+            [`${lang}Slug`, Joi.string().required()]
+        ]))),
 
         address: Joi.object({
             building: Joi.string().trim()
@@ -97,9 +118,17 @@ export class JoiCommon {
                 .required()
         }),
 
-        translations: Joi.object(Object.fromEntries(Object.values(Language).map((lang) => [
+        translationsReq: Joi.object(Object.fromEntries(Object.values(Language).map((lang) => [
             lang,
             Joi.string().required()
-        ])))
+        ]))),
+
+        translationsRes: Joi.object(Object.fromEntries(Object.values(Language).map((lang) => [
+            lang,
+            Joi.string().required()
+        ]))).keys({
+            id: Joi.string().uuid()
+                .required()
+        })
     }
 }

@@ -3,10 +3,10 @@ import winston from 'winston'
 import WinstonDailyRotateFile from 'winston-daily-rotate-file'
 import TransportStream from 'winston-transport'
 
-import Sentry from './Sentry';
+import Sentry from './Sentry'
 import { IConfig } from '../types/config'
-import { NodeEnv } from '../utils/enums';
-import { IError } from '../utils/IError';
+import { NodeEnv } from '../utils/enums'
+import { IError } from '../utils/IError'
 
 /**
  * @class SentryErrorTransport

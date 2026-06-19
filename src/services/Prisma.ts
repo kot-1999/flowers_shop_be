@@ -1,9 +1,9 @@
-import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaPg } from '@prisma/adapter-pg'
 import { Prisma, PrismaClient } from '@prisma/client'
-import config from 'config';
+import config from 'config'
 
 import logger from './Logger'
-import { IConfig } from '../types/config';
+import { IConfig } from '../types/config'
 
 /**
  * @class PrismaService
@@ -24,7 +24,7 @@ class PrismaService {
      * @description Initializes Prisma client with logging and event listeners
      */
     constructor(dbConfig: IConfig['database']) {
-        this.dbConfig = dbConfig;
+        this.dbConfig = dbConfig
         this.client = new PrismaClient({
             adapter: new PrismaPg({
                 connectionString: this.dbConfig.postgresURL
@@ -42,15 +42,15 @@ class PrismaService {
         })
 
         this.client.$on('warn', (e: Prisma.LogEvent) => {
-            logger.warn(`[Prisma] ${e.message}`);
+            logger.warn(`[Prisma] ${e.message}`)
         })
 
         this.client.$on('error', (e: Prisma.LogEvent) => {
-            logger.error(`[Prisma] ${e.message}`);
+            logger.error(`[Prisma] ${e.message}`)
         })
 
         this.client.$on('info', (e: Prisma.LogEvent) => {
-            logger.info(`[Prisma] ${e.message}`);
+            logger.info(`[Prisma] ${e.message}`)
         })
 
         logger.info('Prisma client was created')

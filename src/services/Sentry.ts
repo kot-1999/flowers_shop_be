@@ -1,6 +1,6 @@
 import * as SentryNode from '@sentry/node'
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import config from 'config';
+import { nodeProfilingIntegration } from '@sentry/profiling-node'
+import config from 'config'
 
 import { IConfig } from '../types/config'
 

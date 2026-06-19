@@ -1,12 +1,12 @@
-import dayjs from 'dayjs';
-import { AuthRequest, NextFunction, Response } from 'express';
-import Joi from 'joi';
+import dayjs from 'dayjs'
+import { AuthRequest, NextFunction, Response } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { slugify, translationSelect } from '../../utils/helpers';
-import { IError } from '../../utils/IError';
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { slugify, translationSelect } from '../../utils/helpers'
+import { IError } from '../../utils/IError'
 
 export class ItemTypeController extends AbstractController {
 
@@ -25,7 +25,7 @@ export class ItemTypeController extends AbstractController {
                 body: Joi.object({
                     itemTypeID: JoiCommon.string.id.optional(),
                     nameTID: JoiCommon.string.id.optional(),
-                    nameTranslations: JoiCommon.object.translations,
+                    nameTranslations: JoiCommon.object.translationsReq,
                     weight: Joi.number().min(1)
                         .description('Weight in gramms')
                         .required()
@@ -44,7 +44,7 @@ export class ItemTypeController extends AbstractController {
             getItemTypes: Joi.object({
                 itemTypes: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id.required(),
-                    name: JoiCommon.object.translations,
+                    name: JoiCommon.object.translationsRes,
                     weight: Joi.number().required(),
                     createdAt: Joi.date().iso()
                         .required(),
@@ -81,15 +81,15 @@ export class ItemTypeController extends AbstractController {
     ) {
         try {
             const { query } = req
-            const skip = (query.page - 1) * query.limit;
-            const language = req.headers['accept-language'];
+            const skip = (query.page - 1) * query.limit
+            const language = req.headers['accept-language']
 
             const where: any = {
                 deletedAt: null
             }
             
             if (query.search) {
-                const terms = slugify(query.search).split('-');
+                const terms = slugify(query.search).split('-')
 
                 where.name = {
                     AND: terms.map((term: string) => ({
@@ -97,7 +97,7 @@ export class ItemTypeController extends AbstractController {
                             contains: term
                         }
                     }))
-                };
+                }
             }
 
             const [itemTypes, count] = await Promise.all([

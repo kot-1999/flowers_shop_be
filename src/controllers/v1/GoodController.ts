@@ -1,12 +1,13 @@
-import { GoodState } from '@prisma/client';
-import dayjs from 'dayjs';
-import { AuthRequest, NextFunction, Response } from 'express';
-import Joi from 'joi';
+import { GoodState } from '@prisma/client'
+import dayjs from 'dayjs'
+import { AuthRequest, NextFunction, Response } from 'express'
+import Joi from 'joi'
 
-import prisma from '../../services/Prisma';
-import { AbstractController } from '../../types/AbstractController';
-import { JoiCommon } from '../../types/JoiCommon';
-import { slugify, translationSelect } from '../../utils/helpers';
+import s3Service from '../../services/AwsS3'
+import prisma from '../../services/Prisma'
+import { AbstractController } from '../../types/AbstractController'
+import { JoiCommon } from '../../types/JoiCommon'
+import { slugify, translationSelect } from '../../utils/helpers'
 import { IError } from '../../utils/IError'
 
 const enum Action {
@@ -34,7 +35,7 @@ export class GoodController extends AbstractController {
                         .allow('')
                         .optional(),
 
-                    sortBy: Joi.string().valid('createdAt', 'name', 'selectionist', 'state')
+                    sortBy: Joi.string().valid('createdAt', 'name', 'selectionist', 'state', 'random')
                         .default('createdAt'),
                     sortOrder: Joi.string()
                         .valid('asc', 'desc')
@@ -59,16 +60,16 @@ export class GoodController extends AbstractController {
                         .max(10)
                         .required(),
 
-                    nameTranslations: JoiCommon.object.translations.required(),
+                    nameTranslations: JoiCommon.object.translationsReq.required(),
 
-                    descriptionTranslations: JoiCommon.object.translations.required(),
+                    descriptionTranslations: JoiCommon.object.translationsReq.required(),
 
                     action: Joi.string().valid(Action.Show, Action.Hide)
                         .optional()
                         .default(Action.Show),
 
                     photos: Joi.array().items(Joi.string())
-                        .max(5)
+                        .max(20)
                         .unique()
                         .required(),
 
@@ -106,15 +107,15 @@ export class GoodController extends AbstractController {
                         .max(10)
                         .optional(),
 
-                    nameTranslations: JoiCommon.object.translations.optional(),
+                    nameTranslations: JoiCommon.object.translationsReq.optional(),
 
-                    descriptionTranslations: JoiCommon.object.translations.optional(),
+                    descriptionTranslations: JoiCommon.object.translationsReq.optional(),
 
                     action: Joi.string().valid(Action.Show, Action.Hide)
                         .optional(),
 
                     photos: Joi.array().items(Joi.string())
-                        .max(5)
+                        .max(20)
                         .unique()
                         .optional(),
 
@@ -153,12 +154,15 @@ export class GoodController extends AbstractController {
                     photos: Joi.array().items(Joi.string())
                         .required(),
 
-                    name: JoiCommon.object.singleTranslation.required(),
+                    name: JoiCommon.object.singleTranslationWithSlug.required(),
                     description: JoiCommon.object.singleTranslation.required(),
 
                     state: Joi.string().valid(...Object.values(GoodState))
                         .required(),
-
+                    category: Joi.object({
+                        id: JoiCommon.string.id,
+                        name: JoiCommon.object.singleTranslation.required()
+                    }).required(),
                     createdAt: Joi.date().iso()
                         .required(),
                     updatedAt: Joi.date().iso()
@@ -207,28 +211,30 @@ export class GoodController extends AbstractController {
             getGood: Joi.object({
                 good: Joi.object({
                     id: JoiCommon.string.id,
-                    photos: Joi.array().items(Joi.string())
+                    photos: Joi.array().items(Joi.string()
+                        .required())
                         .required(),
-                    category: Joi.object({
-                        id: JoiCommon.string.id,
-                        name: JoiCommon.object.singleTranslation.required()
-                    }),
                     selectionist: Joi.object({
                         id: JoiCommon.string.id,
-                        name: JoiCommon.object.singleTranslation.required(),
+                        name: JoiCommon.object.translationsRes.required(),
                         country: Joi.string().allow(null)
                             .required()
                     }).required(),
 
-                    name: JoiCommon.object.translations.required(),
-                    description: JoiCommon.object.translations.required(),
+                    category: Joi.object({
+                        id: JoiCommon.string.id,
+                        name: JoiCommon.object.translationsRes.required()
+                    }).required(),
+
+                    name: JoiCommon.object.translationsRes.required(),
+                    description: JoiCommon.object.translationsRes.required(),
 
                     state: Joi.string().valid(...Object.values(GoodState))
                         .required(),
 
                     tags: Joi.array().items(Joi.object({
                         id: JoiCommon.string.id,
-                        name: JoiCommon.object.translations.required()
+                        name: JoiCommon.object.translationsRes.required()
                     }))
                         .required(),
 
@@ -313,6 +319,19 @@ export class GoodController extends AbstractController {
                         tagID: {
                             in: query.tagIDs
                         }
+                    },
+                    every: {
+                        tag: {
+                            deletedAt: null
+                        }
+                    }
+                }
+            } else {
+                where.tags = {
+                    every: {
+                        tag: {
+                            deletedAt: null
+                        }
                     }
                 }
             }
@@ -342,6 +361,8 @@ export class GoodController extends AbstractController {
                         [`${language}Slug`]: query.sortOrder
                     }
                 }
+            } else if (query.sortBy === 'random') {
+                orderBy._raw = 'RANDOM()'
             } else {
                 orderBy[query.sortBy] = query.sortOrder
             }
@@ -361,13 +382,25 @@ export class GoodController extends AbstractController {
 
                         name: {
                             select: {
-                                [language]: true
+                                [language]: true,
+                                [language + 'Slug']: true
                             }
                         },
 
                         description: {
                             select: {
                                 [language]: true
+                            }
+                        },
+
+                        category: {
+                            select: {
+                                id: true,
+                                name: {
+                                    select: {
+                                        [language]: true
+                                    }
+                                }
                             }
                         },
 
@@ -399,6 +432,11 @@ export class GoodController extends AbstractController {
                         },
 
                         pricings: {
+                            where: {
+                                pricing: {
+                                    deletedAt: null
+                                }
+                            },
                             select: {
                                 pricing: {
                                     select: {
@@ -428,6 +466,7 @@ export class GoodController extends AbstractController {
             return res.status(200).json({
                 goods: goods.map((good: any) => ({
                     ...good,
+                    photos: good.photos.map((photoKey: string) => s3Service.getPublicUrl(photoKey)),
                     tags: good.tags.map((item: any) => ({ ...item.tag })),
                     pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
                     selectionist: {
@@ -477,6 +516,15 @@ export class GoodController extends AbstractController {
                         select: translationSelect
                     },
 
+                    category: {
+                        select: {
+                            id: true,
+                            name: {
+                                select: translationSelect
+                            }
+                        }
+                    },
+
                     tags: {
                         select: {
                             tag: {
@@ -501,6 +549,11 @@ export class GoodController extends AbstractController {
                     },
 
                     pricings: {
+                        where: {
+                            pricing: {
+                                deletedAt: null
+                            }
+                        },
                         select: {
                             pricing: {
                                 select: {
@@ -531,6 +584,7 @@ export class GoodController extends AbstractController {
             return res.status(200).json({
                 good: {
                     ...good,
+                    photos: good.photos.map((photoKey: string) => s3Service.getPublicUrl(photoKey)),
                     tags: good.tags.map((item: any) => ({ ...item.tag })),
                     pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
                     selectionist: {
@@ -711,8 +765,8 @@ export class GoodController extends AbstractController {
         try {
             const { body, params } = req
 
-            const existingPricings = body.pricings?.filter((p) => p.pricingID) ?? [];
-            const newPricings = body.pricings?.filter((p) => !p.pricingID) ?? [];
+            const existingPricings = body.pricings?.filter((p) => p.pricingID) ?? []
+            const newPricings = body.pricings?.filter((p) => !p.pricingID) ?? []
 
             const good = await prisma.good.findFirst({
                 where: {
@@ -853,52 +907,78 @@ export class GoodController extends AbstractController {
                 }
             }
 
-            const [updated] = await prisma.$transaction([
-                prisma.good.update({
-                    where: {
-                        id: params.goodID
-                    },
-                    data: {
-                        ...updateData,
-                        pricings: {
-                            create: newPricings.map((p) => ({
-                                pricing: {
-                                    create: {
-                                        price: p.price,
-                                        quantity: p.quantity,
-                                        itemType: {
-                                            connect: {
-                                                id: p.itemTypeID
+            let updated: { id: string }
+            await prisma.$transaction(async (tx: any) => {
+
+                if (body.pricings?.length) {
+                    const pricings = body.pricings?.filter((p) => !!p.pricingID) ?? []
+
+                    await tx.pricing.updateMany({
+                        where: {
+                            goods: {
+                                some: {
+                                    goodID: params.goodID
+                                }
+                            },
+                            id: {
+                                notIn: pricings.map((pricing) => pricing.pricingID)
+                            }
+                        },
+                        data: {
+                            deletedAt: dayjs().toISOString()
+                        }
+                    })
+                }
+
+                const [tmpUpdate] = await Promise.all([
+                    tx.good.update({
+                        where: {
+                            id: params.goodID
+                        },
+                        data: {
+                            ...updateData,
+                            pricings: {
+                                create: newPricings.map((p) => ({
+                                    pricing: {
+                                        create: {
+                                            price: p.price,
+                                            quantity: p.quantity,
+                                            itemType: {
+                                                connect: {
+                                                    id: p.itemTypeID
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            }))
-                        }
-                    },
-                    select: {
-                        id: true
-                    }
-                }),
-
-                ...existingPricings.map((existingPricing) =>
-                    prisma.pricing.update({
-                        where: {
-                            id: existingPricing.pricingID
+                                }))
+                            }
                         },
-                        data: {
-                            price: existingPricing.price,
-                            quantity: existingPricing.quantity,
-                            itemType: {
-                                connect: {
-                                    id: existingPricing.itemTypeID
+                        select: {
+                            id: true
+                        }
+                    }),
+
+                    ...existingPricings.map((existingPricing) =>
+                        tx.pricing.update({
+                            where: {
+                                id: existingPricing.pricingID
+                            },
+                            data: {
+                                price: existingPricing.price,
+                                quantity: existingPricing.quantity,
+                                itemType: {
+                                    connect: {
+                                        id: existingPricing.itemTypeID
+                                    }
                                 }
                             }
-                        }
-                    }))
-            ]);
+                        }))
+                ])
+                updated = tmpUpdate
+            })
 
             return res.status(200).json({
+                // @ts-ignore
                 good: { id: updated.id },
                 message: req.t('Good updated')
             })

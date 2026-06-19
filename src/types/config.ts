@@ -1,16 +1,16 @@
 import { S3ClientConfig } from '@aws-sdk/client-s3'
-import { NodeOptions } from '@sentry/node';
-import { Options as RateLimitRedisOptions } from 'express-rate-limit';
+import { NodeOptions } from '@sentry/node'
+import { Options as RateLimitRedisOptions } from 'express-rate-limit'
 import { SessionOptions } from 'express-session'
-import helmet from 'helmet';
-import { InitOptions } from 'i18next';
-import { Algorithm } from 'jsonwebtoken';
+import helmet from 'helmet'
+import { InitOptions } from 'i18next'
+import { Algorithm } from 'jsonwebtoken'
 import SMTPConnection from 'nodemailer/lib/smtp-connection'
 import { OAuth2StrategyOptionsWithoutRequiredURLs } from 'passport-google-oauth20'
 import { JwtFromRequestFunction } from 'passport-jwt'
 import { RedisClientOptions } from 'redis'
 
-import { NodeEnv } from '../utils/enums';
+import { NodeEnv } from '../utils/enums'
 
 interface LoggerCommonConfig {
   isLoggedToConsole: boolean

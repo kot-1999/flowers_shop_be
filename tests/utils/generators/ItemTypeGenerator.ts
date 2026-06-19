@@ -3,7 +3,7 @@ import { ItemType, Translation } from '@prisma/client'
 import dayjs from 'dayjs'
 
 import prisma from '../../../src/services/Prisma'
-import { Language, Languages } from '../../../src/utils/enums';
+import { Language, Languages } from '../../../src/utils/enums'
 
 export default class ItemTypeGenerator {
     public static generateItemType(data: Partial<ItemType> & { name?: Partial<Translation> } = {}) {

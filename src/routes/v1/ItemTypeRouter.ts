@@ -1,9 +1,9 @@
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client'
 import { Router } from 'express'
 
 import { ItemTypeController } from '../../controllers/v1/ItemTypeController'
 import authorizationMiddleware from '../../middlewares/authorizationMiddleware'
-import permissionMiddleware from '../../middlewares/permissionMiddleware';
+import permissionMiddleware from '../../middlewares/permissionMiddleware'
 import validationMiddleware from '../../middlewares/validationMiddleware'
 import { PassportStrategy } from '../../utils/enums'
 

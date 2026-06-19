@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker'
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client'
 import { expect } from 'chai'
 import supertest from 'supertest'
 
 import app from '../../../../src/app'
 import { UsersController } from '../../../../src/controllers/v1/UserController'
 import prisma from '../../../../src/services/Prisma'
-import { loginUserAndGetCookie } from '../../../utils/helpers';
+import { loginUserAndGetCookie } from '../../../utils/helpers'
 
 const endpoint = (val: string = '') => '/api/v1/user/' + val
 

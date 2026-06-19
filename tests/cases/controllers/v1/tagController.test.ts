@@ -1,14 +1,14 @@
-import { faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker'
 import { UserRole } from '@prisma/client'
 import { expect } from 'chai'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 import supertest from 'supertest'
 
 import app from '../../../../src/app'
 import { TagController } from '../../../../src/controllers/v1/TagController'
 import prisma from '../../../../src/services/Prisma'
-import { Language, Languages } from '../../../../src/utils/enums';
-import TagGenerator from '../../../utils/generators/TagGenerator';
+import { Language, Languages } from '../../../../src/utils/enums'
+import TagGenerator from '../../../utils/generators/TagGenerator'
 import { loginUserAndGetCookie } from '../../../utils/helpers'
 
 const publicEndpoint = '/api/v1/tags'
@@ -47,6 +47,24 @@ describe(`GET ${publicEndpoint}`, () => {
                 page: 1,
                 limit: 10,
                 search: 'flower'
+            })
+            .set('Content-Type', 'application/json')
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.type).to.eq('application/json')
+
+        const validation = TagController.schemas.response.getTags.validate(res.body)
+        expect(validation.error).to.eq(undefined)
+    })
+
+    it('Should search by categoryID (200)', async () => {
+        const category = await prisma.category.findFirst({ where: { deletedAt: null } })
+        const res = await supertest(app)
+            .get(publicEndpoint)
+            .query({
+                page: 1,
+                limit: 10,
+                categoryID: category.id
             })
             .set('Content-Type', 'application/json')
 

@@ -1,7 +1,7 @@
-import supertest from 'supertest';
+import supertest from 'supertest'
 
-import app from '../../src/app';
-import { EncryptionService } from '../../src/services/Encryption';
+import app from '../../src/app'
+import { EncryptionService } from '../../src/services/Encryption'
 
 export async function loginUserAndGetCookie(user: { email: string, password: string } & any): Promise<string> {
     const res = await supertest(app)
