@@ -148,6 +148,7 @@ class AwsS3 {
      * @returns {Promise<string>} Public URL of uploaded file
      */
     public async uploadFile(filePath: string, keyPrefix: 'image') {
+        await this.ensureBucketExists()
         const fs = await import('fs')
         const path = await import('path')
 
