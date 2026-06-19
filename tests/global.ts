@@ -1,6 +1,5 @@
 import 'dotenv'
 
-import '../src/services/AwsS3'
 import seed from '../scripts/seed'
 import prisma from '../src/services/Prisma'
 
