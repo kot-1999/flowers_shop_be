@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { faker } from '@faker-js/faker'
 import { UserRole } from '@prisma/client'
 import config from 'config'
 
@@ -10,6 +11,7 @@ import { EncryptionService } from '../src/services/Encryption'
 import logger from '../src/services/Logger'
 import prisma from '../src/services/Prisma'
 import { IConfig } from '../src/types/config'
+import AddressGenerator from '../tests/utils/generators/AddressGenerator'
 import CategoryGenerator from '../tests/utils/generators/CategoryGenerator'
 import { GoodGenerator } from '../tests/utils/generators/GoodGenerator'
 import ItemTypeGenerator from '../tests/utils/generators/ItemTypeGenerator'
@@ -38,6 +40,7 @@ async function seed() {
         const selectionists: any[] = []
         const tags: any[] = []
         const goods: any[] = []
+        const addresses: any[] = []
         const images: {
         [key: string]: string[]
     } = {
@@ -76,6 +79,20 @@ async function seed() {
                 }))
             }
         }
+        
+        users.forEach((user: any) => {
+            const addressCount = faker.number.int({
+                min: 0,
+                max: 10 
+            })
+
+            for (let j = 0; j < addressCount; j++) {
+                addresses.push(AddressGenerator.generateData({
+                    userID: user.id,
+                    isDefault: j === 0
+                }))
+            }
+        })
 
         for (let i = 0; i < seedConfig.grain / 4; i++) {
             selectionists.push(SelectionistGenerator.generateData())
@@ -165,6 +182,16 @@ async function seed() {
                 })
                 seededTables.push('users')
             }
+
+
+            if ((await tx.address.count()) === 0) {
+                await tx.address.createMany({
+                    data: addresses,
+                    skipDuplicates: true
+                })
+                seededTables.push('addresses')
+            }
+
             if ((await tx.category.count()) === 0) {
                 await tx.category.createMany({
                     data: categories.map(({ name, description, ...rest }) => ({
@@ -269,15 +296,11 @@ async function seed() {
      
         logger.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`)
     } catch (err: any) {
-        // eslint disable-next-line
-        console.log(err)
+        logger.error(err.message)
         throw err
     }
 }
 
-seed().catch((error) => {
-    logger.error('Seeding failed:', error)
-    process.exit(1)
-})
+seed()
 
 export default seed
