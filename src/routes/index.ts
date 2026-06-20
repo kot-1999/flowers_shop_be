@@ -1,5 +1,6 @@
 import { Router } from 'express'
 
+import addressRouter from './v1/AddressRouter'
 import aiRouter from './v1/AIRouter'
 import categoryRouter from './v1/CategoryRouter'
 import fileUploadRouter from './v1/FileUploadRouter'
@@ -25,7 +26,7 @@ export default function authorizeRouters() {
     router.use('/v1', categoryRouter())
     router.use('/v1', goodRouter())
     router.use('/v1/files', fileUploadRouter())
-
+    router.use('/v1', addressRouter())
     logger.info('Application routes were initialized.')
 
     return router
