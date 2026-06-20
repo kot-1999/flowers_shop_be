@@ -183,7 +183,6 @@ async function seed() {
                 seededTables.push('users')
             }
 
-
             if ((await tx.address.count()) === 0) {
                 await tx.address.createMany({
                     data: addresses,
