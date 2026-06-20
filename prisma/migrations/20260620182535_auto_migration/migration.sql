@@ -8,7 +8,7 @@ CREATE TYPE "GoodState" AS ENUM ('Available', 'NoShow', 'Awaiting', 'Deleted');
 CREATE TYPE "OrderState" AS ENUM ('Pending', 'Paid', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded');
 
 -- CreateEnum
-CREATE TYPE "Country" AS ENUM ('Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'CzechRepublic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Albania', 'Andorra', 'Armenia', 'Azerbaijan', 'BosniaAndHerzegovina', 'Georgia', 'Iceland', 'Kosovo', 'Liechtenstein', 'Moldova', 'Monaco', 'Montenegro', 'NorthMacedonia', 'Norway', 'SanMarino', 'Serbia', 'Switzerland', 'Turkey', 'Ukraine', 'VaticanCity', 'Australia', 'Canada', 'China', 'HongKong', 'India', 'Israel', 'Japan', 'Kazakhstan', 'Malaysia', 'NewZealand', 'Singapore', 'SouthKorea', 'Taiwan', 'Thailand', 'UnitedArabEmirates', 'UnitedStates', 'Argentina', 'Brazil', 'Chile', 'Colombia', 'Mexico', 'Paraguay', 'Peru', 'Uruguay', 'Egypt', 'Morocco', 'SouthAfrica');
+CREATE TYPE "Country" AS ENUM ('UnitedKingdom', 'Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'CzechRepublic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Albania', 'Andorra', 'Armenia', 'Azerbaijan', 'BosniaAndHerzegovina', 'Georgia', 'Iceland', 'Kosovo', 'Liechtenstein', 'Moldova', 'Monaco', 'Montenegro', 'NorthMacedonia', 'Norway', 'SanMarino', 'Serbia', 'Switzerland', 'Turkey', 'Ukraine', 'VaticanCity', 'Australia', 'Canada', 'China', 'HongKong', 'India', 'Israel', 'Japan', 'Kazakhstan', 'Malaysia', 'NewZealand', 'Singapore', 'SouthKorea', 'Taiwan', 'Thailand', 'UnitedArabEmirates', 'UnitedStates', 'Argentina', 'Brazil', 'Chile', 'Colombia', 'Mexico', 'Paraguay', 'Peru', 'Uruguay', 'Egypt', 'Morocco', 'SouthAfrica');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -80,7 +80,6 @@ CREATE TABLE "categories" (
 -- CreateTable
 CREATE TABLE "goods" (
     "id" UUID NOT NULL,
-    "amount" INTEGER NOT NULL,
     "state" "GoodState" NOT NULL,
     "photos" TEXT[],
     "nameTID" UUID NOT NULL,
@@ -98,6 +97,7 @@ CREATE TABLE "goods" (
 CREATE TABLE "pricings" (
     "id" UUID NOT NULL,
     "price" DECIMAL(10,2) NOT NULL,
+    "quantity" INTEGER NOT NULL,
     "itemTypeID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -137,8 +137,8 @@ CREATE TABLE "item_types" (
 -- CreateTable
 CREATE TABLE "selectionists" (
     "id" UUID NOT NULL,
-    "name" TEXT NOT NULL,
-    "country" TEXT NOT NULL,
+    "country" TEXT,
+    "nameTID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -296,6 +296,9 @@ ALTER TABLE "good_tags" ADD CONSTRAINT "good_tags_tagID_fkey" FOREIGN KEY ("tagI
 
 -- AddForeignKey
 ALTER TABLE "item_types" ADD CONSTRAINT "item_types_nameTID_fkey" FOREIGN KEY ("nameTID") REFERENCES "translations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "selectionists" ADD CONSTRAINT "selectionists_nameTID_fkey" FOREIGN KEY ("nameTID") REFERENCES "translations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "basket_items" ADD CONSTRAINT "basket_items_goodID_fkey" FOREIGN KEY ("goodID") REFERENCES "goods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
