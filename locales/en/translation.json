@@ -1,4 +1,9 @@
 {
+ "Address created": "Address created",
+ "Address deleted": "Address deleted",
+ "Address not found": "Address not found",
+ "Address updated": "Address updated",
+ "Address was not found. Please double check fields": "Address was not found. Please double check fields",
  "Albania": "Albania",
  "Andorra": "Andorra",
  "Argentina": "Argentina",
@@ -75,6 +80,7 @@
  "Norway": "Norway",
  "One or more item types not found": "One or more product types were not found",
  "One or more tags not found": "One or more tags were not found",
+ "Operation forbidden": "Operation forbidden",
  "Paraguay": "Paraguay",
  "Password or email is incorrect": "Incorrect email or password",
  "Password was reset successfully": "Password reset successfully",
@@ -109,12 +115,15 @@
  "Ukraine": "Ukraine",
  "Unauthorized": "Unauthorized",
  "UnitedArabEmirates": "United Arab Emirates",
+ "UnitedKingdom": "UnitedKingdom",
  "UnitedStates": "United States",
  "Uploading more then one file is forbidden": "Uploading more than one file is not allowed",
  "Uruguay": "Uruguay",
  "User already exists. Try to login again, or use forgot password": "User already exists. Please sign in or use Forgot Password.",
+ "User updated successfully": "User updated successfully",
  "User was deleted successfully.": "User was deleted successfully.",
  "User was logged out": "Signed out successfully",
  "User was not found": "User not found",
- "VaticanCity": "Vatican City"
+ "VaticanCity": "Vatican City",
+ "Maximum number of addresses reached": "Maximum number of addresses reached"
 }

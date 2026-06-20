@@ -1,4 +1,9 @@
 {
+ "Address created": "Adresa bola vytvorená",
+ "Address deleted": "Adresa bola odstránená",
+ "Address not found": "Adresa sa nenašla",
+ "Address updated": "Adresa bola aktualizovaná",
+ "Address was not found. Please double check fields": "Adresa sa nenašla. Skontrolujte prosím zadané údaje",
  "Albania": "Albánsko",
  "Andorra": "Andorra",
  "Argentina": "Argentína",
@@ -77,6 +82,7 @@
  "Norway": "Nórsko",
  "One or more item types not found": "Jeden alebo viac typov produktov nebolo nájdených",
  "One or more tags not found": "Jeden alebo viac tagov nebolo nájdených",
+ "Operation forbidden": "Operácia je zakázaná",
  "Paraguay": "Paraguaj",
  "Password or email is incorrect": "Nesprávny e-mail alebo heslo",
  "Password was reset successfully": "Heslo bolo úspešne obnovené",
@@ -113,12 +119,15 @@
  "Ukraine": "Ukrajina",
  "Unauthorized": "Neautorizovaný prístup",
  "UnitedArabEmirates": "Spojené arabské emiráty",
+ "UnitedKingdom": "Spojené kráľovstvo",
  "UnitedStates": "Spojené štáty",
  "Uploading more then one file is forbidden": "Nahrávanie viac ako jedného súboru nie je povolené",
  "Uruguay": "Uruguaj",
  "User already exists. Try to login again, or use forgot password": "Používateľ už existuje. Skúste sa prihlásiť alebo použite obnovenie hesla.",
+ "User updated successfully": "Používateľ bol úspešne aktualizovaný",
  "User was deleted successfully.": "Používateľ bol úspešne odstránený.",
  "User was logged out": "Používateľ bol odhlásený",
  "User was not found": "Používateľ nebol nájdený",
- "VaticanCity": "Vatikán"
+ "VaticanCity": "Vatikán",
+ "Maximum number of addresses reached": "Bol dosiahnutý maximálny počet adries"
 }
