@@ -1,14 +1,16 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Request, RequestHandler, Response } from 'express'
 import passport from 'passport'
 
 import { PassportStrategy } from '../utils/enums'
 import { IError } from '../utils/IError'
 
-export default function authorizationMiddleware(allowedStrategies: PassportStrategy[]) {
+export default function authorizationMiddleware(allowedStrategies: PassportStrategy[], isOptional?: boolean): RequestHandler {
     return (req: Request, res: Response, next: NextFunction) => {
         try {
             // If user is using passport-google-oauth-20 strategy
             if (allowedStrategies.includes(PassportStrategy.google) && req.isAuthenticated()) {
+                return next()
+            } if (isOptional) {
                 return next()
             }
 
