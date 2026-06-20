@@ -45,8 +45,8 @@ model Address {
   country   Country
   isDefault Boolean @db.Boolean
 
-  userID String  @db.Uuid
-  user   User    @relation(fields: [userID], references: [id])
+  userID String? @db.Uuid
+  user   User?   @relation(fields: [userID], references: [id])
   orders Order[]
 
   // Metadata
@@ -325,6 +325,7 @@ enum OrderState {
 }
 
 enum Country {
+  UnitedKingdom
   Austria
   Belgium
   Bulgaria
