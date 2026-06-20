@@ -27,6 +27,7 @@ export default function itemTypesRouter() {
         validationMiddleware(ItemTypeController.schemas.request.getItemTypes),
         authorizationMiddleware([PassportStrategy.google]),
         permissionMiddleware([UserRole.Admin]),
+        // @ts-ignore
         itemTypesController.getItemTypes
     )
 
