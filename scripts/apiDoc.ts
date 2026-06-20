@@ -13,6 +13,7 @@ import { GoodController } from '../src/controllers/v1/GoodController'
 import { ItemTypeController } from '../src/controllers/v1/ItemTypeController'
 import { SelectionistController } from '../src/controllers/v1/SelectionistController'
 import { TagController } from '../src/controllers/v1/TagController'
+import {UsersController} from "../src/controllers/v1/UserController";
 
 /**
  * Link all endpoints to their schemas
@@ -67,7 +68,13 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         getGood: GoodController.schemas,
         postGood: GoodController.schemas,
         patchGood: GoodController.schemas,
-        deleteGood: GoodController.schemas
+        deleteGood: GoodController.schemas,
+
+        // User
+        getUser: UsersController.schemas,
+        getUsers: UsersController.schemas,
+        patchUser: UsersController.schemas,
+        deleteUser: UsersController.schemas
 
     }
 }

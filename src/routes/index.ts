@@ -17,7 +17,7 @@ export default function authorizeRouters() {
 
     // v1
     router.use('/v1/authorization',userAuthorizationRouter())
-    router.use('/v1/user', userRouter())
+    router.use('/v1', userRouter())
     router.use('/v1/ai', aiRouter())
     router.use('/v1', tagRouter())
     router.use('/v1', selectionistRouter())

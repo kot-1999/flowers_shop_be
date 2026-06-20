@@ -8,7 +8,9 @@ import { UsersController } from '../../../../src/controllers/v1/UserController'
 import prisma from '../../../../src/services/Prisma'
 import { loginUserAndGetCookie } from '../../../utils/helpers'
 
-const endpoint = (val: string = '') => '/api/v1/user/' + val
+const endpoint = (val: string = '') => '/api/v1/users/' + val
+
+const adminEndpoint = (val: string = '') => '/api/v1/admin/users/' + val
 
 const password = 'Test123'
 
@@ -84,7 +86,7 @@ describe('GET ' + endpoint(':userID'), () => {
     })
 })
 
-describe('GET ' + endpoint(), () => {
+describe('GET ' + adminEndpoint(), () => {
     let sessionCookie: string
 
     before(async () => {
@@ -103,7 +105,7 @@ describe('GET ' + endpoint(), () => {
 
     it('Should require auth (401)', async () => {
         const res = await supertest(app)
-            .get(endpoint())
+            .get(adminEndpoint())
             .query({
                 page: 1,
                 limit: 10
@@ -114,7 +116,7 @@ describe('GET ' + endpoint(), () => {
 
     it('Should return users list (200)', async () => {
         const res = await supertest(app)
-            .get(endpoint())
+            .get(adminEndpoint())
             .set('Cookie', sessionCookie)
             .query({
                 page: 1,
@@ -132,7 +134,7 @@ describe('GET ' + endpoint(), () => {
 
     it('Should apply pagination', async () => {
         const res = await supertest(app)
-            .get(endpoint())
+            .get(adminEndpoint())
             .set('Cookie', sessionCookie)
             .query({
                 page: 1,
@@ -157,7 +159,7 @@ describe('GET ' + endpoint(), () => {
         const searchTerm = targetUser.firstName.slice(0, 3)
 
         const res = await supertest(app)
-            .get(endpoint())
+            .get(adminEndpoint())
             .set('Cookie', sessionCookie)
             .query({
                 page: 1,

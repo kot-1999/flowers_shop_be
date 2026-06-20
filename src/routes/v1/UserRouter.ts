@@ -25,7 +25,7 @@ export default function authorizationRouter() {
                 schema: { "$ref": "#/definitions/v1GetUserRes" },
             }
         */
-        '/:userID',
+        '/users/:userID',
         validationMiddleware(UsersController.schemas.request.getUser),
         authorizationMiddleware([PassportStrategy.google]),
         userController.getUser
@@ -43,7 +43,7 @@ export default function authorizationRouter() {
                 schema: { "$ref": "#/definitions/v1GetUsersRes" },
             }
         */
-        '/',
+        '/admin/users',
         validationMiddleware(UsersController.schemas.request.getUsers),
         authorizationMiddleware([PassportStrategy.google]),
         permissionMiddleware([UserRole.Admin]),
@@ -63,7 +63,7 @@ export default function authorizationRouter() {
                 schema: { "$ref": "#/definitions/v1PatchUserRes" },
             }
         */
-        '/:userID',
+        '/users/:userID',
         validationMiddleware(UsersController.schemas.request.patchUser),
         authorizationMiddleware([PassportStrategy.google]),
         userController.patchUser
@@ -81,7 +81,7 @@ export default function authorizationRouter() {
                 schema: { "$ref": "#/definitions/v1DeleteUserRes" },
             }
         */
-        '/',
+        '/users',
         validationMiddleware(UsersController.schemas.request.deleteUser),
         authorizationMiddleware([PassportStrategy.google]),
         userController.deleteUser
