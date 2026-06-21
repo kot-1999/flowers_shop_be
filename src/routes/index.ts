@@ -10,6 +10,7 @@ import selectionistRouter from './v1/SelectionistRouter'
 import tagRouter from './v1/TagRouter'
 import userAuthorizationRouter from './v1/UserAuthorizationRouter'
 import userRouter from './v1/UserRouter'
+import basketRouter from "./v1/BasketRouter";
 import logger from '../services/Logger'
 
 const router = Router()
@@ -27,6 +28,7 @@ export default function authorizeRouters() {
     router.use('/v1', goodRouter())
     router.use('/v1/files', fileUploadRouter())
     router.use('/v1', addressRouter())
+    router.use('/v1', basketRouter())
     logger.info('Application routes were initialized.')
 
     return router
