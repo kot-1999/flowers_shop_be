@@ -325,6 +325,7 @@ enum OrderState {
 }
 
 enum Country {
+  UnitedKingdom
   Austria
   Belgium
   Bulgaria

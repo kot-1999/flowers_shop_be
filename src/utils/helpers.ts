@@ -11,9 +11,21 @@ export function slugify(text: string): string {
         .replace(/[\u0300-\u036f]/g, '') // remove accents
         .toLowerCase()
         .replace(/ß/g, 'ss')
-        // KEEP Cyrillic + Latin + numbers + spaces
+        // Cyrillic + Latin + numbers + spaces
         .replace(/[^a-z0-9а-яіїєґ\s-]/g, '')
         .trim()
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
+}
+
+export function isUrl(value: string | null): boolean {
+    try {
+        if (!value) {
+            return false
+        }
+        new URL(value)
+        return true
+    } catch {
+        return false
+    }
 }

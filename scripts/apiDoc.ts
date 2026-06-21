@@ -5,14 +5,17 @@ import Joi from 'joi'
 import j2s from 'joi-to-swagger'
 import swaggerAutogen from 'swagger-autogen'
 
+import { AddressController } from '../src/controllers/v1/AddressController'
 import { AIController } from '../src/controllers/v1/AIController'
 import { AuthorizationController as UserAuthorizationController } from '../src/controllers/v1/AuthorizationController'
+import { BasketController } from '../src/controllers/v1/BasketController'
 import { CategoryController } from '../src/controllers/v1/CategoryController'
 import { FileUpload } from '../src/controllers/v1/FileUpload'
 import { GoodController } from '../src/controllers/v1/GoodController'
 import { ItemTypeController } from '../src/controllers/v1/ItemTypeController'
 import { SelectionistController } from '../src/controllers/v1/SelectionistController'
 import { TagController } from '../src/controllers/v1/TagController'
+import { UsersController } from '../src/controllers/v1/UserController'
 
 /**
  * Link all endpoints to their schemas
@@ -33,6 +36,18 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         completeRegistration: UserAuthorizationController.schemas,
         me: UserAuthorizationController.schemas,
 
+        // Basket
+        
+        getBasket: BasketController.schemas,
+        postBasket: BasketController.schemas,
+        patchBasket: BasketController.schemas,
+        deleteBasket: BasketController.schemas,
+        
+        // Address
+        getAddresses: AddressController.schemas,
+        putAddress: AddressController.schemas,
+        deleteAddress: AddressController.schemas,
+        
         // File Upload
         putFile: FileUpload.schemas,
 
@@ -67,7 +82,13 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         getGood: GoodController.schemas,
         postGood: GoodController.schemas,
         patchGood: GoodController.schemas,
-        deleteGood: GoodController.schemas
+        deleteGood: GoodController.schemas,
+
+        // User
+        getUser: UsersController.schemas,
+        getUsers: UsersController.schemas,
+        patchUser: UsersController.schemas,
+        deleteUser: UsersController.schemas
 
     }
 }

@@ -44,6 +44,7 @@ export default function tagsRouter() {
         validationMiddleware(TagController.schemas.request.getAdminTags),
         authorizationMiddleware([PassportStrategy.google]),
         permissionMiddleware([UserRole.Admin]),
+        // @ts-ignore
         tagsController.getAdminTags
     )
 
