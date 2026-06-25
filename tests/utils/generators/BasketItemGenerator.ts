@@ -26,9 +26,14 @@ export default class BasketItemGenerator {
 
         if (!goodID || !pricingID) {
             const good = await GoodGenerator.generateGood()
-            
             goodID = good.id
-            pricingID = good.pricings[0].id
+
+            const goodPricing = await prisma.goodPricing.findFirst({
+                where: {
+                    goodID: good.id
+                }
+            })
+            pricingID = goodPricing.pricingID
         }
 
         return {
