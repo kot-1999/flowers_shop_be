@@ -1,4 +1,6 @@
+import { GoodState } from '@prisma/client'
 import { AuthRequest, NextFunction, Response } from 'express'
+import { TFunction } from 'i18next'
 import Joi from 'joi'
 
 import prisma from '../../services/Prisma'
@@ -7,6 +9,42 @@ import { JoiCommon } from '../../types/JoiCommon'
 import { IError } from '../../utils/IError'
 
 export class BasketController extends AbstractController {
+    public static basketItemSchema = Joi.object({
+        id: JoiCommon.string.id.required(),
+
+        quantity: Joi.number()
+            .integer()
+            .required(),
+        createdAt: Joi.date()
+            .iso()
+            .required(),
+        good: Joi.object({
+            id: JoiCommon.string.id,
+            name: JoiCommon.object.singleTranslationWithSlug.required(),
+            photos: Joi.array().items(Joi.string())
+                .required(),
+            state: Joi.string().valid(...Object.values(GoodState))
+                .required(),
+            selectionist: Joi.object({
+                id: JoiCommon.string.id,
+                name: JoiCommon.object.singleTranslation.required(),
+                country: Joi.string().required()
+                    .allow(null)
+            })
+        }).required(),
+        pricing: Joi.object({
+            id: JoiCommon.string.id,
+            quantity: Joi.number().integer()
+                .min(0)
+                .required(),
+            price: Joi.number().required(),
+            itemType: Joi.object({
+                id: JoiCommon.string.id,
+                name: JoiCommon.object.singleTranslation.required()
+            }).required()
+        })
+    })
+    
     public static readonly schemas = {
         request: {
             getBasketItems: JoiCommon.object.request.required(),
@@ -47,40 +85,16 @@ export class BasketController extends AbstractController {
         response: {
             getBasketItems: Joi.object({
                 basketItems: Joi.array()
-                    .items(Joi.object({
-                        id: JoiCommon.string.id.required(),
-
-                        quantity: Joi.number()
-                            .integer()
-                            .required(),
-                        createdAt: Joi.date()
-                            .iso()
-                            .required(),
-                        good: Joi.object({
-                            id: JoiCommon.string.id,
-                            name: JoiCommon.object.singleTranslationWithSlug.required(),
-                            photos: Joi.array().items(Joi.string())
-                                .required(),
-                            selectionist: Joi.object({
-                                id: JoiCommon.string.id,
-                                name: JoiCommon.object.singleTranslation.required(),
-                                country: Joi.string().required()
-                                    .allow(null)
-                            })
-                        }).required(),
-                        pricing: Joi.object({
-                            id: JoiCommon.string.id,
-                            quantity: Joi.number().integer()
-                                .min(0)
-                                .required(),
-                            price: Joi.number().required(),
-                            itemType: Joi.object({
-                                id: JoiCommon.string.id,
-                                name: JoiCommon.object.singleTranslation.required()
-                            }).required()
-                        })
-                    }))
-                    .required()
+                    .items(BasketController.basketItemSchema)
+                    .required(),
+                unavailableBasketItems: Joi.array()
+                    .items(BasketController.basketItemSchema)
+                    .required(),
+                summary: Joi.object({
+                    totalPrice: Joi.number().required(),
+                    totalAvailable: Joi.number().required(),
+                    totalUnavailable: Joi.number().required()
+                })
             }),
 
             postBasketItem: Joi.object({
@@ -108,6 +122,20 @@ export class BasketController extends AbstractController {
     constructor() {
         super()
     }
+    
+    private static mapBasketItems = (items: any[], t: TFunction) => {
+        return items.map((item: any) => ({
+            ...item,
+            quantity: item.quantity > item.pricing.quantity ? item.pricing.quantity : item.quantity,
+            good: {
+                ...item.good,
+                selectionist: {
+                    ...item.good.selectionist,
+                    country: item.good.selectionist.country ? t(item.good.selectionist.country) : null
+                }
+            }
+        }))
+    }
 
     private GetBasketItemsReqType: Joi.extractType<typeof BasketController.schemas.request.getBasketItems>
     private GetBasketItemsResType: Joi.extractType<typeof BasketController.schemas.response.getBasketItems>
@@ -122,6 +150,9 @@ export class BasketController extends AbstractController {
             const basketItems = await prisma.basketItem.findMany({
                 where: {
                     userID: user.id,
+                    pricing: {
+                        deletedAt: null
+                    },
                     good: {
                         deletedAt: null,
                         state: {
@@ -167,7 +198,7 @@ export class BasketController extends AbstractController {
                         select: {
                             id: true,
                             photos: true,
-
+                            state: true,
                             name: {
                                 select: {
                                     [language as string]: true,
@@ -189,19 +220,24 @@ export class BasketController extends AbstractController {
                     }
                 }
             })
+            
+            const unavailableBasketItems = basketItems.filter((item: any) => item.pricing.quantity < 1 || item.good.state === GoodState.Awaiting)
+            const availableBasketItems = basketItems.filter((item: any) => item.pricing.quantity > 0 && item.good.state === GoodState.Available)
+
+            let totalPrice = 0
+
+            for (const item of availableBasketItems) {
+                totalPrice += item.pricing.price * item.quantity
+            }
 
             return res.status(200).json({
-                basketItems: basketItems.map((item: any) => ({
-                    ...item,
-                    quantity: item.quantity > item.pricing.quantity ? item.pricing.quantity : item.quantity,
-                    good: {
-                        ...item.good,
-                        selectionist: {
-                            ...item.good.selectionist,
-                            country: item.good.selectionist.country ? req.t(item.good.selectionist.country) : null
-                        }
-                    }
-                }))
+                basketItems: BasketController.mapBasketItems(availableBasketItems, req.t),
+                unavailableBasketItems: BasketController.mapBasketItems(unavailableBasketItems, req.t),
+                summary: {
+                    totalPrice: Number(totalPrice.toFixed(2)),
+                    totalAvailable: availableBasketItems.length,
+                    totalUnavailable: unavailableBasketItems.length
+                }
             })
         } catch (err) {
             return next(err)
