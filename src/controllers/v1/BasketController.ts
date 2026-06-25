@@ -7,22 +7,6 @@ import { JoiCommon } from '../../types/JoiCommon'
 import { IError } from '../../utils/IError'
 
 export class BasketController extends AbstractController {
-    private static readonly basketItemSchema = Joi.object({
-        id: JoiCommon.string.id.required(),
-
-        quantity: Joi.number()
-            .integer()
-            .min(1)
-            .required(),
-
-        goodID: JoiCommon.string.id.required(),
-        pricingID: JoiCommon.string.id.required(),
-
-        createdAt: Joi.date()
-            .iso()
-            .required()
-    })
-
     public static readonly schemas = {
         request: {
             getBasketItems: JoiCommon.object.request.required(),
@@ -63,7 +47,39 @@ export class BasketController extends AbstractController {
         response: {
             getBasketItems: Joi.object({
                 basketItems: Joi.array()
-                    .items(this.basketItemSchema)
+                    .items(Joi.object({
+                        id: JoiCommon.string.id.required(),
+
+                        quantity: Joi.number()
+                            .integer()
+                            .required(),
+                        createdAt: Joi.date()
+                            .iso()
+                            .required(),
+                        good: Joi.object({
+                            id: JoiCommon.string.id,
+                            name: JoiCommon.object.singleTranslationWithSlug.required(),
+                            photos: Joi.array().items(Joi.string())
+                                .required(),
+                            selectionist: Joi.object({
+                                id: JoiCommon.string.id,
+                                name: JoiCommon.object.singleTranslation.required(),
+                                country: Joi.string().required()
+                                    .allow(null)
+                            })
+                        }).required(),
+                        pricing: Joi.object({
+                            id: JoiCommon.string.id,
+                            quantity: Joi.number().integer()
+                                .min(0)
+                                .required(),
+                            price: Joi.number().required(),
+                            itemType: Joi.object({
+                                id: JoiCommon.string.id,
+                                name: JoiCommon.object.singleTranslation.required()
+                            }).required()
+                        })
+                    }))
                     .required()
             }),
 
@@ -105,11 +121,24 @@ export class BasketController extends AbstractController {
             const language = req.headers['accept-language']
             const basketItems = await prisma.basketItem.findMany({
                 where: {
-                    userID: user.id
+                    userID: user.id,
+                    good: {
+                        deletedAt: null,
+                        state: {
+                            in: ['Available', 'Awaiting']
+                        }
+                    }
                 },
-                orderBy: {
-                    createdAt: 'desc'
-                },
+                orderBy: [
+                    {
+                        good: {
+                            state: 'asc' // assumes Awaiting is last enum value OR adjust logic below
+                        }
+                    },
+                    {
+                        createdAt: 'desc'
+                    }
+                ],
                 select: {
                     id: true,
                     quantity: true,
@@ -124,8 +153,6 @@ export class BasketController extends AbstractController {
                             itemType: {
                                 select: {
                                     id: true,
-                                    weight: true,
-
                                     name: {
                                         select: {
                                             [language as string]: true
@@ -143,18 +170,19 @@ export class BasketController extends AbstractController {
 
                             name: {
                                 select: {
-                                    [language as string]: true
+                                    [language as string]: true,
+                                    [language + 'Slug' as string]: true
                                 }
                             },
-
-                            category: {
+                            selectionist: {
                                 select: {
                                     id: true,
                                     name: {
                                         select: {
                                             [language as string]: true
                                         }
-                                    }
+                                    },
+                                    country: true
                                 }
                             }
                         }
@@ -163,7 +191,17 @@ export class BasketController extends AbstractController {
             })
 
             return res.status(200).json({
-                basketItems
+                basketItems: basketItems.map((item: any) => ({
+                    ...item,
+                    quantity: item.quantity > item.pricing.quantity ? item.pricing.quantity : item.quantity,
+                    good: {
+                        ...item.good,
+                        selectionist: {
+                            ...item.good.selectionist,
+                            country: item.good.selectionist.country ? req.t(item.good.selectionist.country) : null
+                        }
+                    }
+                }))
             })
         } catch (err) {
             return next(err)
