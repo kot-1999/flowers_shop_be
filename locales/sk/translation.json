@@ -129,5 +129,10 @@
  "User was logged out": "Používateľ bol odhlásený",
  "User was not found": "Používateľ nebol nájdený",
  "VaticanCity": "Vatikán",
- "Maximum number of addresses reached": "Bol dosiahnutý maximálny počet adries"
+ "Maximum number of addresses reached": "Bol dosiahnutý maximálny počet adries",
+ "Pricing not found": "Cenník sa nenašiel",
+ "Basket item created": "Položka košíka bola vytvorená",
+ "Basket item not found": "Položka košíka sa nenašla",
+ "Basket item updated": "Položka košíka bola aktualizovaná",
+ "Basket item deleted": "Položka košíka bola odstránená"
 }

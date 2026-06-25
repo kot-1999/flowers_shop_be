@@ -129,5 +129,10 @@
  "User was logged out": "Benutzer wurde abgemeldet",
  "User was not found": "Benutzer wurde nicht gefunden",
  "VaticanCity": "Vatikanstadt",
- "Maximum number of addresses reached": "Maximale Anzahl an Adressen erreicht"
+ "Maximum number of addresses reached": "Maximale Anzahl an Adressen erreicht",
+ "Pricing not found": "Preis nicht gefunden",
+ "Basket item created": "Warenkorb-Artikel erstellt",
+ "Basket item not found": "Warenkorb-Artikel nicht gefunden",
+ "Basket item updated": "Warenkorb-Artikel aktualisiert",
+ "Basket item deleted": "Warenkorb-Artikel gelöscht"
 }
