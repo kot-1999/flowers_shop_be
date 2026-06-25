@@ -211,8 +211,7 @@ export class GoodController extends AbstractController {
             getGood: Joi.object({
                 good: Joi.object({
                     id: JoiCommon.string.id,
-                    photos: Joi.array().items(Joi.string()
-                        .required())
+                    photos: Joi.array().items(Joi.string())
                         .required(),
                     selectionist: Joi.object({
                         id: JoiCommon.string.id,

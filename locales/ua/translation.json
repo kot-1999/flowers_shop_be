@@ -129,5 +129,10 @@
  "User was logged out": "Користувача успішно виведено з системи",
  "User was not found": "Користувача не знайдено",
  "VaticanCity": "Ватикан",
- "Maximum number of addresses reached": "Досягнуто максимальну кількість адрес"
+ "Maximum number of addresses reached": "Досягнуто максимальну кількість адрес",
+ "Pricing not found": "Цінник не знайдено",
+ "Basket item created": "Товар у кошику створено",
+ "Basket item not found": "Товар у кошику не знайдено",
+ "Basket item updated": "Товар у кошику оновлено",
+ "Basket item deleted": "Товар у кошику видалено"
 }

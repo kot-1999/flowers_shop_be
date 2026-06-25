@@ -37,11 +37,11 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         me: UserAuthorizationController.schemas,
 
         // Basket
-        
-        getBasket: BasketController.schemas,
-        postBasket: BasketController.schemas,
-        patchBasket: BasketController.schemas,
-        deleteBasket: BasketController.schemas,
+
+        getBasketItems: BasketController.schemas,
+        postBasketItem: BasketController.schemas,
+        patchBasketItem: BasketController.schemas,
+        deleteBasketItem: BasketController.schemas,
         
         // Address
         getAddresses: AddressController.schemas,

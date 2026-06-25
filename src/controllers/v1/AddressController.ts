@@ -249,7 +249,8 @@ export class AddressController extends AbstractController {
                 return await tx.address.create({
                     data: {
                         ...data,
-                        userID: user.id
+                        userID: user.id,
+                        isDefault: data.isDefault ?? false
                     },
                     select: {
                         id: true

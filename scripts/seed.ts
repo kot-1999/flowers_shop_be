@@ -41,6 +41,7 @@ async function seed() {
         const tags: any[] = []
         const goods: any[] = []
         const addresses: any[] = []
+        const basketItems: any[] = []
         const images: {
         [key: string]: string[]
     } = {
@@ -132,6 +133,44 @@ async function seed() {
             index += 1
         }
 
+        for (let i = 0; i < users.length; i++) {
+            if (faker.number.int({
+                min: 1,
+                max: 5 
+            }) === 1) {
+                continue
+            }
+
+            const basketCount = faker.number.int({
+                min: 1,
+                max: 10
+            })
+
+            const selectedGoods = pickRandom(
+                goods,
+                Math.min(basketCount, goods.length)
+            )
+
+            for (let j = 0; j < selectedGoods.length; j++) {
+                const pricing: any = faker.helpers.arrayElement(selectedGoods[j].pricings)
+
+                basketItems.push({
+                    id: faker.string.uuid(),
+
+                    userID: users[i].id,
+                    goodID: selectedGoods[j].id,
+                    pricingID: pricing.id,
+
+                    quantity: faker.number.int({
+                        min: 1,
+                        max: Math.max(pricing.quantity, 1)
+                    }),
+
+                    createdAt: faker.date.recent()
+                })
+            }
+        }
+
         // Map all translations
 
         const translations: any[] = []
@@ -161,7 +200,9 @@ async function seed() {
                 goodID: item.id
             }))
         })
-    
+
+        // Create data
+
         const seededTables: string[] = []
     
         await prisma.$transaction(async (tx: any) => {
@@ -181,14 +222,6 @@ async function seed() {
                     skipDuplicates: true
                 })
                 seededTables.push('users')
-            }
-
-            if ((await tx.address.count()) === 0) {
-                await tx.address.createMany({
-                    data: addresses,
-                    skipDuplicates: true
-                })
-                seededTables.push('addresses')
             }
 
             if ((await tx.category.count()) === 0) {
@@ -212,6 +245,14 @@ async function seed() {
                 })
 
                 seededTables.push('itemTypes')
+            }
+
+            if ((await tx.address.count()) === 0) {
+                await tx.address.createMany({
+                    data: addresses,
+                    skipDuplicates: true
+                })
+                seededTables.push('addresses')
             }
 
             if ((await tx.selectionist.count()) === 0) {
@@ -288,6 +329,15 @@ async function seed() {
                 seededTables.push('goodPricings')
             }
 
+            if ((await tx.basketItem.count()) === 0) {
+                await tx.basketItem.createMany({
+                    data: basketItems,
+                    skipDuplicates: true
+                })
+
+                seededTables.push('basketItems')
+            }
+
             logger.info(`Seeded tables: ${
                 seededTables.length > 0 ? seededTables.join(', ') : 'none'
             }`)
@@ -295,6 +345,7 @@ async function seed() {
      
         logger.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`)
     } catch (err: any) {
+        console.log(err)
         logger.error(err.message)
         throw err
     }

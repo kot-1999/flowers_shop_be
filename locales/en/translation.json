@@ -125,5 +125,10 @@
  "User was logged out": "Signed out successfully",
  "User was not found": "User not found",
  "VaticanCity": "Vatican City",
- "Maximum number of addresses reached": "Maximum number of addresses reached"
+ "Maximum number of addresses reached": "Maximum number of addresses reached",
+ "Pricing not found": "Pricing not found",
+ "Basket item created": "Basket item created",
+ "Basket item not found": "Basket item not found",
+ "Basket item updated": "Basket item updated",
+ "Basket item deleted": "Basket item deleted"
 }
