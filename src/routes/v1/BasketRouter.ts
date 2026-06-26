@@ -23,7 +23,7 @@ export default function basketRouter() {
         basketController.getBasketItems
     )
 
-    router.get(
+    router.post(
         /*
             #swagger.tags = ['v1-Basket']
             #swagger.description = 'Get user basket items.'
@@ -70,7 +70,7 @@ export default function basketRouter() {
                 schema: { "$ref": "#/definitions/v1PatchBasketItemRes" }
             }
         */
-        '/basket-items/:basketItemID',
+        '/basket-items',
         validationMiddleware(BasketController.schemas.request.patchBasketItem),
         authorizationMiddleware([PassportStrategy.google]),
         basketController.patchBasketItem
@@ -88,7 +88,7 @@ export default function basketRouter() {
                 schema: { "$ref": "#/definitions/v1DeleteBasketItemRes" }
             }
         */
-        '/basket-items/:basketItemID',
+        '/basket-items',
         validationMiddleware(BasketController.schemas.request.deleteBasketItem),
         authorizationMiddleware([PassportStrategy.google]),
         basketController.deleteBasketItem

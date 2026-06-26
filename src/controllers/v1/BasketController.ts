@@ -78,21 +78,27 @@ export class BasketController extends AbstractController {
             }),
 
             patchBasketItem: JoiCommon.object.request.keys({
-                params: Joi.object({
-                    basketItemID: JoiCommon.string.id.required()
-                }).required(),
 
                 body: Joi.object({
-                    quantity: Joi.number()
-                        .integer()
+                    basketItems: Joi.array().items(Joi.object({
+                        basketItemID: JoiCommon.string.id,
+                        quantity: Joi.number()
+                            .integer()
+                            .min(1)
+                            .required()
+                    }))
                         .min(1)
                         .required()
                 }).required()
             }),
 
             deleteBasketItem: JoiCommon.object.request.keys({
-                params: Joi.object({
-                    basketItemID: JoiCommon.string.id.required()
+                body: Joi.object({
+                    basketItems: Joi.array().items(Joi.object({
+                        id: JoiCommon.string.id 
+                    }))
+                        .min(1)
+                        .required()
                 }).required()
             })
         },
@@ -121,9 +127,11 @@ export class BasketController extends AbstractController {
             }),
 
             patchBasketItem: Joi.object({
-                basketItem: Joi.object({
+                basketItems: Joi.array().items(Joi.object({
                     id: JoiCommon.string.id.required()
-                }).required(),
+                }).required())
+                    .min(1)
+                    .required(),
 
                 message: Joi.string().required()
             }),
@@ -495,55 +503,50 @@ export class BasketController extends AbstractController {
         next: NextFunction
     ) {
         try {
-            const { params, body, user } = req
+            const { body, user } = req
 
-            const basketItem = await prisma.basketItem.findFirst({
+            const basketItems = await prisma.basketItem.findMany({
                 where: {
-                    id: params.basketItemID,
+                    id: {
+                        in: body.basketItems.map((item) => item.basketItemID)
+                    },
                     userID: user.id
                 },
                 select: {
                     id: true,
-                    pricingID: true
+                    pricing: {
+                        select: {
+                            id: true,
+                            quantity: true
+                        }
+                    }
                 }
             })
 
-            if (!basketItem) {
-                throw new IError(404, req.t('Basket item not found'))
-            }
-
-            const pricing = await prisma.pricing.findFirst({
-                where: {
-                    id: basketItem.pricingID,
-                    deletedAt: null
-                },
-                select: {
-                    quantity: true
+            const updatedBasketItems = await prisma.$transaction(basketItems.map((item: any) => {
+                const updateVal = body.basketItems.find((bi) => bi.basketItemID === item.id)
+                if (!updateVal) {
+                    return
                 }
-            })
-
-            if (!pricing) {
-                throw new IError(404, req.t('Pricing not found'))
-            }
-
-            const updated = await prisma.basketItem.update({
-                where: {
-                    id: basketItem.id
-                },
-                data: {
-                    quantity: Math.min(
-                        body.quantity,
-                        pricing.quantity
-                    )
-                },
-                select: {
-                    id: true
-                }
-            })
+                return prisma.basketItem.update({
+                    where: {
+                        id: item.id
+                    },
+                    data: {
+                        quantity: Math.min(
+                                item.pricing.quantity!,
+                                updateVal.quantity
+                        )
+                    },
+                    select: {
+                        id: true
+                    }
+                })
+            }))
 
             return res.status(200).json({
-                basketItem: updated,
-                message: req.t('Item updated')
+                basketItems: updatedBasketItems,
+                message: req.t('Items updated')
             })
         } catch (err) {
             return next(err)
@@ -558,11 +561,13 @@ export class BasketController extends AbstractController {
         next: NextFunction
     ) {
         try {
-            const { params, user } = req
+            const { body, user } = req
 
-            const basketItem = await prisma.basketItem.findFirst({
+            const basketItems = await prisma.basketItem.findMany({
                 where: {
-                    id: params.basketItemID,
+                    id: {
+                        in: body.basketItems.map((item) => item.id)
+                    },
                     userID: user.id
                 },
                 select: {
@@ -570,18 +575,16 @@ export class BasketController extends AbstractController {
                 }
             })
 
-            if (!basketItem) {
-                throw new IError(404, req.t('Basket item not found'))
-            }
-
-            await prisma.basketItem.delete({
+            await prisma.basketItem.deleteMany({
                 where: {
-                    id: basketItem.id
+                    id: {
+                        in: basketItems.map((item: { id: string }) => item.id)
+                    }
                 }
             })
 
             return res.status(200).json({
-                message: req.t('Item deleted')
+                message: req.t('{{count}} item(s) deleted', { count: basketItems.length })
             })
         } catch (err) {
             return next(err)
