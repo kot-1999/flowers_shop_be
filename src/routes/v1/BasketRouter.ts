@@ -26,6 +26,23 @@ export default function basketRouter() {
     router.post(
         /*
             #swagger.tags = ['v1-Basket']
+            #swagger.description = 'Get user basket items.'
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1GetPublicBasketItemsRes" }
+            }
+            #swagger.responses[200] = {
+                schema: { "$ref": "#/definitions/v1GetBasketItemsRes" }
+            }
+        */
+        '/public/basket-items',
+        validationMiddleware(BasketController.schemas.request.getPublicBasketItems),
+        basketController.getPublicBasketItems
+    )
+
+    router.post(
+        /*
+            #swagger.tags = ['v1-Basket']
             #swagger.description = 'Add item to basket.'
             #swagger.parameters['body'] = {
                 in: 'body',
@@ -53,7 +70,7 @@ export default function basketRouter() {
                 schema: { "$ref": "#/definitions/v1PatchBasketItemRes" }
             }
         */
-        '/basket-items/:basketItemID',
+        '/basket-items',
         validationMiddleware(BasketController.schemas.request.patchBasketItem),
         authorizationMiddleware([PassportStrategy.google]),
         basketController.patchBasketItem
@@ -71,7 +88,7 @@ export default function basketRouter() {
                 schema: { "$ref": "#/definitions/v1DeleteBasketItemRes" }
             }
         */
-        '/basket-items/:basketItemID',
+        '/basket-items',
         validationMiddleware(BasketController.schemas.request.deleteBasketItem),
         authorizationMiddleware([PassportStrategy.google]),
         basketController.deleteBasketItem

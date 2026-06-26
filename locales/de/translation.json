@@ -134,5 +134,11 @@
  "Basket item created": "Warenkorb-Artikel erstellt",
  "Basket item not found": "Warenkorb-Artikel nicht gefunden",
  "Basket item updated": "Warenkorb-Artikel aktualisiert",
- "Basket item deleted": "Warenkorb-Artikel gelöscht"
+ "Basket item deleted": "Warenkorb-Artikel gelöscht",
+ "Added to basket": "Zum Warenkorb hinzugefügt",
+ "Item updated": "Artikel aktualisiert",
+ "Item deleted": "Artikel gelöscht",
+ "Items updated": "Artikel aktualisiert",
+ "{{count}} item(s) deleted_one": "{{count}} Artikel gelöscht",
+ "{{count}} item(s) deleted_other": "{{count}} Artikel gelöscht"
 }

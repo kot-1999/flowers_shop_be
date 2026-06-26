@@ -134,5 +134,11 @@
  "Basket item created": "Товар у кошику створено",
  "Basket item not found": "Товар у кошику не знайдено",
  "Basket item updated": "Товар у кошику оновлено",
- "Basket item deleted": "Товар у кошику видалено"
+ "Basket item deleted": "Товар у кошику видалено",
+ "Added to basket": "Додано до кошика",
+ "Item updated": "Товар оновлено",
+ "Item deleted": "Товар видалено",
+ "Items updated": "Товари оновлено",
+ "{{count}} item(s) deleted_one": "Видалено {{count}} товар",
+ "{{count}} item(s) deleted_other": "Видалено {{count}} товарів"
 }

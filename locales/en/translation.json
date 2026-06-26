@@ -130,5 +130,11 @@
  "Basket item created": "Basket item created",
  "Basket item not found": "Basket item not found",
  "Basket item updated": "Basket item updated",
- "Basket item deleted": "Basket item deleted"
+ "Basket item deleted": "Basket item deleted",
+ "Added to basket": "Added to basket",
+ "Item updated": "Item updated",
+ "Item deleted": "Item deleted",
+ "Items updated": "Items updated",
+ "{{count}} item(s) deleted_one": "{{count}} item(s) deleted",
+ "{{count}} item(s) deleted_other": "{{count}} item(s) deleted"
 }

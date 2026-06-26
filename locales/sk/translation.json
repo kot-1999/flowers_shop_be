@@ -134,5 +134,13 @@
  "Basket item created": "Položka košíka bola vytvorená",
  "Basket item not found": "Položka košíka sa nenašla",
  "Basket item updated": "Položka košíka bola aktualizovaná",
- "Basket item deleted": "Položka košíka bola odstránená"
+ "Basket item deleted": "Položka košíka bola odstránená",
+ "Added to basket": "Pridané do košíka",
+ "Item updated": "Položka bola aktualizovaná",
+ "Item deleted": "Položka bola odstránená",
+ "Items updated": "Položky boli aktualizované",
+ "{{count}} item(s) deleted_one": "{{count}} položka bola odstránená",
+ "{{count}} item(s) deleted_other": "{{count}} položiek bolo odstránených",
+ "{{count}} item(s) deleted_few": "{{count}} položiek bolo odstránených",
+ "{{count}} item(s) deleted_many": "{{count}} položiek bolo odstránených"
 }
