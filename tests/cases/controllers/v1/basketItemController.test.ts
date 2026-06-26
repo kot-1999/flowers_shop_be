@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { User } from '@prisma/client'
 import { expect } from 'chai'
+import dayjs from 'dayjs'
 import supertest from 'supertest'
 
 import app from '../../../../src/app'
@@ -12,7 +13,73 @@ import UserGenerator from '../../../utils/generators/UserGenerator'
 import { loginUserAndGetCookie } from '../../../utils/helpers'
 
 const endpoint = (val: string = '') => `/api/v1/basket-items/${val}`
+const publicEndpoint = '/api/v1/public/basket-items/'
+
 const password = 'Test123'
+
+describe(`GET ${publicEndpoint}`, () => {
+
+    it('Should return basket items (200)', async () => {
+        const goods = await prisma.good.findMany({
+            where: { deletedAt: null },
+            take: 4,
+            select: {
+                id: true,
+                pricings: {
+                    select: {
+                        pricing: {
+                            select: {
+                                id: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        
+        const res = await supertest(app)
+            .get(publicEndpoint)
+            .send({
+                basketItems: goods.map((good: any) => ({
+                    goodID: good.id,
+                    pricingID: good.pricings[0].pricing.id,
+                    quantity: faker.number.int({
+                        min: 1,
+                        max: 100 
+                    }),
+                    createdAt: dayjs().toISOString()
+                }))
+            })
+        expect(res.statusCode).to.equal(200)
+        expect(res.type).to.eq('application/json')
+
+        const validationResult = BasketController.schemas.response.getBasketItems.validate(res.body)
+        expect(validationResult.error).to.eq(undefined)
+    })
+
+    // it('Should return empty array when user has no basket items (200)', async () => {
+    //
+    //     const emptyUser = await UserGenerator.generateUser({
+    //         password: EncryptionService.hashSHA256(password)
+    //     })
+    //
+    //     const emptyUserCookie = await loginUserAndGetCookie({
+    //         email: emptyUser.email,
+    //         password
+    //     })
+    //
+    //     const res = await supertest(app)
+    //         .get(endpoint())
+    //
+    //     expect(res.statusCode).to.equal(200)
+    //     expect(res.type).to.eq('application/json')
+    //
+    //     const validationResult = BasketController.schemas.response.getBasketItems.validate(res.body)
+    //
+    //     expect(validationResult.error).to.eq(undefined)
+    //     expect(res.body.basketItems).to.be.an('array')
+    // })
+})
 
 describe(`GET ${endpoint()}`, () => {
     let sessionCookie: string

@@ -23,6 +23,23 @@ export default function basketRouter() {
         basketController.getBasketItems
     )
 
+    router.get(
+        /*
+            #swagger.tags = ['v1-Basket']
+            #swagger.description = 'Get user basket items.'
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1GetPublicBasketItemsRes" }
+            }
+            #swagger.responses[200] = {
+                schema: { "$ref": "#/definitions/v1GetBasketItemsRes" }
+            }
+        */
+        '/public/basket-items',
+        validationMiddleware(BasketController.schemas.request.getPublicBasketItems),
+        basketController.getPublicBasketItems
+    )
+
     router.post(
         /*
             #swagger.tags = ['v1-Basket']
