@@ -53,7 +53,6 @@ export class BasketController extends AbstractController {
                 body: Joi.object({
                     basketItems: Joi.array().items(Joi.object({
                         pricingID: Joi.string().required(),
-                        goodID: Joi.string().required(),
                         quantity: Joi.number().integer()
                             .required(),
                         createdAt: Joi.date().iso()
@@ -66,8 +65,6 @@ export class BasketController extends AbstractController {
 
             postBasketItem: JoiCommon.object.request.keys({
                 body: Joi.object({
-                    goodID: JoiCommon.string.id.required(),
-
                     pricingID: JoiCommon.string.id.required(),
 
                     quantity: Joi.number()
@@ -150,12 +147,16 @@ export class BasketController extends AbstractController {
         return items.map((item: any) => ({
             ...item,
             quantity: item.quantity > item.pricing.quantity ? item.pricing.quantity : item.quantity,
+            pricing: {
+                ...item.pricing,
+                good: undefined
+            },
             good: {
-                ...item.good,
-                photos: item.good.photos?.map((photoKey: string) => s3Service.getPublicUrl(photoKey)),
+                ...item.pricing.good,
+                photos: item.pricing.good.photos?.map((photoKey: string) => s3Service.getPublicUrl(photoKey)),
                 selectionist: {
-                    ...item.good.selectionist,
-                    country: item.good.selectionist.country ? t(item.good.selectionist.country) : null
+                    ...item.pricing.good.selectionist,
+                    country: item.pricing.good.selectionist.country ? t(item.pricing.good.selectionist.country) : null
                 }
             }
         }))
@@ -190,14 +191,10 @@ export class BasketController extends AbstractController {
                         in: basketItems.map((item) => item.pricingID)
                     },
                     deletedAt: null,
-                    goods: {
-                        some: {
-                            good: {
-                                deletedAt: null,
-                                state: {
-                                    in: [GoodState.Available, GoodState.Awaiting]
-                                }
-                            }
+                    good: {
+                        deletedAt: null,
+                        state: {
+                            in: [GoodState.Available, GoodState.Awaiting]
                         }
                     }
                 },
@@ -216,47 +213,42 @@ export class BasketController extends AbstractController {
                             }
                         }
                     },
-                    goods: {
+                    good: {
                         select: {
-                            good: {
+                            id: true,
+                            photos: true,
+                            state: true,
+                            name: {
+                                select: {
+                                    [language as string]: true,
+                                    [`${language}Slug`]: true
+                                }
+                            },
+                            description: {
+                                select: {
+                                    [language as string]: true
+                                }
+                            },
+                            selectionist: {
                                 select: {
                                     id: true,
-                                    photos: true,
-                                    state: true,
                                     name: {
-                                        select: {
-                                            [language as string]: true,
-                                            [`${language}Slug`]: true
-                                        }
-                                    },
-                                    description: {
                                         select: {
                                             [language as string]: true
                                         }
                                     },
-                                    selectionist: {
-                                        select: {
-                                            id: true,
-                                            name: {
-                                                select: {
-                                                    [language as string]: true
-                                                }
-                                            },
-                                            country: true
-                                        }
-                                    }
+                                    country: true
                                 }
                             }
                         }
                     }
                 }
+           
             })
             const mappedBasketItems: any[] = basketItems
                 .map((item) => {
                     const pricing = pricings.find((pricing: any) => pricing.id === item.pricingID)
-                    const good = pricing.goods.find((goodItem: any) => goodItem.good.id === item.goodID)
-
-                    if (!pricing || !good) {
+                    if (!pricing) {
                         return null
                     }
 
@@ -268,18 +260,18 @@ export class BasketController extends AbstractController {
                             id: pricing.id,
                             price: pricing.price,
                             quantity: pricing.quantity,
-                            itemType: pricing.itemType
-                        },
-                        good: good.good
+                            itemType: pricing.itemType,
+                            good: pricing.good
+                        }
                     }
                 })
                 .filter(Boolean)
 
             const unavailableBasketItems = mappedBasketItems.filter((item: any) =>
-                item.pricing.quantity < 1 || item.good.state === GoodState.Awaiting)
+                item.pricing.quantity < 1 || item.pricing.good.state === GoodState.Awaiting)
 
             const availableBasketItems = mappedBasketItems.filter((item: any) =>
-                item.pricing.quantity > 0 && item.good.state === GoodState.Available)
+                item.pricing.quantity > 0 && item.pricing.good.state === GoodState.Available)
 
             let totalPrice = 0
 
@@ -320,19 +312,21 @@ export class BasketController extends AbstractController {
                 where: {
                     userID: user.id,
                     pricing: {
-                        deletedAt: null
-                    },
-                    good: {
                         deletedAt: null,
-                        state: {
-                            in: ['Available', 'Awaiting']
+                        good: {
+                            deletedAt: null,
+                            state: {
+                                in: ['Available', 'Awaiting']
+                            }
                         }
                     }
                 },
                 orderBy: [
                     {
-                        good: {
-                            state: 'asc' // assumes Awaiting is last enum value OR adjust logic below
+                        pricing: {
+                            good: {
+                                state: 'asc' // assumes Awaiting is last enum value OR adjust logic below
+                            }
                         }
                     },
                     {
@@ -359,35 +353,34 @@ export class BasketController extends AbstractController {
                                         }
                                     }
                                 }
-                            }
-                        }
-                    },
-
-                    good: {
-                        select: {
-                            id: true,
-                            photos: true,
-                            state: true,
-                            name: {
-                                select: {
-                                    [language as string]: true,
-                                    [language + 'Slug' as string]: true
-                                }
                             },
-                            description: {
-                                select: {
-                                    [language as string]: true
-                                }
-                            },
-                            selectionist: {
+                            good: {
                                 select: {
                                     id: true,
+                                    photos: true,
+                                    state: true,
                                     name: {
+                                        select: {
+                                            [language as string]: true,
+                                            [language + 'Slug' as string]: true
+                                        }
+                                    },
+                                    description: {
                                         select: {
                                             [language as string]: true
                                         }
                                     },
-                                    country: true
+                                    selectionist: {
+                                        select: {
+                                            id: true,
+                                            name: {
+                                                select: {
+                                                    [language as string]: true
+                                                }
+                                            },
+                                            country: true
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -395,8 +388,10 @@ export class BasketController extends AbstractController {
                 }
             })
             
-            const unavailableBasketItems = basketItems.filter((item: any) => item.pricing.quantity < 1 || item.good.state === GoodState.Awaiting)
-            const availableBasketItems = basketItems.filter((item: any) => item.pricing.quantity > 0 && item.good.state === GoodState.Available)
+            const unavailableBasketItems = basketItems.filter((item: any) =>
+                item.pricing.quantity < 1 || item.pricing.good.state === GoodState.Awaiting)
+            const availableBasketItems = basketItems.filter((item: any) =>
+                item.pricing.quantity > 0 && item.pricing.good.state === GoodState.Available)
 
             let totalPrice = 0
 
@@ -431,7 +426,10 @@ export class BasketController extends AbstractController {
             const pricing = await prisma.pricing.findFirst({
                 where: {
                     id: body.pricingID,
-                    deletedAt: null
+                    deletedAt: null,
+                    good: {
+                        deletedAt: null,
+                    }
                 },
                 select: {
                     id: true,
@@ -450,8 +448,7 @@ export class BasketController extends AbstractController {
 
             const existingItem = await prisma.basketItem.findUnique({
                 where: {
-                    goodID_userID_pricingID: {
-                        goodID: body.goodID,
+                    userID_pricingID: {
                         pricingID: body.pricingID,
                         userID: user.id
                     }
@@ -475,7 +472,6 @@ export class BasketController extends AbstractController {
             } else {
                 basketItem = await prisma.basketItem.create({
                     data: {
-                        goodID: body.goodID,
                         pricingID: body.pricingID,
                         userID: user.id,
                         quantity

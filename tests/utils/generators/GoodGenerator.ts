@@ -56,14 +56,10 @@ export class GoodGenerator {
 
                 pricings: {
                     create: payload.pricings.map((p) => ({
-                        pricing: {
-                            create: {
-                                price: p.price,
-                                quantity: p.quantity,
-                                itemType: {
-                                    connect: { id: p.itemTypeID }
-                                }
-                            }
+                        price: p.price,
+                        quantity: p.quantity,
+                        itemType: {
+                            connect: { id: p.itemTypeID }
                         }
                     }))
                 }
@@ -100,7 +96,8 @@ export class GoodGenerator {
             itemTypeID,
             id: faker.string.uuid(),
             price: Number((Math.random() * 50 + 5).toFixed(2)),
-            quantity: rand(0, 20)
+            quantity: rand(0, 20),
+            goodID: id
         }))
         const totalQty = pricings.reduce((s, p) => s + p.quantity, 0)
 

@@ -124,9 +124,8 @@ model Good {
   selectionistID String       @db.Uuid
   selectionist   Selectionist @relation(fields: [selectionistID], references: [id])
 
-  pricings    GoodPricing[]
-  tags        GoodTag[]
-  basketItems BasketItem[]
+  pricings Pricing[]
+  tags     GoodTag[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -151,7 +150,8 @@ model Pricing {
   itemTypeID String   @db.Uuid
   itemType   ItemType @relation(fields: [itemTypeID], references: [id])
 
-  goods       GoodPricing[]
+  goodID      String       @db.Uuid
+  good        Good         @relation(fields: [goodID], references: [id])
   basketItems BasketItem[]
 
   createdAt DateTime  @default(now())
@@ -160,17 +160,6 @@ model Pricing {
 
   @@index([itemTypeID])
   @@map("pricings")
-}
-
-model GoodPricing {
-  pricingID String @db.Uuid
-  goodID    String @db.Uuid
-
-  pricing Pricing @relation(fields: [pricingID], references: [id], onDelete: Cascade)
-  good    Good    @relation(fields: [goodID], references: [id], onDelete: Cascade)
-
-  @@id([goodID, pricingID])
-  @@map("good_pricings")
 }
 
 model GoodTag {
@@ -223,19 +212,16 @@ model BasketItem {
 
   quantity Int
 
-  goodID    String @db.Uuid
   userID    String @db.Uuid
   pricingID String @db.Uuid
 
-  good    Good    @relation(fields: [goodID], references: [id])
   user    User    @relation(fields: [userID], references: [id])
   pricing Pricing @relation(fields: [pricingID], references: [id])
 
   createdAt DateTime @default(now())
 
-  @@unique([goodID, userID, pricingID])
+  @@unique([userID, pricingID])
   @@index([userID])
-  @@index([goodID])
   @@index([pricingID])
   @@map("basket_items")
 }

@@ -158,7 +158,6 @@ async function seed() {
                     id: faker.string.uuid(),
 
                     userID: users[i].id,
-                    goodID: selectedGoods[j].id,
                     pricingID: pricing.id,
 
                     quantity: faker.number.int({
@@ -176,8 +175,7 @@ async function seed() {
         const translations: any[] = []
         const pricings: any[] = []
         const goodTags: any[] = []
-        const goodPricings: any[] = []
-    
+
         categories.forEach((item) => {
             translations.push(item.name)
             translations.push(item.description)
@@ -190,10 +188,6 @@ async function seed() {
             translations.push(item.description)
             item.pricings.forEach((pricing: any) => {
                 pricings.push(pricing)
-                goodPricings.push({
-                    goodID: item.id,
-                    pricingID: pricing.id
-                })
             })
             item.tagIDs.forEach((tagID: string) => goodTags.push({
                 tagID,
@@ -277,21 +271,6 @@ async function seed() {
                 seededTables.push('tags')
             }
 
-            if ((await tx.pricing.count()) === 0) {
-                await tx.pricing.createMany({
-                    data: pricings.map((item) => ({
-                        id: item.id,
-                        price: item.price,
-                        quantity: item.quantity,
-                        itemTypeID: item.itemTypeID
-                    }))
-                })
-
-                seededTables.push('pricings')
-            }
-
-            // throw new Error('TEST' + seededTables)
-
             if ((await tx.good.count()) === 0) {
                 await tx.good.createMany({
                     data: goods.map((good) => ({
@@ -313,20 +292,26 @@ async function seed() {
                 seededTables.push('goods')
             }
 
+            if ((await tx.pricing.count()) === 0) {
+                await tx.pricing.createMany({
+                    data: pricings.map((item) => ({
+                        id: item.id,
+                        price: item.price,
+                        quantity: item.quantity,
+                        itemTypeID: item.itemTypeID,
+                        goodID: item.goodID
+                    }))
+                })
+
+                seededTables.push('pricings')
+            }
+
             if ((await tx.goodTag.count()) === 0) {
                 await tx.goodTag.createMany({
                     data: goodTags
                 })
 
                 seededTables.push('goodTags')
-            }
-
-            if ((await tx.goodPricing.count()) === 0) {
-                await tx.goodPricing.createMany({
-                    data: goodPricings
-                })
-
-                seededTables.push('goodPricings')
             }
 
             if ((await tx.basketItem.count()) === 0) {
@@ -345,7 +330,6 @@ async function seed() {
      
         logger.info(`Database was seeded with ${seededTables.length} table(s)${seededTables.length > 0 ? ': ' + seededTables.join(', ') : '.'}`)
     } catch (err: any) {
-        console.log(err)
         logger.error(err.message)
         throw err
     }

@@ -432,24 +432,18 @@ export class GoodController extends AbstractController {
 
                         pricings: {
                             where: {
-                                pricing: {
-                                    deletedAt: null
-                                }
+                                deletedAt: null
                             },
                             select: {
-                                pricing: {
+                                id: true,
+                                price: true,
+                                quantity: true,
+                                itemType: {
                                     select: {
                                         id: true,
-                                        price: true,
-                                        quantity: true,
-                                        itemType: {
+                                        name: {
                                             select: {
-                                                id: true,
-                                                name: {
-                                                    select: {
-                                                        [language]: true
-                                                    }
-                                                }
+                                                [language]: true
                                             }
                                         }
                                     }
@@ -467,7 +461,6 @@ export class GoodController extends AbstractController {
                     ...good,
                     photos: good.photos.map((photoKey: string) => s3Service.getPublicUrl(photoKey)),
                     tags: good.tags.map((item: any) => ({ ...item.tag })),
-                    pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
                     selectionist: {
                         ...good.selectionist,
                         country: good.selectionist.country ? req.t(good.selectionist.country) : null
@@ -549,24 +542,18 @@ export class GoodController extends AbstractController {
 
                     pricings: {
                         where: {
-                            pricing: {
-                                deletedAt: null
-                            }
+                            deletedAt: null
                         },
                         select: {
-                            pricing: {
+                            id: true,
+                            price: true,
+                            quantity: true,
+                            itemType: {
                                 select: {
                                     id: true,
-                                    price: true,
-                                    quantity: true,
-                                    itemType: {
+                                    name: {
                                         select: {
-                                            id: true,
-                                            name: {
-                                                select: {
-                                                    [language]: true
-                                                }
-                                            }
+                                            [language]: true
                                         }
                                     }
                                 }
@@ -585,7 +572,6 @@ export class GoodController extends AbstractController {
                     ...good,
                     photos: good.photos.map((photoKey: string) => s3Service.getPublicUrl(photoKey)),
                     tags: good.tags.map((item: any) => ({ ...item.tag })),
-                    pricings: good.pricings.map((item: any) => ({ ...item.pricing })),
                     selectionist: {
                         ...good.selectionist,
                         country: good.selectionist.country ? req.t(good.selectionist.country) : null
@@ -724,14 +710,10 @@ export class GoodController extends AbstractController {
 
                     pricings: {
                         create: body.pricings.map((pricing) => ({
-                            pricing: {
-                                create: {
-                                    price: pricing.price,
-                                    quantity: pricing.quantity,
-                                    itemType: {
-                                        connect: { id: pricing.itemTypeID }
-                                    }
-                                }
+                            price: pricing.price,
+                            quantity: pricing.quantity,
+                            itemType: {
+                                connect: { id: pricing.itemTypeID }
                             }
                         }))
                     }
@@ -893,14 +875,10 @@ export class GoodController extends AbstractController {
             if (newPricings) {
                 updateData.pricings = {
                     create: newPricings.map((p) => ({
-                        pricing: {
-                            create: {
-                                price: p.price,
-                                quantity: p.quantity,
-                                itemType: {
-                                    connect: { id: p.itemTypeID }
-                                }
-                            }
+                        price: p.price,
+                        quantity: p.quantity,
+                        itemType: {
+                            connect: { id: p.itemTypeID }
                         }
                     }))
                 }
@@ -914,11 +892,7 @@ export class GoodController extends AbstractController {
 
                     await tx.pricing.updateMany({
                         where: {
-                            goods: {
-                                some: {
-                                    goodID: params.goodID
-                                }
-                            },
+                            goodID: params.goodID,
                             id: {
                                 notIn: pricings.map((pricing) => pricing.pricingID)
                             }
@@ -934,24 +908,7 @@ export class GoodController extends AbstractController {
                         where: {
                             id: params.goodID
                         },
-                        data: {
-                            ...updateData,
-                            pricings: {
-                                create: newPricings.map((p) => ({
-                                    pricing: {
-                                        create: {
-                                            price: p.price,
-                                            quantity: p.quantity,
-                                            itemType: {
-                                                connect: {
-                                                    id: p.itemTypeID
-                                                }
-                                            }
-                                        }
-                                    }
-                                }))
-                            }
-                        },
+                        data: updateData,
                         select: {
                             id: true
                         }
