@@ -99,19 +99,12 @@ CREATE TABLE "pricings" (
     "price" DECIMAL(10,2) NOT NULL,
     "quantity" INTEGER NOT NULL,
     "itemTypeID" UUID NOT NULL,
+    "goodID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "pricings_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "good_pricings" (
-    "pricingID" UUID NOT NULL,
-    "goodID" UUID NOT NULL,
-
-    CONSTRAINT "good_pricings_pkey" PRIMARY KEY ("goodID","pricingID")
 );
 
 -- CreateTable
@@ -150,7 +143,6 @@ CREATE TABLE "selectionists" (
 CREATE TABLE "basket_items" (
     "id" UUID NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "goodID" UUID NOT NULL,
     "userID" UUID NOT NULL,
     "pricingID" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -229,13 +221,10 @@ CREATE INDEX "pricings_itemTypeID_idx" ON "pricings"("itemTypeID");
 CREATE INDEX "basket_items_userID_idx" ON "basket_items"("userID");
 
 -- CreateIndex
-CREATE INDEX "basket_items_goodID_idx" ON "basket_items"("goodID");
-
--- CreateIndex
 CREATE INDEX "basket_items_pricingID_idx" ON "basket_items"("pricingID");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "basket_items_goodID_userID_pricingID_key" ON "basket_items"("goodID", "userID", "pricingID");
+CREATE UNIQUE INDEX "basket_items_userID_pricingID_key" ON "basket_items"("userID", "pricingID");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "orders_transactionID_key" ON "orders"("transactionID");
@@ -283,10 +272,7 @@ ALTER TABLE "goods" ADD CONSTRAINT "goods_selectionistID_fkey" FOREIGN KEY ("sel
 ALTER TABLE "pricings" ADD CONSTRAINT "pricings_itemTypeID_fkey" FOREIGN KEY ("itemTypeID") REFERENCES "item_types"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "good_pricings" ADD CONSTRAINT "good_pricings_pricingID_fkey" FOREIGN KEY ("pricingID") REFERENCES "pricings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "good_pricings" ADD CONSTRAINT "good_pricings_goodID_fkey" FOREIGN KEY ("goodID") REFERENCES "goods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "pricings" ADD CONSTRAINT "pricings_goodID_fkey" FOREIGN KEY ("goodID") REFERENCES "goods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "good_tags" ADD CONSTRAINT "good_tags_goodID_fkey" FOREIGN KEY ("goodID") REFERENCES "goods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -299,9 +285,6 @@ ALTER TABLE "item_types" ADD CONSTRAINT "item_types_nameTID_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "selectionists" ADD CONSTRAINT "selectionists_nameTID_fkey" FOREIGN KEY ("nameTID") REFERENCES "translations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "basket_items" ADD CONSTRAINT "basket_items_goodID_fkey" FOREIGN KEY ("goodID") REFERENCES "goods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "basket_items" ADD CONSTRAINT "basket_items_userID_fkey" FOREIGN KEY ("userID") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -27,12 +27,9 @@ describe(`GET ${publicEndpoint}`, () => {
                 id: true,
                 pricings: {
                     select: {
-                        pricing: {
-                            select: {
-                                id: true
-                            }
-                        }
+                        id: true
                     }
+                  
                 }
             }
         })
@@ -41,8 +38,7 @@ describe(`GET ${publicEndpoint}`, () => {
             .post(publicEndpoint)
             .send({
                 basketItems: goods.map((good: any) => ({
-                    goodID: good.id,
-                    pricingID: good.pricings[0].pricing.id,
+                    pricingID: good.pricings[0].id,
                     quantity: faker.number.int({
                         min: 1,
                         max: 100 
@@ -50,6 +46,7 @@ describe(`GET ${publicEndpoint}`, () => {
                     createdAt: dayjs().toISOString()
                 }))
             })
+
         expect(res.statusCode).to.equal(200)
         expect(res.type).to.eq('application/json')
 
@@ -141,12 +138,9 @@ describe(`POST ${endpoint()}`, () => {
                 id: true,
                 pricings: {
                     select: {
-                        pricing: {
-                            select: {
-                                id: true
-                            }
-                        }
+                        id: true
                     }
+
                 }
             }
         })
@@ -155,8 +149,7 @@ describe(`POST ${endpoint()}`, () => {
             .post(endpoint())
             .set('Cookie', sessionCookie)
             .send({
-                goodID: good.id,
-                pricingID: good.pricings[0].pricing.id,
+                pricingID: good.pricings[0].id,
                 quantity: 3
             })
 
@@ -178,18 +171,15 @@ describe(`POST ${endpoint()}`, () => {
                 id: true,
                 pricings: {
                     select: {
-                        pricing: {
-                            select: {
-                                id: true
-                            }
-                        }
+                        id: true
                     }
+                  
                 }
             }
         })
 
         await prisma.pricing.update({
-            where: { id: good.pricings[0].pricing.id },
+            where: { id: good.pricings[0].id },
             data: { quantity: 5 }
         })
 
@@ -197,8 +187,7 @@ describe(`POST ${endpoint()}`, () => {
             .post(endpoint())
             .set('Cookie', sessionCookie)
             .send({
-                goodID: good.id,
-                pricingID: good.pricings[0].pricing.id,
+                pricingID: good.pricings[0].id,
                 quantity: 100
 
             })
@@ -212,7 +201,7 @@ describe(`POST ${endpoint()}`, () => {
         const basketItem = await prisma.basketItem.findFirstOrThrow({
             where: {
                 userID: user.id,
-                pricingID: good.pricings[0].pricing.id
+                pricingID: good.pricings[0].id
             }
         })
 
