@@ -8,7 +8,7 @@ CREATE TYPE "GoodState" AS ENUM ('Available', 'NoShow', 'Awaiting', 'Deleted');
 CREATE TYPE "OrderState" AS ENUM ('Pending', 'Paid', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded');
 
 -- CreateEnum
-CREATE TYPE "Country" AS ENUM ('UnitedKingdom', 'Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'CzechRepublic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Albania', 'Andorra', 'Armenia', 'Azerbaijan', 'BosniaAndHerzegovina', 'Georgia', 'Iceland', 'Kosovo', 'Liechtenstein', 'Moldova', 'Monaco', 'Montenegro', 'NorthMacedonia', 'Norway', 'SanMarino', 'Serbia', 'Switzerland', 'Turkey', 'Ukraine', 'VaticanCity', 'Australia', 'Canada', 'China', 'HongKong', 'India', 'Israel', 'Japan', 'Kazakhstan', 'Malaysia', 'NewZealand', 'Singapore', 'SouthKorea', 'Taiwan', 'Thailand', 'UnitedArabEmirates', 'UnitedStates', 'Argentina', 'Brazil', 'Chile', 'Colombia', 'Mexico', 'Paraguay', 'Peru', 'Uruguay', 'Egypt', 'Morocco', 'SouthAfrica');
+CREATE TYPE "Country" AS ENUM ('UnitedKingdom', 'Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'CzechRepublic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Albania', 'Andorra', 'Armenia', 'Azerbaijan', 'BosniaAndHerzegovina', 'Georgia', 'Iceland', 'Kosovo', 'Liechtenstein', 'Moldova', 'Monaco', 'Montenegro', 'NorthMacedonia', 'Norway', 'SanMarino', 'Serbia', 'Switzerland', 'Turkey', 'Ukraine', 'VaticanCity', 'Canada', 'China', 'HongKong', 'India', 'Israel', 'Japan', 'Kazakhstan', 'Malaysia', 'NewZealand', 'Singapore', 'SouthKorea', 'Taiwan', 'Thailand', 'UnitedArabEmirates', 'Argentina', 'Brazil', 'Chile', 'Colombia', 'Mexico', 'Paraguay', 'Peru', 'Uruguay', 'Egypt', 'Morocco', 'SouthAfrica');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -153,7 +153,6 @@ CREATE TABLE "basket_items" (
 -- CreateTable
 CREATE TABLE "orders" (
     "id" UUID NOT NULL,
-    "transactionID" TEXT NOT NULL,
     "sum" DECIMAL(12,2) NOT NULL,
     "state" "OrderState" NOT NULL,
     "trackingUrl" TEXT,
@@ -163,6 +162,10 @@ CREATE TABLE "orders" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "expiresAt" TIMESTAMP(3),
+    "shippingPrice" DECIMAL(12,2) NOT NULL,
+    "shippingRateID" TEXT,
+    "shippingTransactionID" TEXT,
+    "paymentTransactionID" TEXT,
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
 );
@@ -227,7 +230,7 @@ CREATE INDEX "basket_items_pricingID_idx" ON "basket_items"("pricingID");
 CREATE UNIQUE INDEX "basket_items_userID_pricingID_key" ON "basket_items"("userID", "pricingID");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "orders_transactionID_key" ON "orders"("transactionID");
+CREATE UNIQUE INDEX "orders_paymentTransactionID_key" ON "orders"("paymentTransactionID");
 
 -- CreateIndex
 CREATE INDEX "orders_userID_idx" ON "orders"("userID");
