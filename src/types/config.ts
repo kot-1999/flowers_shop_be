@@ -10,7 +10,7 @@ import { OAuth2StrategyOptionsWithoutRequiredURLs } from 'passport-google-oauth2
 import { JwtFromRequestFunction } from 'passport-jwt'
 import { RedisClientOptions } from 'redis'
 
-import { NodeEnv } from '../utils/enums'
+import {NodeEnv, TaxType} from '../utils/enums'
 
 interface LoggerCommonConfig {
   isLoggedToConsole: boolean
@@ -78,5 +78,34 @@ export interface IConfig {
   ollama: {
     url: string
     model: string
-  } | null
+  } | null,
+  shippo: {
+    config: {
+      apiKey: string,
+      version: string
+    },
+    sender: {
+      name: string,
+      company: string,
+      street: string,
+      city: string,
+      postalCode: string,
+      country: string,
+      phone: string,
+      email: string
+    },
+    customs: {
+      contents_type: string,
+      non_delivery_option: string,
+      incoterm: 'DDU',
+      certify: true,
+      certify_signer: string,
+      exporter: {
+        'tax_ids': {
+          'type': TaxType,
+          'number': string
+        }[]
+      },
+    }
+  }
 }

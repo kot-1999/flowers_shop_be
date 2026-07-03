@@ -7,7 +7,7 @@ import { Request } from 'express'
 import { ExtractJwt } from 'passport-jwt'
 
 import { IConfig } from '../src/types/config'
-import { Language, NodeEnv } from '../src/utils/enums'
+import { Language, NodeEnv, ShippingCountry, TaxType } from '../src/utils/enums'
 
 const options: IConfig = {
     app: {
@@ -142,7 +142,42 @@ const options: IConfig = {
     seed: {
         grain: 100
     },
-    ollama: null
+    ollama: null,
+    shippo: {
+        config: {
+            apiKey: process.env.POST_API_KEY as string,
+            version: '2018-02-08'
+        },
+        customs: {
+            certify: true,
+            certify_signer: 'John Smith',
+            contents_type: 'MERCHANDISE',
+            incoterm: 'DDU',
+            non_delivery_option: 'RETURN',
+            exporter: {
+                tax_ids: [
+                    {
+                        number: 'GB123456789' ,
+                        type: TaxType.VAT
+                    },
+                    {
+                        number: 'IM1234567890',
+                        type: TaxType.IOSS
+                    }
+                ]
+            }
+        },
+        sender: {
+            city: 'London',
+            company: 'Flowers Shop',
+            country: ShippingCountry.UnitedKingdom.countryCode,
+            email: process.env.EMAIL_FROM_ADDRESS as string,
+            name: 'John Smith',
+            phone: '+447467467467',
+            postalCode: 'SW19 8TR',
+            street: '172 Haydons Road'
+        }
+    }
 }
 
 export default options
