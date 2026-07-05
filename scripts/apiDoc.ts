@@ -16,6 +16,7 @@ import { ItemTypeController } from '../src/controllers/v1/ItemTypeController'
 import { SelectionistController } from '../src/controllers/v1/SelectionistController'
 import { TagController } from '../src/controllers/v1/TagController'
 import { UsersController } from '../src/controllers/v1/UserController'
+import {ShippingController} from "../src/controllers/v1/ShippingController";
 
 /**
  * Link all endpoints to their schemas
@@ -88,8 +89,11 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         getUser: UsersController.schemas,
         getUsers: UsersController.schemas,
         patchUser: UsersController.schemas,
-        deleteUser: UsersController.schemas
+        deleteUser: UsersController.schemas,
 
+        // Shipping
+        getRates: ShippingController.schemas,
+        createLabel: ShippingController.schemas
     }
 }
 
