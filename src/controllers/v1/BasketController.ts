@@ -1,4 +1,5 @@
 import { GoodState } from '@prisma/client'
+import dayjs from 'dayjs'
 import { AuthRequest, NextFunction, Response, Request } from 'express'
 import { TFunction } from 'i18next'
 import Joi from 'joi'
@@ -7,6 +8,7 @@ import s3Service from '../../services/AwsS3'
 import prisma from '../../services/Prisma'
 import { AbstractController } from '../../types/AbstractController'
 import { JoiCommon } from '../../types/JoiCommon'
+import { Language } from '../../utils/enums'
 import { IError } from '../../utils/IError'
 
 export class BasketController extends AbstractController {
@@ -161,156 +163,73 @@ export class BasketController extends AbstractController {
             }
         }))
     }
-
+    
     private GetPublicBasketItemsReqType: Joi.extractType<typeof BasketController.schemas.request.getPublicBasketItems>
-    private GetBasketItemsResType: Joi.extractType<typeof BasketController.schemas.response.getBasketItems>
-    public async getPublicBasketItems(
-        req: Request & typeof this.GetPublicBasketItemsReqType,
-        res: Response<typeof this.GetBasketItemsResType>,
-        next: NextFunction
-    ) {
-        try {
-            const language = req.headers['accept-language']
-            const { basketItems } = req.body
+    private static GetBasketItemsResType: Joi.extractType<typeof BasketController.schemas.response.getBasketItems>
+    
+    public static async selectBasketItems(options: { 
+        userID?: string, 
+        language: Language,
+        t: TFunction,
+        basketItems?: Array<{ quantity: number, createdAt: string, pricingID: string }>}): Promise<typeof BasketController.GetBasketItemsResType> {
+        
+        const { userID, language, basketItems, t } = options
 
-            if (!basketItems.length) {
-                return res.status(200).json({
-                    basketItems: [],
-                    unavailableBasketItems: [],
-                    summary: {
-                        totalPrice: 0,
-                        totalAvailable: 0,
-                        totalUnavailable: 0
+        let mappedBasketItems
+        
+        const goodSelect = {
+            select: {
+                id: true,
+                photos: true,
+                state: true,
+                name: {
+                    select: {
+                        [language as string]: true,
+                        [language + 'Slug' as string]: true
                     }
-                })
+                },
+                description: {
+                    select: {
+                        [language as string]: true
+                    }
+                },
+                selectionist: {
+                    select: {
+                        id: true,
+                        name: {
+                            select: {
+                                [language as string]: true
+                            }
+                        },
+                        country: true
+                    }
+                }
             }
+        }
+        const pricingSelect = {
+            select: {
+                id: true,
+                price: true,
+                quantity: true,
 
-            const pricings = await prisma.pricing.findMany({
-                where: {
-                    id: {
-                        in: basketItems.map((item) => item.pricingID)
-                    },
-                    deletedAt: null,
-                    good: {
-                        deletedAt: null,
-                        state: {
-                            in: [GoodState.Available, GoodState.Awaiting]
+                itemType: {
+                    select: {
+                        id: true,
+                        name: {
+                            select: {
+                                [language as string]: true
+                            }
                         }
                     }
                 },
-                select: {
-                    id: true,
-                    price: true,
-                    quantity: true,
-
-                    itemType: {
-                        select: {
-                            id: true,
-                            name: {
-                                select: {
-                                    [language as string]: true
-                                }
-                            }
-                        }
-                    },
-                    good: {
-                        select: {
-                            id: true,
-                            photos: true,
-                            state: true,
-                            name: {
-                                select: {
-                                    [language as string]: true,
-                                    [`${language}Slug`]: true
-                                }
-                            },
-                            description: {
-                                select: {
-                                    [language as string]: true
-                                }
-                            },
-                            selectionist: {
-                                select: {
-                                    id: true,
-                                    name: {
-                                        select: {
-                                            [language as string]: true
-                                        }
-                                    },
-                                    country: true
-                                }
-                            }
-                        }
-                    }
-                }
-           
-            })
-            const mappedBasketItems: any[] = basketItems
-                .map((item) => {
-                    const pricing = pricings.find((pricing: any) => pricing.id === item.pricingID)
-                    if (!pricing) {
-                        return null
-                    }
-
-                    return {
-                        id: item.pricingID,
-                        quantity: item.quantity,
-                        createdAt: item.createdAt,
-                        pricing: {
-                            id: pricing.id,
-                            price: pricing.price,
-                            quantity: pricing.quantity,
-                            itemType: pricing.itemType,
-                            good: pricing.good
-                        }
-                    }
-                })
-                .filter(Boolean)
-
-            const unavailableBasketItems = mappedBasketItems.filter((item: any) =>
-                item.pricing.quantity < 1 || item.pricing.good.state === GoodState.Awaiting)
-
-            const availableBasketItems = mappedBasketItems.filter((item: any) =>
-                item.pricing.quantity > 0 && item.pricing.good.state === GoodState.Available)
-
-            let totalPrice = 0
-
-            for (const item of availableBasketItems) {
-                totalPrice += item.pricing.price * item.quantity
+                good: goodSelect
             }
-
-            return res.status(200).json({
-                basketItems: BasketController.mapBasketItems(
-                    availableBasketItems,
-                    req.t
-                ),
-                unavailableBasketItems: BasketController.mapBasketItems(
-                    unavailableBasketItems,
-                    req.t
-                ),
-                summary: {
-                    totalPrice: Number(totalPrice.toFixed(2)),
-                    totalAvailable: availableBasketItems.length,
-                    totalUnavailable: unavailableBasketItems.length
-                }
-            })
-        } catch (err) {
-            return next(err)
         }
-    }
 
-    private GetBasketItemsReqType: Joi.extractType<typeof BasketController.schemas.request.getBasketItems>
-    public async getBasketItems(
-        req: AuthRequest & typeof this.GetBasketItemsReqType,
-        res: Response<typeof this.GetBasketItemsResType>,
-        next: NextFunction
-    ) {
-        try {
-            const { user } = req
-            const language = req.headers['accept-language']
-            const basketItems = await prisma.basketItem.findMany({
+        if (userID) {
+            mappedBasketItems = await prisma.basketItem.findMany({
                 where: {
-                    userID: user.id,
+                    userID: userID,
                     pricing: {
                         deletedAt: null,
                         good: {
@@ -338,59 +257,54 @@ export class BasketController extends AbstractController {
                     quantity: true,
                     createdAt: true,
 
-                    pricing: {
-                        select: {
-                            id: true,
-                            price: true,
-                            quantity: true,
-
-                            itemType: {
-                                select: {
-                                    id: true,
-                                    name: {
-                                        select: {
-                                            [language as string]: true
-                                        }
-                                    }
-                                }
-                            },
-                            good: {
-                                select: {
-                                    id: true,
-                                    photos: true,
-                                    state: true,
-                                    name: {
-                                        select: {
-                                            [language as string]: true,
-                                            [language + 'Slug' as string]: true
-                                        }
-                                    },
-                                    description: {
-                                        select: {
-                                            [language as string]: true
-                                        }
-                                    },
-                                    selectionist: {
-                                        select: {
-                                            id: true,
-                                            name: {
-                                                select: {
-                                                    [language as string]: true
-                                                }
-                                            },
-                                            country: true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    pricing: pricingSelect
                 }
             })
-            
-            const unavailableBasketItems = basketItems.filter((item: any) =>
+        } else if (basketItems?.length) {
+            const pricings = await prisma.pricing.findMany({
+                where: {
+                    id: {
+                        in: basketItems.map((item) => item.pricingID)
+                    },
+                    deletedAt: null,
+                    good: {
+                        deletedAt: null,
+                        state: {
+                            in: [GoodState.Available, GoodState.Awaiting]
+                        }
+                    }
+                },
+                select: pricingSelect.select
+
+            })
+            mappedBasketItems = basketItems
+                .map((item) => {
+                    const pricing = pricings.find((pricing: any) => pricing.id === item.pricingID)
+                    if (!pricing) {
+                        return null
+                    }
+
+                    return {
+                        id: item.pricingID,
+                        quantity: item.quantity,
+                        createdAt: item.createdAt,
+                        pricing: {
+                            id: pricing.id,
+                            price: pricing.price,
+                            quantity: pricing.quantity,
+                            itemType: pricing.itemType,
+                            good: pricing.good
+                        }
+                    }
+                })
+                .filter(Boolean)
+        } 
+        
+        if (mappedBasketItems.length) {
+            const unavailableBasketItems = mappedBasketItems.filter((item: any) =>
                 item.pricing.quantity < 1 || item.pricing.good.state === GoodState.Awaiting)
-            const availableBasketItems = basketItems.filter((item: any) =>
+
+            const availableBasketItems = mappedBasketItems.filter((item: any) =>
                 item.pricing.quantity > 0 && item.pricing.good.state === GoodState.Available)
 
             let totalPrice = 0
@@ -399,15 +313,77 @@ export class BasketController extends AbstractController {
                 totalPrice += item.pricing.price * item.quantity
             }
 
-            return res.status(200).json({
-                basketItems: BasketController.mapBasketItems(availableBasketItems, req.t),
-                unavailableBasketItems: BasketController.mapBasketItems(unavailableBasketItems, req.t),
+            return {
+                basketItems: BasketController.mapBasketItems(
+                    availableBasketItems,
+                    t
+                ),
+                unavailableBasketItems: BasketController.mapBasketItems(
+                    unavailableBasketItems,
+                    t
+                ),
                 summary: {
                     totalPrice: Number(totalPrice.toFixed(2)),
                     totalAvailable: availableBasketItems.length,
                     totalUnavailable: unavailableBasketItems.length
                 }
+            } 
+        }  else {
+            return {
+                basketItems: [],
+                unavailableBasketItems: [],
+                summary: {
+                    totalPrice: 0,
+                    totalAvailable: 0,
+                    totalUnavailable: 0
+                }
+            }
+        }
+
+    }
+
+    public async getPublicBasketItems(
+        req: Request & typeof this.GetPublicBasketItemsReqType,
+        res: Response<typeof BasketController.GetBasketItemsResType>,
+        next: NextFunction
+    ) {
+        try {
+            const language = req.headers['accept-language']
+            const { basketItems } = req.body
+
+            const basket = await BasketController.selectBasketItems({
+                language: language as Language,
+                basketItems: basketItems.map((item) => ({
+                    pricingID: item.pricingID as string,
+                    createdAt: dayjs(item.createdAt).toISOString(),
+                    quantity: item.quantity as number
+                })),
+                t: req.t
             })
+
+            return res.status(200).json(basket)
+        } catch (err) {
+            return next(err)
+        }
+    }
+
+    private GetBasketItemsReqType: Joi.extractType<typeof BasketController.schemas.request.getBasketItems>
+    public async getBasketItems(
+        req: AuthRequest & typeof this.GetBasketItemsReqType,
+        res: Response<typeof BasketController.GetBasketItemsResType>,
+        next: NextFunction
+    ) {
+        try {
+            const { user } = req
+            const language = req.headers['accept-language']
+            
+            const basket = await BasketController.selectBasketItems({
+                language: language as Language,
+                userID: user.id,
+                t: req.t
+            })
+
+            return res.status(200).json(basket)
         } catch (err) {
             return next(err)
         }
@@ -428,7 +404,7 @@ export class BasketController extends AbstractController {
                     id: body.pricingID,
                     deletedAt: null,
                     good: {
-                        deletedAt: null,
+                        deletedAt: null
                     }
                 },
                 select: {
