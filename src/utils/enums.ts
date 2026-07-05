@@ -7,6 +7,7 @@ export enum PassportStrategy {
     google = 'google',
     jwtUserForgotPassword = 'jwt-user-forgot_password',
     jwtAdminForgotPassword = 'jwt-admin-forgot_password',
+    jwtCheckout = 'jwt-checkout',
 }
 
 export enum EmailType {
@@ -16,7 +17,8 @@ export enum EmailType {
 
 export enum JwtAudience {
     userForgotPassword = 'userfps',
-    adminForgotPassword = 'adminfps'
+    adminForgotPassword = 'adminfps',
+    userCheckout = 'usrcht',
 }
 
 export enum NodeEnv {
