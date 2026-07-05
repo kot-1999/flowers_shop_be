@@ -44,7 +44,8 @@ export class BasketController extends AbstractController {
             price: Joi.number().required(),
             itemType: Joi.object({
                 id: JoiCommon.string.id,
-                name: JoiCommon.object.singleTranslation.required()
+                name: JoiCommon.object.singleTranslation.required(),
+                weight: Joi.number().required()
             }).required()
         })
     })
@@ -215,6 +216,7 @@ export class BasketController extends AbstractController {
                 itemType: {
                     select: {
                         id: true,
+                        weight: true,
                         name: {
                             select: {
                                 [language as string]: true
