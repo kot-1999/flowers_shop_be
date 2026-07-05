@@ -1,8 +1,14 @@
-import { AuthRequest, NextFunction, OptionalAuthRequest, Response } from 'express'
+import { Address, User } from '@prisma/client'
+import { AuthRequest, NextFunction, Response } from 'express'
 import Joi from 'joi'
 
+import { BasketController } from './BasketController'
+import prisma from '../../services/Prisma'
+import shippingService from '../../services/ShippingService'
 import { AbstractController } from '../../types/AbstractController'
 import { JoiCommon } from '../../types/JoiCommon'
+import { Language } from '../../utils/enums'
+import { IError } from '../../utils/IError'
 
 export class ShippingController extends AbstractController {
     public static readonly schemas = {
@@ -10,8 +16,6 @@ export class ShippingController extends AbstractController {
             getRates: JoiCommon.object.request.keys({
                 body: Joi.object({
                     addressID: Joi.string().uuid()
-                        .required(),
-                    userID: Joi.string().uuid()
                         .required()
                 }).required()
             }),
@@ -47,8 +51,48 @@ export class ShippingController extends AbstractController {
         next: NextFunction
     ) {
         try {
+            const { user, body } = req
+            const language = req.headers['accept-language'] as Language
 
-            return res.json()
+            const address: Address & { user: User } = await prisma.address.findFirst({
+                where: {
+                    id: body.addressID
+                },
+                select: {
+                    apartment: true,
+                    building: true,
+                    street: true,
+                    city: true,
+                    postcode: true,
+                    country: true,
+                    user: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                        phone: true
+                    }
+                }
+            })
+
+            if (!address) {
+                throw new IError(404, req.t('Address not found'))
+            }
+
+            if (address.userID !== user.id) {
+                throw new IError(403, req.t('Not the address holder'))
+            }
+
+            const { basketItems } = await BasketController.selectBasketItems({
+                userID: user.id,
+                language,
+                t: req.t
+            })
+
+            // TODO: Add AI rates translation
+            const result = await shippingService.createShipment(address, basketItems as any)
+
+            return res.status(200).json(result)
         } catch (e) {
             next(e)
         }
@@ -57,7 +101,7 @@ export class ShippingController extends AbstractController {
     private CreateLabelReqType: Joi.extractType<typeof ShippingController.schemas.request.createLabel>
     private CreateLabelResType: Joi.extractType<typeof ShippingController.schemas.response.createLabel>
     public async createLabel(
-        req: OptionalAuthRequest & typeof this.CreateLabelReqType,
+        req: AuthRequest & typeof this.CreateLabelReqType,
         res: Response<typeof this.CreateLabelResType>,
         next: NextFunction
     ) {

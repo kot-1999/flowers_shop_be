@@ -1,7 +1,9 @@
+import { UserRole } from '@prisma/client'
 import { Router } from 'express'
 
 import { ShippingController } from '../../controllers/v1/ShippingController'
 import authorizationMiddleware from '../../middlewares/authorizationMiddleware'
+import permissionMiddleware from '../../middlewares/permissionMiddleware'
 import validationMiddleware from '../../middlewares/validationMiddleware'
 import { PassportStrategy } from '../../utils/enums'
 
@@ -23,7 +25,7 @@ export default function shippingRouter() {
         */
         '/shipping',
         validationMiddleware(ShippingController.schemas.request.getRates),
-        authorizationMiddleware([PassportStrategy.google]),
+        authorizationMiddleware([PassportStrategy.google, PassportStrategy.jwtCheckout]),
         shippingController.getRates
     )
 
@@ -41,6 +43,8 @@ export default function shippingRouter() {
         */
         '/shipping/:orderID',
         validationMiddleware(ShippingController.schemas.request.createLabel),
+        authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
         shippingController.createLabel
     )
 
