@@ -4,6 +4,7 @@ import addressRouter from './v1/AddressRouter'
 import aiRouter from './v1/AIRouter'
 import basketRouter from './v1/BasketRouter'
 import categoryRouter from './v1/CategoryRouter'
+import checkoutRouter from './v1/CheckoutRouter'
 import fileUploadRouter from './v1/FileUploadRouter'
 import goodRouter from './v1/GoodRouter'
 import itemTypeRouter from './v1/ItemTypeRouter'
@@ -31,6 +32,7 @@ export default function authorizeRouters() {
     router.use('/v1', addressRouter())
     router.use('/v1', basketRouter())
     router.use('/v1', shippingRouter())
+    router.use('/v1', checkoutRouter())
     
     logger.info('Application routes were initialized.')
 
