@@ -19,7 +19,7 @@ export default function addressRouter() {
         */
         '/addresses',
         validationMiddleware(AddressController.schemas.request.getAddresses),
-        authorizationMiddleware([PassportStrategy.google]),
+        authorizationMiddleware([PassportStrategy.google, PassportStrategy.jwtCheckout]),
         addressController.getAddresses
     )
 
@@ -37,7 +37,7 @@ export default function addressRouter() {
         */
         '/addresses',
         validationMiddleware(AddressController.schemas.request.putAddress),
-        authorizationMiddleware([PassportStrategy.google]),
+        authorizationMiddleware([PassportStrategy.google, PassportStrategy.jwtCheckout]),
         addressController.putAddress
     )
 
