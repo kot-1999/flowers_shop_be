@@ -161,12 +161,14 @@ const options: IConfig = {
         },
         customs: {
             certify: true,
-            certify_signer: 'John Smith',
-            contents_type: 'MERCHANDISE',
+            certifySigner: 'John Smith',
+            contentsType: 'MERCHANDISE',
             incoterm: 'DDU',
-            non_delivery_option: 'RETURN',
+            nonDeliveryOption: 'RETURN',
+            hsCode: '9505.10',
+            tariffNumber: '9505100000',
             exporter: {
-                tax_ids: [
+                taxIDs: [
                     {
                         number: 'GB123456789' ,
                         type: TaxType.VAT

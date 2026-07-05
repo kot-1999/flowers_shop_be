@@ -10,7 +10,8 @@ import { OAuth2StrategyOptionsWithoutRequiredURLs } from 'passport-google-oauth2
 import { JwtFromRequestFunction } from 'passport-jwt'
 import { RedisClientOptions } from 'redis'
 
-import {NodeEnv, TaxType} from '../utils/enums'
+import { NodeEnv, TaxType } from '../utils/enums'
+import {CustomsDeclarationContentsTypeEnum, CustomsDeclarationNonDeliveryOptionEnum} from "shippo";
 
 interface LoggerCommonConfig {
   isLoggedToConsole: boolean
@@ -95,15 +96,17 @@ export interface IConfig {
       email: string
     },
     customs: {
-      contents_type: string,
-      non_delivery_option: string,
+      hsCode: string,
+      tariffNumber: string,
+      contentsType: CustomsDeclarationContentsTypeEnum,
+      nonDeliveryOption: CustomsDeclarationNonDeliveryOptionEnum,
       incoterm: 'DDU',
       certify: true,
-      certify_signer: string,
+      certifySigner: string,
       exporter: {
-        'tax_ids': {
-          'type': TaxType,
-          'number': string
+        taxIDs: {
+          type: TaxType,
+          number: string
         }[]
       },
     }

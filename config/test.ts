@@ -149,13 +149,15 @@ const options: IConfig = {
             version: '2018-02-08'
         },
         customs: {
+            hsCode: '9505.10',
+            tariffNumber: '9505100000',
             certify: true,
-            certify_signer: 'John Smith',
-            contents_type: 'MERCHANDISE',
+            certifySigner: 'John Smith',
+            contentsType: 'MERCHANDISE',
             incoterm: 'DDU',
-            non_delivery_option: 'RETURN',
+            nonDeliveryOption: 'RETURN',
             exporter: {
-                tax_ids: [
+                taxIDs: [
                     {
                         number: 'GB123456789' ,
                         type: TaxType.VAT
