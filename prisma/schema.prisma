@@ -314,6 +314,7 @@ enum OrderState {
   Delivered
   Cancelled
   Refunded
+  Expired
 }
 
 enum Country {
