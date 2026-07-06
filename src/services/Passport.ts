@@ -226,7 +226,7 @@ class PassportSetup {
                 throw new IError(401, 'Not authorized (JwtForgotPasswordStrategy)')
             }
 
-            const user = await prisma.admin.findFirst({
+            const user = await prisma.user.findFirst({
                 where: {
                     id: payload.id,
                     deletedAt: null

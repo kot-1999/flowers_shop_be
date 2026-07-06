@@ -66,11 +66,13 @@ export class ShippingController extends AbstractController {
                     postcode: true,
                     country: true,
                     user: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        email: true,
-                        phone: true
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            phone: true
+                        }
                     }
                 }
             })
@@ -79,7 +81,7 @@ export class ShippingController extends AbstractController {
                 throw new IError(404, req.t('Address not found'))
             }
 
-            if (address.userID !== user.id) {
+            if (address.user.id !== user.id) {
                 throw new IError(403, req.t('Not the address holder'))
             }
 
@@ -89,8 +91,13 @@ export class ShippingController extends AbstractController {
                 t: req.t
             })
 
-            // TODO: Add AI rates translation
-            const result = await shippingService.createShipment(address, basketItems as any)
+            const result = await shippingService.createShipment(address, basketItems.map((item: any) => ({
+                ...item,
+                pricing: {
+                    ...item.pricing,
+                    good: item.good
+                }
+            })))
 
             return res.status(200).json(result)
         } catch (e) {

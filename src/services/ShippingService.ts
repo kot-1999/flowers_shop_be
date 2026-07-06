@@ -113,7 +113,7 @@ export class ShippingService {
                 },
 
                 items: basketItems.map((item) => ({
-                    description: item.pricing.good.name.en,
+                    description: Object.values(item.pricing.good.name)[0] as string,
                     quantity: item.quantity,
 
                     valueAmount: item.pricing.price.toString(),

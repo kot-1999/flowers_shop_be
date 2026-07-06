@@ -185,9 +185,9 @@ export class CheckoutController extends AbstractController {
                     token: JwtService.generateToken({
                         id: user.id,
                         aud: JwtAudience.userCheckout
-                    })
+                    }, 60 * 60)
                 },
-                message: req.t('Registration completed')
+                message: req.t('User was validated successfully')
             })
         } catch (e) {
             next(e)

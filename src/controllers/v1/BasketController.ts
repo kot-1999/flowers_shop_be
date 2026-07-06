@@ -302,7 +302,7 @@ export class BasketController extends AbstractController {
                 .filter(Boolean)
         } 
         
-        if (mappedBasketItems.length) {
+        if (mappedBasketItems?.length) {
             const unavailableBasketItems = mappedBasketItems.filter((item: any) =>
                 item.pricing.quantity < 1 || item.pricing.good.state === GoodState.Awaiting)
 
