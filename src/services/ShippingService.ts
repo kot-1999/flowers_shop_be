@@ -2,6 +2,7 @@ import { Address, BasketItem, Good, ItemType, Pricing, Selectionist, Translation
 import config from 'config'
 import { Shippo } from 'shippo'
 
+import logger from './Logger'
 import { IConfig } from '../types/config'
 import { ShippingCountry } from '../utils/enums'
 
@@ -29,6 +30,7 @@ export class ShippingService {
             apiKeyHeader: this.shippoConfig.config.apiKey,
             shippoApiVersion: this.shippoConfig.config.version
         })
+        logger.info('Shipping service was initialized')
     }
 
     /**
@@ -117,7 +119,7 @@ export class ShippingService {
                     quantity: item.quantity,
 
                     valueAmount: item.pricing.price.toString(),
-                    valueCurrency: 'EUR',
+                    valueCurrency: 'GBP',
 
                     originCountry: ShippingCountry.UnitedKingdom.countryCode,
 
@@ -142,6 +144,10 @@ export class ShippingService {
             labelFileType: 'PDF',
             async: false
         })
+    }
+
+    public async getRate(rateID: string) {
+        return this.client.rates.get(rateID)
     }
 }
 
