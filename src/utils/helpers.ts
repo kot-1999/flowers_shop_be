@@ -5,6 +5,12 @@ export const translationSelect = {
     ...Object.fromEntries(Object.values(Language).map((lang) => [lang, true]))
 }
 
+export const translationWithSlugSelect = {
+    id: true,
+    ...Object.fromEntries(Object.values(Language).map((lang) => [lang, true])),
+    ...Object.fromEntries(Object.values(Language).map((lang) => [lang + 'Slug', true]))
+}
+
 export function slugify(text: string): string {
     return text
         .normalize('NFD') // split accents
