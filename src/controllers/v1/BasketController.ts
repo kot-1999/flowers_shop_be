@@ -9,6 +9,7 @@ import prisma from '../../services/Prisma'
 import { AbstractController } from '../../types/AbstractController'
 import { JoiCommon } from '../../types/JoiCommon'
 import { Language } from '../../utils/enums'
+import { translationWithSlugSelect } from '../../utils/helpers'
 import { IError } from '../../utils/IError'
 
 export class BasketController extends AbstractController {
@@ -170,7 +171,7 @@ export class BasketController extends AbstractController {
     
     public static async selectBasketItems(options: { 
         userID?: string, 
-        language: Language,
+        language?: Language,
         t: TFunction,
         basketItems?: Array<{ quantity: number, createdAt: string, pricingID: string }>}): Promise<typeof BasketController.GetBasketItemsResType> {
         
@@ -184,23 +185,23 @@ export class BasketController extends AbstractController {
                 photos: true,
                 state: true,
                 name: {
-                    select: {
+                    select: language ? {
                         [language as string]: true,
                         [language + 'Slug' as string]: true
-                    }
+                    } : translationWithSlugSelect
                 },
                 description: {
-                    select: {
+                    select: language ? {
                         [language as string]: true
-                    }
+                    } : translationWithSlugSelect
                 },
                 selectionist: {
                     select: {
                         id: true,
                         name: {
-                            select: {
+                            select: language ? {
                                 [language as string]: true
-                            }
+                            } : translationWithSlugSelect
                         },
                         country: true
                     }
@@ -218,9 +219,9 @@ export class BasketController extends AbstractController {
                         id: true,
                         weight: true,
                         name: {
-                            select: {
+                            select: language ? {
                                 [language as string]: true
-                            }
+                            } : translationWithSlugSelect
                         }
                     }
                 },
