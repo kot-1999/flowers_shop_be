@@ -110,5 +110,10 @@ export interface IConfig {
         }[]
       },
     }
+  },
+  stripe: {
+    config: {
+      apiSecret: string
+    }
   }
 }

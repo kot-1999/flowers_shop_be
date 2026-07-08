@@ -190,6 +190,11 @@ const options: IConfig = {
             postalCode: 'SW19 8TR',
             street: '172 Haydons Road'
         }
+    },
+    stripe: {
+        config: {
+            apiSecret: process.env.STRIPE_API_SECRET as string,
+        }
     }
 }
 export default options
