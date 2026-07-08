@@ -240,6 +240,10 @@ model Order {
   addressID String  @db.Uuid
   address   Address @relation(fields: [addressID], references: [id])
 
+  recipientFirstName String
+  recipientLastName  String
+  recipientEmail     String
+
   orderItems OrderItem[]
 
   createdAt DateTime  @default(now())
