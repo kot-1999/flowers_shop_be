@@ -1,3 +1,5 @@
+import { MetadataParam } from 'stripe'
+
 import { EmailType } from '../utils/enums'
 
 export type EmailDataType<T extends EmailType> =
@@ -13,3 +15,8 @@ export type EmailDataType<T extends EmailType> =
         lastName: string,
         jwtToken: string
     } : never
+
+export interface StripeMetadata extends MetadataParam{
+    userID: string,
+    orderID: string
+}
