@@ -44,5 +44,31 @@ export default function checkoutRouter() {
         checkoutController.createOrder
     )
 
+    router.post(
+        /*
+            #swagger.tags = ['v1-Checkout']
+            #swagger.description = 'Refund an order.'
+            #swagger.parameters['orderID'] = {
+                in: 'path',
+                description: 'Order ID',
+                required: true,
+                type: 'string'
+            }
+            #swagger.responses[200] = {
+                schema: {
+                    type: 'object',
+                    properties: {
+                        message: {
+                            type: 'string'
+                        }
+                    }
+                }
+            }
+        */
+        '/checkout/order/:orderID/refund',
+        authorizationMiddleware([PassportStrategy.google]),
+        checkoutController.refundOrder
+    )
+
     return router
 }

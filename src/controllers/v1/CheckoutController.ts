@@ -13,7 +13,7 @@ import shippingService from '../../services/ShippingService'
 import stripeService from '../../services/StripeService'
 import { AbstractController } from '../../types/AbstractController'
 import { JoiCommon } from '../../types/JoiCommon'
-import { JwtAudience, Language } from '../../utils/enums'
+import { JwtAudience } from '../../utils/enums'
 import { IError } from '../../utils/IError'
 
 export class CheckoutController extends AbstractController {
@@ -46,6 +46,13 @@ export class CheckoutController extends AbstractController {
                         email: JoiCommon.string.email.required()
                     }).required()
                 }).required()
+            }),
+            refundOrder: JoiCommon.object.request.keys({
+                params: Joi.object({
+                    orderID: Joi.string()
+                        .uuid()
+                        .required()
+                }).required()
             })
         },
 
@@ -64,12 +71,108 @@ export class CheckoutController extends AbstractController {
                     token: Joi.string().required()
                 }).required(),
                 message: Joi.string().required()
+            }).required(),
+            refundOrder: Joi.object({
+                message: Joi.string().required()
             }).required()
         }
     }
 
     constructor() {
         super()
+    }
+
+    private RefundOrderReqType: Joi.extractType<typeof CheckoutController.schemas.request.refundOrder>
+    private RefundOrderResType: Joi.extractType<typeof CheckoutController.schemas.response.refundOrder>
+    public async refundOrder(
+        req: AuthRequest & typeof this.RefundOrderReqType,
+        res: Response<typeof this.RefundOrderResType>,
+        next: NextFunction
+    ) {
+        try {
+            const { user } = req
+            const { orderID } = req.params
+
+            const order = await prisma.order.findFirst({
+                where: {
+                    id: orderID,
+                    userID: req.user.id,
+                    deletedAt: null
+                },
+                select: {
+                    id: true,
+                    productsPrice: true,
+                    shippingPrice: true,
+                    state: true,
+                    refundAmount: true
+                }
+            })
+
+            if (!order) {
+                throw new IError(404, req.t('Order not found'))
+            }
+
+            if (!order.paymentTransactionID) {
+                throw new IError(400, req.t('Order has no payment'))
+            }
+
+            let refundAmount: number | undefined
+
+            switch (order.state) {
+            case OrderState.Pending:
+                await prisma.order.update({
+                    where: {
+                        id: order.id
+                    },
+                    data: {
+                        state: OrderState.Cancelled
+                    }
+                })
+                return res.status(200).json({
+                    message: req.t('Order was cancelled')
+                })
+            case OrderState.Paid:
+                refundAmount = Math.round(Number(order.productsPrice + order.shippingPrice) * 100)
+                break
+            case OrderState.Processing:
+                refundAmount = Math.round(Number(order.productsPrice + order.shippingPrice) * 100)
+            case OrderState.Shipped && user.role === UserRole.Admin:
+                refundAmount = Math.round(Number(order.productsPrice) * 100)
+                break
+            case OrderState.Cancelled:
+                throw new IError(403, req.t('Refund already requested'))
+            case OrderState.Refunded:
+                throw new IError(403, req.t('Order is already refunded'))
+            default:
+                throw new IError(
+                    409,
+                    req.t('Order cannot be refunded')
+                )
+            }
+
+            await stripeService.createRefund(
+                order.paymentTransactionID,
+                refundAmount,
+                'requested_by_customer',
+                req.t
+            )
+
+            await prisma.order.update({
+                where: {
+                    id: order.id
+                },
+                data: {
+                    state: OrderState.Cancelled,
+                    refundAmount: Math.round((Number(refundAmount) * 100))
+                }
+            })
+
+            return res.status(200).json({
+                message: req.t('Refund created successfully')
+            })
+        } catch (e) {
+            next(e)
+        }
     }
 
     private CreateOrderReqType: Joi.extractType<typeof CheckoutController.schemas.request.createOrder>
@@ -135,10 +238,7 @@ export class CheckoutController extends AbstractController {
             }
 
             const totalInMinorUnits
-                = Math.round((
-                    Number(cart.summary.totalPrice)
-                        + Number(rate.amountLocal)
-                ) * 100)
+                = Math.round((Number(cart.summary.totalPrice) + Number(rate.amountLocal)) * 100)
 
             const orderID = randomUUID()
             const paymentIntent = await stripeService.createPaymentIntent(
@@ -147,7 +247,8 @@ export class CheckoutController extends AbstractController {
                 {
                     orderID,
                     userID: user.id
-                }
+                },
+                req.t
             )
 
             if (!paymentIntent.client_secret) {
@@ -237,32 +338,10 @@ export class CheckoutController extends AbstractController {
                     deletedAt: null
                 }
             })
-            // let [user, pricings] = await Promise.all([
-            //     prisma.user.findFirst({
-            //         where: {
-            //             email: body.user.email,
-            //             deletedAt: null
-            //         }
-            //     }),
-            //     prisma.pricing.findMany({
-            //         where: {
-            //             id: {
-            //                 in: body.basketItems.map((item) => item.pricingID)
-            //             },
-            //             deletedAt: null
-            //         }
-            //     })
-            // ])
 
             if (user?.role && user.role !== UserRole.NotRegistered) {
                 throw new IError(409, req.t('There is an account with such email in the system. Login into your account or use different email'))
             }
-
-            // const nonZeroQuantityPricings = pricings.filter((pricing: Pricing) => pricing.quantity > 0)
-            //
-            // if (!pricings.length || !nonZeroQuantityPricings.length) {
-            //     throw new IError(404, req.t('Add some products to your basket to proceed with checkout'))
-            // }
 
             const data = {
                 firstName: body.user.firstName,
@@ -294,34 +373,6 @@ export class CheckoutController extends AbstractController {
                     }
                 })
             }
-            
-            // await prisma.$transaction(async (tx: any) => {
-            //     await tx.basketItem.deleteMany({
-            //         where: {
-            //             userID: user.id
-            //         }
-            //     })
-            //    
-            //     const basketItemsData: Array<Partial<BasketItem>> = []
-            //
-            //     for (const pricing of pricings) {
-            //         const basketItem = body.basketItems.find((item) => item.pricingID === pricing.id)
-            //         if (basketItem) {
-            //             basketItemsData.push({
-            //                 pricingID: basketItem.pricingID,
-            //                 createdAt: dayjs(basketItem.createdAt).toISOString() as any,
-            //                 userID: user.id,
-            //                 quantity: basketItem.quantity
-            //             })
-            //         } else {
-            //             continue
-            //         }
-            //     }
-            //    
-            //     await tx.basketItem.createMany({
-            //         data: basketItemsData
-            //     })
-            // })
 
             return res.status(200).json({
                 user: {
