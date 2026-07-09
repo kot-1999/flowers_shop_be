@@ -13,6 +13,7 @@ import shippingRouter from './v1/ShippingRoutes'
 import tagRouter from './v1/TagRouter'
 import userAuthorizationRouter from './v1/UserAuthorizationRouter'
 import userRouter from './v1/UserRouter'
+import stripeWebhookRouter from './v1/StripeWebhookRouter'
 import logger from '../services/Logger'
 
 const router = Router()
@@ -33,7 +34,7 @@ export default function authorizeRouters() {
     router.use('/v1', basketRouter())
     router.use('/v1', shippingRouter())
     router.use('/v1', checkoutRouter())
-    
+    router.use('/', stripeWebhookRouter())
     logger.info('Application routes were initialized.')
 
     return router

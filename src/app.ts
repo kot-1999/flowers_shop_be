@@ -14,6 +14,7 @@ import swaggerUi from 'swagger-ui-express'
 
 import errorMiddleware from './middlewares/errorMiddleware'  
 import languageMiddleware from './middlewares/languageMiddleware'
+import stripeWebhookRouter from './routes/v1/StripeWebhookRouter'
 // eslint-disable-next-line import/order
 import authorizeRouters from './routes'
 
@@ -35,6 +36,8 @@ const rateLimitConfig = config.get<IConfig['rateLimiter']>('rateLimiter')
 // Local variables
 const app = express()
 const redisClient = redis.getRedisClient()
+
+app.use('/api/v1', stripeWebhookRouter())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

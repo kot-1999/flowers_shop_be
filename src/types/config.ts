@@ -9,9 +9,9 @@ import SMTPConnection from 'nodemailer/lib/smtp-connection'
 import { OAuth2StrategyOptionsWithoutRequiredURLs } from 'passport-google-oauth20'
 import { JwtFromRequestFunction } from 'passport-jwt'
 import { RedisClientOptions } from 'redis'
+import { CustomsDeclarationContentsTypeEnum, CustomsDeclarationNonDeliveryOptionEnum } from 'shippo'
 
 import { NodeEnv, TaxType } from '../utils/enums'
-import {CustomsDeclarationContentsTypeEnum, CustomsDeclarationNonDeliveryOptionEnum} from "shippo";
 
 interface LoggerCommonConfig {
   isLoggedToConsole: boolean
@@ -113,7 +113,8 @@ export interface IConfig {
   },
   stripe: {
     config: {
-      apiSecret: string
+      apiSecret: string,
+      webhookSecret: string
     }
   }
 }

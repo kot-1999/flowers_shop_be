@@ -194,6 +194,7 @@ const options: IConfig = {
     stripe: {
         config: {
             apiSecret: process.env.STRIPE_API_SECRET as string,
+            webhookSecret: process.env.STRIPE_WEBHOOK_SECRET as string
         }
     }
 }

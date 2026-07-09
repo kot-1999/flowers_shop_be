@@ -1,8 +1,21 @@
 import config from 'config'
+import { TFunction } from 'i18next'
 import Stripe from 'stripe'
 
 import logger from './Logger'
 import { IConfig } from '../types/config'
+import { StripeMetadata } from '../types/types'
+import { IError } from '../utils/IError'
+
+interface StripeErrorType {
+    type: string
+    statusCode?: number
+    code?: string
+    decline_code?: string
+    param?: string
+    message: string
+    requestId?: string
+}
 
 class StripeService {
     private readonly stripe: Stripe
@@ -24,85 +37,152 @@ class StripeService {
     public async createPaymentIntent(
         amount: number,
         currency: string,
-        metadata?: Record<string, string>
+        metadata: StripeMetadata,
+        t: TFunction
     ) {
-        return this.stripe.paymentIntents.create({
-            amount,
-            currency,
-            automatic_payment_methods: {
-                enabled: true
-            },
-            metadata
-        })
+        try {
+            return await this.stripe.paymentIntents.create({
+                amount,
+                currency,
+                automatic_payment_methods: {
+                    enabled: true
+                },
+                metadata
+            })
+        } catch (err) {
+            this.handleStripeError(err as StripeErrorType, t)
+        }
     }
 
-    // public async retrievePaymentIntent(id: string) {
-    //     return this.stripe.paymentIntents.retrieve(id)
-    // }
+    public async retrievePaymentIntent(id: string, t: TFunction) {
+        try {
+            return await this.stripe.paymentIntents.retrieve(id)
+        } catch (err) {
+            this.handleStripeError(err as StripeErrorType, t)
+        }
+    }
 
-    // public async createCheckoutSession(params: Stripe.Checkout.SessionCreateParams) {
-    //     return this.stripe.checkout.sessions.create(params)
-    // }
-    //
-    // public constructWebhookEvent(
-    //     payload: Buffer,
-    //     signature: string
-    // ) {
-    //     return this.stripe.webhooks.constructEvent(
-    //         payload,
-    //         signature,
-    //         this.stripeConfig.webhookSecret
-    //     )
-    // }
+    public async createCheckoutSession(
+        params: Stripe.Checkout.SessionCreateParams,
+        t: (key: string) => string
+    ) {
+        try {
+            return await this.stripe.checkout.sessions.create(params)
+        } catch (err) {
+            this.handleStripeError(err as StripeErrorType, t)
+        }
+    }
+
+    public constructWebhookEvent(
+        payload: string,
+        signature: string,
+        t: (key: string) => string
+    ): Stripe.Event & { data: { object: { metadata?: StripeMetadata } }} {
+        try {
+            return this.stripe.webhooks.constructEvent(
+                payload,
+                signature,
+                this.stripeConfig.config.webhookSecret
+            ) as Stripe.Event & {
+                data: {
+                    object: {
+                        metadata?: StripeMetadata
+                    }
+                }
+            }
+        } catch (err) {
+            this.handleStripeError(err as StripeErrorType, t)
+        }
+    }
+
+    public async createRefund(
+        paymentIntentID: string,
+        amount: number | undefined,
+        reason: Stripe.RefundCreateParams.Reason,
+        t: TFunction
+    ) {
+        try {
+            return await this.stripe.refunds.create({
+                payment_intent: paymentIntentID,
+                amount,
+                reason
+            })
+        } catch (err) {
+            this.handleStripeError(err as StripeErrorType, t)
+        }
+    }
+
+    private handleStripeError(
+        err: StripeErrorType | any,
+        t: (key: string) => string
+    ): never {
+
+        switch (err.type) {
+        case 'StripeCardError':
+            logger.error('Card declined', {
+                statusCode: err.statusCode,
+                code: err.code,
+                declineCode: err.decline_code,
+                param: err.param,
+                requestId: err.requestId
+            })
+            throw new IError(400, t('Card declined'))
+
+        case 'StripeRateLimitError':
+            logger.error('Stripe rate limit exceeded', {
+                requestId: err.requestId
+            })
+            throw new IError(429, t('Payment service rate limit exceeded'))
+
+        case 'StripeInvalidRequestError':
+            logger.error('Invalid request', {
+                message: err.message,
+                param: err.param,
+                requestId: err.requestId
+            })
+            throw new IError(400, t('Invalid payment request'))
+
+        case 'StripeAPIError':
+            logger.error('Stripe API error', {
+                requestId: err.requestId,
+                message: err.message
+            })
+            throw new IError(500, t('Payment service API error'))
+
+        case 'StripeConnectionError':
+            logger.error('Connection error to Stripe', {
+                requestId: err.requestId,
+                message: err.message
+            })
+            throw new IError(503, t('Connection error to payment service'))
+
+        case 'StripeAuthenticationError':
+            logger.error('Stripe authentication error', {
+                requestId: err.requestId
+            })
+            throw new IError(401, t('Payment authentication error'))
+
+        default:
+            if (err instanceof this.stripe.errors.StripeError) {
+                logger.error('Stripe error', {
+                    statusCode: err.statusCode,
+                    code: err.code,
+                    message: err.message,
+                    requestId: err.requestId
+                })
+                throw new IError(500, t('errors.payment.stripeError'))
+            } else {
+                logger.error('Unexpected error in Stripe service', {
+                    message: err.message,
+                    stack: err.stack
+                })
+                throw new IError(500, t('Unexpected error in payment service'))
+            }
+        }
+    }
 }
 
 const stripeConfig = config.get<IConfig['stripe']>('stripe')
 const stripeService = new StripeService(stripeConfig)
 
 export default stripeService
-
-// switch (err.type) {
-//     case 'StripeCardError':
-//         // A declined card error
-//         console.log('Status:', err.statusCode);
-//         console.log('Code:', err.code);
-//         if (err.decline_code) console.log('Decline code:', err.decline_code);
-//         if (err.param) console.log('Param:', err.param);
-//         console.log('Message:', err.message);
-//         console.log('Request ID:', err.requestId);
-//         break;
-//     case 'StripeRateLimitError':
-//         // Too many requests made to the API too quickly
-//         console.log('Request ID:', err.requestId);
-//         break;
-//     case 'StripeInvalidRequestError':
-//         // Invalid parameters were supplied to Stripe's API
-//         console.log('Message:', err.message);
-//         if (err.param) console.log('Param:', err.param);
-//         console.log('Request ID:', err.requestId);
-//         break;
-//     case 'StripeAPIError':
-//         // An error occurred internally with Stripe's API
-//         console.log('Request ID:', err.requestId);
-//         break;
-//     case 'StripeConnectionError':
-//         // Some kind of error occurred during the HTTPS communication
-//         console.log('Request ID:', err.requestId);
-//         break;
-//     case 'StripeAuthenticationError':
-//         // You probably used an incorrect API key
-//         console.log('Request ID:', err.requestId);
-//         break;
-//     default:
-//         if (err instanceof stripe.errors.StripeError) {
-//             // All other Stripe errors
-//             console.log('Status: ' + err.statusCode);
-//             console.log('Code: ' + err.code);
-//             console.log('Message: ' + err.message);
-//             console.log('Request ID: ' + err.requestId);
-//         } else {
-//             // Handle any other types of unexpected errors
-//             throw err;
-//         }
-//         break;
-// }
