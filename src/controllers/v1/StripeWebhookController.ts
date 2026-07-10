@@ -35,7 +35,6 @@ export class StripeWebhookController {
             if (!metadata || !metadata.userID || !metadata.orderID) {
                 throw new IError(500, 'Metadata is missing userID or orderID')
             }
-
             const [user, order] = await Promise.all([
                 prisma.user.findFirst({
                     where: {
@@ -45,14 +44,14 @@ export class StripeWebhookController {
                         id: true
                     }
                 }),
-                prisma.user.findFirst({
+                prisma.order.findFirst({
                     where: {
                         id: metadata.orderID,
                         userID: metadata.userID
                     },
                     select: {
                         id: true,
-                        status: true,
+                        state: true,
                         expiresAt: true
                     }
                 })
@@ -74,7 +73,7 @@ export class StripeWebhookController {
                         userID: metadata.userID
                     },
                     data: {
-                        status: OrderState.Paid
+                        state: OrderState.Paid
                     }
                 })
                 break
@@ -85,7 +84,7 @@ export class StripeWebhookController {
                         userID: metadata.userID
                     },
                     data: {
-                        status: OrderState.PaymentFailed
+                        state: OrderState.PaymentFailed
                     }
                 })
                 break
@@ -97,7 +96,7 @@ export class StripeWebhookController {
                         userID: metadata.userID
                     },
                     data: {
-                        status: OrderState.Refunded
+                        state: OrderState.Refunded
                     }
                 })
                 break

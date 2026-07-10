@@ -1,10 +1,10 @@
-import { Country } from '@prisma/client'
+// import { Country } from '@prisma/client'
 import { expect } from 'chai'
 import dayjs from 'dayjs'
 
 import prisma from '../../../src/services/Prisma'
 import shippingService from '../../../src/services/ShippingService'
-import { ShippingCountry } from '../../../src/utils/enums'
+// import { ShippingCountry } from '../../../src/utils/enums'
 
 describe('Shipping label creation', () => {
     let shippingRateID: string

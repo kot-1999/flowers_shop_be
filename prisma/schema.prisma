@@ -252,8 +252,8 @@ model Order {
   shippingRateID        String
   shippingTransactionID String?
 
-  paymentTransactionID String? @unique
-  refundAnount         Decimal @db.Decimal(12, 2)
+  paymentTransactionID String?  @unique
+  refundAnount         Decimal? @db.Decimal(12, 2)
 
   @@index([userID])
   @@index([state])

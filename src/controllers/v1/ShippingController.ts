@@ -1,4 +1,4 @@
-import { Address, User } from '@prisma/client'
+import { Address, User, UserRole } from '@prisma/client'
 import { AuthRequest, NextFunction, Response } from 'express'
 import Joi from 'joi'
 
@@ -16,7 +16,15 @@ export class ShippingController extends AbstractController {
             getRates: JoiCommon.object.request.keys({
                 body: Joi.object({
                     addressID: Joi.string().uuid()
-                        .required()
+                        .required(),
+                    basketItems: Joi.array().items(Joi.object({
+                        pricingID: Joi.string().required(),
+                        quantity: Joi.number().integer()
+                            .required(),
+                        createdAt: Joi.date().iso()
+                            .required()
+                    }))
+                        .optional()
                 }).required()
             }),
 
@@ -84,8 +92,11 @@ export class ShippingController extends AbstractController {
             if (address.user.id !== user.id) {
                 throw new IError(403, req.t('Not the address holder'))
             }
-
-            const { basketItems } = await BasketController.selectBasketItems({
+            const { basketItems } = user.role === UserRole.NotRegistered ? await BasketController.selectBasketItems({
+                basketItems: body.basketItems as any,
+                language,
+                t: req.t
+            }) : await BasketController.selectBasketItems({
                 userID: user.id,
                 language,
                 t: req.t
