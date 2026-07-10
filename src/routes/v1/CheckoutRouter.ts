@@ -48,26 +48,36 @@ export default function checkoutRouter() {
         /*
             #swagger.tags = ['v1-Checkout']
             #swagger.description = 'Refund an order.'
-            #swagger.parameters['orderID'] = {
-                in: 'path',
-                description: 'Order ID',
-                required: true,
-                type: 'string'
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1RefundOrderReqBody" }
             }
             #swagger.responses[200] = {
-                schema: {
-                    type: 'object',
-                    properties: {
-                        message: {
-                            type: 'string'
-                        }
-                    }
-                }
+                schema: { "$ref": "#/definitions/v1RefundOrderReqRes" }
             }
         */
         '/checkout/order/:orderID/refund',
+        validationMiddleware(CheckoutController.schemas.request.refundOrder),
         authorizationMiddleware([PassportStrategy.google]),
         checkoutController.refundOrder
+    )
+
+    router.get(
+        /*
+            #swagger.tags = ['v1-Checkout']
+            #swagger.description = 'Refund an order.'
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1GetInvoiceReqBody" }
+            }
+            #swagger.responses[200] = {
+                schema: { "$ref": "#/definitions/v1GetInvoiceRes" }
+            }
+        */
+        '/checkout/order/:orderID',
+        validationMiddleware(CheckoutController.schemas.request.getInvoice),
+        authorizationMiddleware([PassportStrategy.google, PassportStrategy.jwtCheckout]),
+        checkoutController.getInvoice
     )
 
     return router

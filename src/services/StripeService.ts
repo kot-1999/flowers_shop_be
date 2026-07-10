@@ -1,3 +1,4 @@
+import {Order, OrderItem, OrderState} from '@prisma/client'
 import config from 'config'
 import { TFunction } from 'i18next'
 import Stripe from 'stripe'
@@ -32,6 +33,88 @@ class StripeService {
 
     public get client() {
         return this.stripe
+    }
+
+    public async getOrCreateCustomer(
+        firstName: string,
+        lastName: string,
+        email: string,
+        t: TFunction
+    ) {
+        try {
+            const customers = await this.stripe.customers.list({
+                email,
+                limit: 1
+            })
+
+            if (customers.data.length > 0) {
+                return customers.data[0]
+            }
+
+            return await this.stripe.customers.create({
+                name: `${firstName} ${lastName}`,
+                email
+            })
+        } catch (err) {
+            this.handleStripeError(err as StripeErrorType, t)
+        }
+    }
+
+    public async createInvoice(
+        order: Order & { orderItems: OrderItem[] },
+        t: TFunction
+    ) {
+        try {
+            const customer = await this.getOrCreateCustomer(
+                order.recipientFirstName,
+                order.recipientLastName,
+                order.recipientEmail,
+                t
+            )
+
+            const invoice = await this.stripe.invoices.create({
+                customer: customer.id,
+                auto_advance: false,
+                collection_method: 'send_invoice',
+                days_until_due: 0,
+                metadata: {
+                    orderID: order.id,
+                    userID: order.userID,
+                    paymentIntentID: order.paymentTransactionID ?? ''
+                }
+            })
+
+            for (const item of order.orderItems) {
+                const snapshot: any = item.snapshot
+
+                await this.stripe.invoiceItems.create({
+                    customer: customer.id,
+                    invoice: invoice.id,
+                    unit_amount_decimal: (Math.round(Number(item.unitPrice) * 100)).toString() as any,
+                    quantity: item.quantity,
+                    currency: 'gbp',
+                    description: `${snapshot.name.en} - ${snapshot.itemType.name.en}`
+                })
+            }
+
+            if (Number(order.shippingPrice) > 0) {
+                await this.stripe.invoiceItems.create({
+                    customer: customer.id,
+                    invoice: invoice.id,
+                    amount: Math.round(Number(order.shippingPrice) * 100),
+                    currency: 'gbp',
+                    description: 'Shipping'
+                })
+            }
+
+            const finalizedInvoice = await this.stripe.invoices.finalizeInvoice(invoice.id)
+
+            return await this.stripe.invoices.pay(finalizedInvoice.id, {
+                paid_out_of_band: order.state !== OrderState.Pending && order.state !== OrderState.PaymentFailed
+            })
+        } catch (err) {
+            this.handleStripeError(err as StripeErrorType, t)
+        }
     }
 
     public async createPaymentIntent(
@@ -135,6 +218,12 @@ class StripeService {
             throw new IError(429, t('Payment service rate limit exceeded'))
 
         case 'StripeInvalidRequestError':
+            console.log('Invalid request', {
+                message: err.message,
+                param: err.param,
+                code: err.code,
+                requestId: err.requestId
+            })
             logger.error('Invalid request', {
                 message: err.message,
                 param: err.param,

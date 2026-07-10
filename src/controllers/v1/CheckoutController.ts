@@ -53,6 +53,13 @@ export class CheckoutController extends AbstractController {
                         .uuid()
                         .required()
                 }).required()
+            }),
+            getInvoice: JoiCommon.object.request.keys({
+                params: Joi.object({
+                    orderID: Joi.string()
+                        .uuid()
+                        .required()
+                }).required()
             })
         },
 
@@ -74,12 +81,82 @@ export class CheckoutController extends AbstractController {
             }).required(),
             refundOrder: Joi.object({
                 message: Joi.string().required()
-            }).required()
+            }).required(),
+            getInvoice: Joi.object({
+                invoiceID: Joi.string().required(),
+                invoiceUrl: Joi.string().uri()
+                    .allow(null)
+                    .required(),
+                pdfUrl: Joi.string().uri()
+                    .allow(null)
+                    .required()
+            })
         }
     }
 
     constructor() {
         super()
+    }
+
+    private GetInvoiceReqType: Joi.extractType<typeof CheckoutController.schemas.request.getInvoice>
+    private GetInvoiceResType: Joi.extractType<typeof CheckoutController.schemas.response.getInvoice>
+    public async getInvoice(
+        req: AuthRequest & typeof this.GetInvoiceReqType,
+        res: Response<typeof this.GetInvoiceResType>,
+        next: NextFunction
+    ) {
+        try {
+            const { user } = req
+            const { orderID } = req.params
+
+            const order = await prisma.order.findFirstOrThrow({
+                where: {
+                    id: orderID,
+                    userID: user.id
+                },
+                include: {
+                    orderItems: true
+                }
+            })
+
+            if (order.state === OrderState.Pending) {
+                throw new IError(403, req.t('Order is unpaid yet'))
+            }
+
+            let invoiceID = order.invoiceID
+
+            if (!invoiceID) {
+                const invoice = await stripeService.createInvoice(
+                    order,
+                    req.t
+                )
+
+                if (!invoice) {
+                    throw new IError(500, 'Invoice creation failed')
+                }
+
+                invoiceID = invoice.id
+
+                await prisma.order.update({
+                    where: {
+                        id: order.id
+                    },
+                    data: {
+                        invoiceID: invoice.id
+                    }
+                })
+            }
+
+            const invoice = await stripeService.client.invoices.retrieve(invoiceID)
+
+            return res.status(200).json({
+                invoiceID: invoice.id,
+                invoiceUrl: invoice.hosted_invoice_url ?? null,
+                pdfUrl: invoice.invoice_pdf ?? null
+            })
+        } catch (err) {
+            next(err)
+        }
     }
 
     private RefundOrderReqType: Joi.extractType<typeof CheckoutController.schemas.request.refundOrder>
