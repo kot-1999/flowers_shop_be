@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction, Router} from 'express'
+import express, { Request, Response, NextFunction, Router } from 'express'
 
 import { StripeWebhookController } from '../../controllers/v1/StripeWebhookController'
 
