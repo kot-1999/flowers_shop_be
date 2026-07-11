@@ -238,9 +238,11 @@ model Order {
 
   addressSnapshot Json
 
-  recipientFirstName String
-  recipientLastName  String
-  recipientEmail     String
+  recipientFirstName     String
+  recipientLastName      String
+  recipientFirstNameSlug String?
+  recipientLastNameSlug  String?
+  recipientEmail         String
 
   orderItems OrderItem[]
   createdAt  DateTime    @default(now())
