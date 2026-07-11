@@ -26,8 +26,7 @@ export class CheckoutController extends AbstractController {
                     shippingRateID: Joi.string().required(),
                     recipientFirstName: JoiCommon.string.name.required(),
                     recipientLastName: JoiCommon.string.name.required(),
-                    recipientEmail: Joi.string().email()
-                        .required(),
+                    recipientEmail: JoiCommon.string.email.required(),
                     basketItems: Joi.array().items(Joi.object({
                         pricingID: Joi.string().required(),
                         quantity: Joi.number().integer()
