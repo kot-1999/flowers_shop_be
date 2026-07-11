@@ -18,6 +18,7 @@ import { SelectionistController } from '../src/controllers/v1/SelectionistContro
 import { ShippingController } from '../src/controllers/v1/ShippingController'
 import { TagController } from '../src/controllers/v1/TagController'
 import { UsersController } from '../src/controllers/v1/UserController'
+import {OrderController} from "../src/controllers/v1/OrderController";
 
 /**
  * Link all endpoints to their schemas
@@ -39,12 +40,17 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         me: UserAuthorizationController.schemas,
 
         // Basket
-
         getBasketItems: BasketController.schemas,
         postBasketItem: BasketController.schemas,
         patchBasketItem: BasketController.schemas,
         deleteBasketItem: BasketController.schemas,
-        
+
+        // Order
+        getOrders: OrderController.schemas,
+        getAdminOrders: OrderController.schemas,
+        getOrder: OrderController.schemas,
+        getAdminOrder: OrderController.schemas,
+
         // Address
         getAddresses: AddressController.schemas,
         putAddress: AddressController.schemas,

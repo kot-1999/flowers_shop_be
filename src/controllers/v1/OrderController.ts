@@ -38,17 +38,22 @@ export class OrderController {
 
     private static ordersResSchema = Joi.object({
         orders: Joi.array().items(Joi.object({
-            id: Joi.string().required(),
+            id: JoiCommon.string.id,
 
             state: Joi.string().required(),
 
             productsPrice: Joi.number().required(),
             shippingPrice: Joi.number().required(),
+            total: Joi.number().required(),
 
             createdAt: Joi.date().required(),
             updatedAt: Joi.date().required(),
 
-            basketItemsCount: Joi.number().required(),
+            recipientFirstName: JoiCommon.string.name.required(),
+            recipientLastName: JoiCommon.string.name.required(),
+            recipientEmail: JoiCommon.string.email.required(),
+
+            itemsCount: Joi.number().required(),
 
             user: Joi.object({
                 id: Joi.string().required(),
@@ -186,11 +191,6 @@ export class OrderController {
 
                 terms.forEach((term) => {
                     expressions.push({
-                        id: {
-                            contains: term
-                        }
-                    })
-                    expressions.push({
                         recipientFirstNameSlug: {
                             contains: term
                         }
@@ -228,21 +228,7 @@ export class OrderController {
                     })
                 })
 
-                where.OR = {
-                    OR: expressions
-                }
-
-                where.OR = [
-                    {
-
-                    },
-                    {
-
-                    },
-                    {
-
-                    }
-                ]
+                where.OR = expressions
             }
 
             const orderBy = {
@@ -260,6 +246,9 @@ export class OrderController {
                         state: true,
                         productsPrice: true,
                         shippingPrice: true,
+                        recipientFirstName: true,
+                        recipientLastName: true,
+                        recipientEmail: true,
                         createdAt: true,
                         updatedAt: true,
 
@@ -288,6 +277,7 @@ export class OrderController {
             return res.status(200).json({
                 orders: orders.map((order: any) => ({
                     ...order,
+                    total: Number((Number(order.shippingPrice) + Number(order.productsPrice)).toFixed(2)),
                     itemsCount: order._count.orderItems
                 })),
                 pagination: {
