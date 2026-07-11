@@ -1,4 +1,4 @@
-import {Order, OrderItem, OrderState} from '@prisma/client'
+import { Order, OrderItem, OrderState } from '@prisma/client'
 import config from 'config'
 import { TFunction } from 'i18next'
 import Stripe from 'stripe'
@@ -218,12 +218,6 @@ class StripeService {
             throw new IError(429, t('Payment service rate limit exceeded'))
 
         case 'StripeInvalidRequestError':
-            console.log('Invalid request', {
-                message: err.message,
-                param: err.param,
-                code: err.code,
-                requestId: err.requestId
-            })
             logger.error('Invalid request', {
                 message: err.message,
                 param: err.param,

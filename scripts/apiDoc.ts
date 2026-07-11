@@ -10,14 +10,14 @@ import { AIController } from '../src/controllers/v1/AIController'
 import { AuthorizationController as UserAuthorizationController } from '../src/controllers/v1/AuthorizationController'
 import { BasketController } from '../src/controllers/v1/BasketController'
 import { CategoryController } from '../src/controllers/v1/CategoryController'
+import { CheckoutController } from '../src/controllers/v1/CheckoutController'
 import { FileUpload } from '../src/controllers/v1/FileUpload'
 import { GoodController } from '../src/controllers/v1/GoodController'
 import { ItemTypeController } from '../src/controllers/v1/ItemTypeController'
 import { SelectionistController } from '../src/controllers/v1/SelectionistController'
+import { ShippingController } from '../src/controllers/v1/ShippingController'
 import { TagController } from '../src/controllers/v1/TagController'
 import { UsersController } from '../src/controllers/v1/UserController'
-import {ShippingController} from "../src/controllers/v1/ShippingController";
-import {CheckoutController} from "../src/controllers/v1/CheckoutController";
 
 /**
  * Link all endpoints to their schemas
