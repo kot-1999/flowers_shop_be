@@ -50,6 +50,7 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         getAdminOrders: OrderController.schemas,
         getOrder: OrderController.schemas,
         getAdminOrder: OrderController.schemas,
+        patchOrder: OrderController.schemas,
 
         // Address
         getAddresses: AddressController.schemas,

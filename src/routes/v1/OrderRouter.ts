@@ -87,5 +87,24 @@ export default function orderRouter() {
         orderController.getAdminOrder
     )
 
+    router.patch(
+        /*
+            #swagger.tags = ['v1-Orders']
+            #swagger.description = 'Get order by ID.'
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1PatchOrderReqBody" }
+            }
+            #swagger.responses[200] = {
+                schema: { "$ref": "#/definitions/v1PatchOrderRes" }
+            }
+        */
+        '/admin/orders/:orderID',
+        validationMiddleware(OrderController.schemas.request.patchOrder),
+        authorizationMiddleware([PassportStrategy.google]),
+        permissionMiddleware([UserRole.Admin]),
+        orderController.patchOrder
+    )
+
     return router
 }

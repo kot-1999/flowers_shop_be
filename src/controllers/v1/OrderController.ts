@@ -1,9 +1,10 @@
-import { OrderState } from '@prisma/client'
+import { Order, OrderState } from '@prisma/client'
 import { NextFunction, Response, AuthRequest } from 'express'
 import Joi from 'joi'
 
 import s3Service from '../../services/AwsS3'
 import prisma from '../../services/Prisma'
+import shippingService from '../../services/ShippingService'
 import { JoiCommon } from '../../types/JoiCommon'
 import { slugify } from '../../utils/helpers'
 import { IError } from '../../utils/IError'
@@ -129,12 +130,17 @@ export class OrderController {
             getAdminOrders: this.orderSchema,
             getOrder: JoiCommon.object.request.keys({
                 params: Joi.object({
-                    orderID: JoiCommon.string.id.required()
+                    orderID: JoiCommon.string.id
                 }).required()
             }),
             getAdminOrder: JoiCommon.object.request.keys({
                 params: Joi.object({
-                    orderID: JoiCommon.string.id.required()
+                    orderID: JoiCommon.string.id
+                }).required()
+            }),
+            patchOrder: JoiCommon.object.request.keys({
+                params: Joi.object({
+                    orderID: JoiCommon.string.id
                 }).required()
             })
         },
@@ -143,7 +149,94 @@ export class OrderController {
             getOrders: this.ordersResSchema,
             getAdminOrders: this.ordersResSchema,
             getOrder: this.orderResSchema,
-            getAdminOrder: this.orderResSchema
+            getAdminOrder: this.orderResSchema,
+            patchOrder: Joi.object({
+                order: Joi.object({
+                    id: JoiCommon.string.id
+                }),
+                message: Joi.string().required()
+            })
+        }
+    }
+
+    private PatchOrderReqType: Joi.extractType<typeof OrderController.schemas.request.patchOrder>
+    private PatchOrderResType: Joi.extractType<typeof OrderController.schemas.response.patchOrder>
+    public patchOrder = async (
+        req: AuthRequest & typeof this.PatchOrderReqType,
+        res: Response<typeof this.PatchOrderResType>,
+        next: NextFunction
+    ) => {
+        try {
+            const { params } = req
+
+            const where = {
+                id: params.orderID
+            }
+            
+            const order: Order = await prisma.order.findFirst({ where })
+
+            if (!order) {
+                throw new IError(404, req.t('Order was not found'))
+            }
+
+            if ([
+                OrderState.Cancelled, 
+                OrderState.Refunded, 
+                OrderState.Expired, 
+                OrderState.PaymentFailed, 
+                OrderState.Pending, 
+                OrderState.Delivered
+            ].includes(order.state as any)) {
+                throw new IError(403, req.t('Can not update order state'))
+            }
+
+            let message: string = ''
+            let data: any = {}
+
+            switch (order.state) {
+            case OrderState.Paid:
+                data.state = OrderState.Processing
+                message = 'Order is processing now'
+                break
+            case OrderState.Processing:
+                const res = await shippingService.createLabel(order.shippingRateID)
+
+                if (res.status === 'ERROR') {
+                    if (!!res.messages?.find((msg: any) => msg.code === 'carrier_request_failed')) {
+                        throw new IError(500, req.t('Carrier is unavailable. Please try again in a few minutes.'))
+                    }
+
+                    throw new IError(500, req.t('Unknown carrier error'))
+                }
+                data = {
+                    state: OrderState.Shipped,
+                    shippingTransactionID: res.objectId,
+                    trackingNumber: res.trackingNumber,
+                    trackingUrl: res.trackingUrlProvider
+                }
+                message = 'Order is ready for shipping'
+                break
+            case OrderState.Shipped:
+                data.state = OrderState.Delivered
+                message = 'Order is completed'
+                break
+            default:
+                throw new IError(400, 'Unknown order state')
+            }
+            
+            await prisma.order({
+                where,
+                data
+            })
+
+            return res.status(200).send({
+                order: {
+                    id: order.id
+                },
+                message
+            })
+        } catch (err) {
+            return next(err)
         }
     }
 
