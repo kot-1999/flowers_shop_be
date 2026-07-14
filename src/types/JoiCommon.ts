@@ -87,6 +87,46 @@ export class JoiCommon {
 
         }),
 
+        addressSnapshot: Joi.object({
+            id: Joi.string().uuid()
+                .required(),
+
+            userID: Joi.string().uuid()
+                .required(),
+
+            building: Joi.string().trim()
+                .required(),
+
+            apartment: Joi.string()
+                .allow(null)
+                .required(),
+
+            street: Joi.string().trim()
+                .required(),
+
+            city: Joi.string().trim()
+                .required(),
+
+            postcode: Joi.string().trim()
+                .required(),
+
+            country: Joi.string().trim()
+                .required(),
+
+            isDefault: Joi.boolean()
+                .required(),
+
+            createdAt: Joi.date()
+                .required(),
+
+            updatedAt: Joi.date()
+                .required(),
+
+            deletedAt: Joi.date()
+                .allow(null)
+                .required()
+        }),
+
         paginatedQuery: Joi.object({
             page: Joi.number()
                 .integer()
