@@ -212,8 +212,12 @@ export class CheckoutController extends AbstractController {
                 break
             case OrderState.Processing:
                 refundAmount = Math.round((Number(order.productsPrice) * 100) + (Number(order.shippingPrice) * 100))
-            case OrderState.Shipped && user.role === UserRole.Admin:
+            case OrderState.Shipped:
+                if (user.role !== UserRole.Admin) {
+                    throw new IError(403, req.t('Contact our administrator'))
+                }
                 refundAmount = Math.round(Number(order.productsPrice) * 100)
+
                 break
             case OrderState.Cancelled:
                 throw new IError(403, req.t('Refund already requested'))
