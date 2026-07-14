@@ -10,6 +10,7 @@ import config from 'config'
 
 import logger from './Logger'
 import { IConfig } from '../types/config'
+import { isUrl } from '../utils/helpers'
 
 /**
  * @class AwsS3
@@ -134,7 +135,15 @@ class AwsS3 {
      * @param {string} key - S3 object key
      * @returns {string}
      */
-    public getPublicUrl(key: string) {
+    public getPublicUrl(key: string | null) {
+        if (!key) {
+            return null
+        }
+
+        if (isUrl(key)) {
+            return key
+        }
+
         return `${this.s3Config.endpoint.replace('localstack_dev', 'localhost')}/${this.bucketName}/${key}`
     }
 
