@@ -15,9 +15,9 @@ export default function orderRouter() {
         /*
             #swagger.tags = ['v1-Orders']
             #swagger.description = 'Get current user orders.'
-            #swagger.parameters['query'] = {
-                in: 'query',
-                schema: { "$ref": "#/definitions/v1GetOrdersReqQuery" }
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1GetOrdersReqBody" }
             }
             #swagger.responses[200] = {
                 schema: { "$ref": "#/definitions/v1GetOrdersRes" }
@@ -34,9 +34,9 @@ export default function orderRouter() {
         /*
             #swagger.tags = ['v1-Orders']
             #swagger.description = 'Get all orders.'
-            #swagger.parameters['query'] = {
-                in: 'query',
-                schema: { "$ref": "#/definitions/v1GetAdminOrdersReqQuery" }
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1GetAdminOrdersReqBody" }
             }
             #swagger.responses[200] = {
                 schema: { "$ref": "#/definitions/v1GetAdminOrdersRes" }
@@ -54,9 +54,9 @@ export default function orderRouter() {
         /*
             #swagger.tags = ['v1-Orders']
             #swagger.description = 'Get current user order.'
-            #swagger.parameters['params'] = {
-                in: 'path',
-                schema: { "$ref": "#/definitions/v1GetOrderReqParams" }
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1GetOrderReqBody" }
             }
             #swagger.responses[200] = {
                 schema: { "$ref": "#/definitions/v1GetOrderRes" }
@@ -72,9 +72,9 @@ export default function orderRouter() {
         /*
             #swagger.tags = ['v1-Orders']
             #swagger.description = 'Get order by ID.'
-            #swagger.parameters['params'] = {
-                in: 'path',
-                schema: { "$ref": "#/definitions/v1GetOrderReqParams" }
+            #swagger.parameters['body'] = {
+                in: 'body',
+                schema: { "$ref": "#/definitions/v1GetOrderReqBody" }
             }
             #swagger.responses[200] = {
                 schema: { "$ref": "#/definitions/v1GetOrderRes" }

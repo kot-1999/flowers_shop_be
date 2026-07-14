@@ -55,11 +55,16 @@ export class OrderController {
 
             itemsCount: Joi.number().required(),
 
+            addressSnapshot: JoiCommon.object.addressSnapshot.required(),
+
             user: Joi.object({
                 id: Joi.string().required(),
                 firstName: Joi.string().required(),
                 lastName: Joi.string().required(),
                 email: Joi.string().email()
+                    .required(),
+                avatar: Joi.string().uri()
+                    .allow(null)
                     .required()
             }).required()
         }))
@@ -107,10 +112,13 @@ export class OrderController {
                 firstName: Joi.string().required(),
                 lastName: Joi.string().required(),
                 email: Joi.string().email()
+                    .required(),
+                avatar: Joi.string().uri()
+                    .allow(null)
                     .required()
             }).required(),
 
-            orderItems: Joi.array().items(Joi.object().unknown(true))
+            orderItems: Joi.array().items(Joi.object())
                 .required()
         }).required()
     })
@@ -167,7 +175,6 @@ export class OrderController {
     ) {
         try {
             const { query, user } = req
-
             const skip = (query.page - 1) * query.limit
 
             const where: any = {}
@@ -249,6 +256,7 @@ export class OrderController {
                         recipientFirstName: true,
                         recipientLastName: true,
                         recipientEmail: true,
+                        addressSnapshot: true,
                         createdAt: true,
                         updatedAt: true,
 
@@ -257,7 +265,8 @@ export class OrderController {
                                 id: true,
                                 firstName: true,
                                 lastName: true,
-                                email: true
+                                email: true,
+                                avatar: true
                             }
                         },
 
@@ -278,7 +287,11 @@ export class OrderController {
                 orders: orders.map((order: any) => ({
                     ...order,
                     total: Number((Number(order.shippingPrice) + Number(order.productsPrice)).toFixed(2)),
-                    itemsCount: order._count.orderItems
+                    itemsCount: order._count.orderItems,
+                    user: {
+                        ...order.user,
+                        avatar: s3Service.getPublicUrl(user.avatar)
+                    }
                 })),
                 pagination: {
                     page: query.page,
@@ -319,7 +332,6 @@ export class OrderController {
         try {
             const { orderID } = req.params
             const { user } = req
-            const language = req.headers['accept-language'] as string
 
             const where: any = {
                 id: orderID
@@ -361,7 +373,8 @@ export class OrderController {
                             id: true,
                             firstName: true,
                             lastName: true,
-                            email: true
+                            email: true,
+                            avatar: true
                         }
                     },
 
@@ -370,7 +383,6 @@ export class OrderController {
                             id: true,
                             quantity: true,
                             unitPrice: true,
-                            totalPrice: true,
                             snapshot: true
                         }
                     }
@@ -384,6 +396,10 @@ export class OrderController {
             return res.status(200).json({
                 order: {
                     ...order,
+                    user: {
+                        ...order.user,
+                        avatar: s3Service.getPublicUrl(user.avatar)
+                    },
                     orderItems: order.orderItems.map((item: any) => {
                         const snapshot = item.snapshot
 
@@ -393,17 +409,11 @@ export class OrderController {
                             unitPrice: item.unitPrice,
                             totalPrice: item.totalPrice,
 
-                            good: {
-                                id: snapshot.id,
-                                name: snapshot.name?.[language],
+                            snapshot: {
+                                ...snapshot,
                                 photo: snapshot.photos?.length
                                     ? s3Service.getPublicUrl(snapshot.photos[0])
                                     : null
-                            },
-
-                            itemType: {
-                                id: snapshot.itemType?.id,
-                                name: snapshot.itemType?.name?.[language]
                             }
                         }
                     })
