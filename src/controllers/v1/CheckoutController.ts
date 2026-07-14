@@ -172,15 +172,15 @@ export class CheckoutController extends AbstractController {
             const order = await prisma.order.findFirst({
                 where: {
                     id: orderID,
-                    userID: req.user.id,
-                    deletedAt: null
+                    userID: req.user.id
                 },
                 select: {
                     id: true,
                     productsPrice: true,
                     shippingPrice: true,
                     state: true,
-                    refundAmount: true
+                    refundAmount: true,
+                    paymentTransactionID: true
                 }
             })
 
@@ -208,10 +208,10 @@ export class CheckoutController extends AbstractController {
                     message: req.t('Order was cancelled')
                 })
             case OrderState.Paid:
-                refundAmount = Math.round(Number(order.productsPrice + order.shippingPrice) * 100)
+                refundAmount = Math.round((Number(order.productsPrice) * 100) + (Number(order.shippingPrice) * 100))
                 break
             case OrderState.Processing:
-                refundAmount = Math.round(Number(order.productsPrice + order.shippingPrice) * 100)
+                refundAmount = Math.round((Number(order.productsPrice) * 100) + (Number(order.shippingPrice) * 100))
             case OrderState.Shipped && user.role === UserRole.Admin:
                 refundAmount = Math.round(Number(order.productsPrice) * 100)
                 break
@@ -239,7 +239,7 @@ export class CheckoutController extends AbstractController {
                 },
                 data: {
                     state: OrderState.Cancelled,
-                    refundAmount: Math.round((Number(refundAmount) * 100))
+                    refundAmount: Number(refundAmount / 100).toFixed(2)
                 }
             })
 
