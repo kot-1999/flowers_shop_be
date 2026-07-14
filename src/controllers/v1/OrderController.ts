@@ -152,7 +152,10 @@ export class OrderController {
             getAdminOrder: this.orderResSchema,
             patchOrder: Joi.object({
                 order: Joi.object({
-                    id: JoiCommon.string.id
+                    id: JoiCommon.string.id,
+                    labelUrl: Joi.string().uri()
+                        .allow(null)
+                        .required()
                 }),
                 message: Joi.string().required()
             })
@@ -192,7 +195,7 @@ export class OrderController {
 
             let message: string = ''
             let data: any = {}
-
+            let labelUrl = null
             switch (order.state) {
             case OrderState.Paid:
                 data.state = OrderState.Processing
@@ -201,7 +204,8 @@ export class OrderController {
             case OrderState.Processing:
                 const res = await shippingService.createLabel(order.shippingRateID)
 
-                if (res.status === 'ERROR') {
+                // TODO: Update error handling for shipping service
+                if (res.status === 'ERROR' || res.status !== 'SUCCESS') {
                     if (!!res.messages?.find((msg: any) => msg.code === 'carrier_request_failed')) {
                         throw new IError(500, req.t('Carrier is unavailable. Please try again in a few minutes.'))
                     }
@@ -214,6 +218,7 @@ export class OrderController {
                     trackingNumber: res.trackingNumber,
                     trackingUrl: res.trackingUrlProvider
                 }
+                labelUrl = res.labelUrl ?? null
                 message = 'Order is ready for shipping'
                 break
             case OrderState.Shipped:
@@ -224,14 +229,15 @@ export class OrderController {
                 throw new IError(400, 'Unknown order state')
             }
             
-            await prisma.order({
+            await prisma.order.update({
                 where,
                 data
             })
 
             return res.status(200).send({
                 order: {
-                    id: order.id
+                    id: order.id,
+                    labelUrl
                 },
                 message
             })

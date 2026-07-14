@@ -141,7 +141,7 @@ export class ShippingService {
     public async createLabel(shippingRateID: string) {
         return this.client.transactions.create({
             rate: shippingRateID,
-            labelFileType: 'PDF',
+            labelFileType: 'PNG',
             async: false
         })
     }
