@@ -172,7 +172,7 @@ CREATE TABLE "orders" (
     "shippingTransactionID" TEXT,
     "paymentTransactionID" TEXT,
     "invoiceID" TEXT,
-    "refundAnount" DECIMAL(12,2),
+    "refundAmount" DECIMAL(12,2),
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
 );
