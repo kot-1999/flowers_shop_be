@@ -1,3 +1,7 @@
+# Flowers Shop
+
+- Frontend repo: https://github.com/kot-1999/flowers_shop_fe
+
 ## Content
 
 - [About Flower Shop](#about-flower-shop)
