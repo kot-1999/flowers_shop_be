@@ -10,6 +10,9 @@
     - [Ollama AI Assistant setup](#ollama-ai-assistant-setup)
     - [Test data](#test-data)
 - [Useful links](#useful-links)
+- [Environment Variables](#environment-variables)
+- [Tech Stack](#tech-stack)
+- [Database Schema](#database-schema)
 - [Project Structure](#project-structure)
 - [Backend and DevOps features](#backend-and-devops-features)
 - [Application Overview](#application-overview)
@@ -109,6 +112,8 @@ npm run docker:dev
 ## Directly via docker compose
 docker compose  --env-file .env.dev --profile dev up
 ```
+
+![Docker Startup](./docs/screenshots/docker-up.png)
 
 When the application is up and running you can open the app on localhost http://localhost:3000
 
@@ -264,6 +269,126 @@ Once the application is running, the following services will be available:
 
 ---
 
+## Environment Variables
+
+The application is configured through environment variables. The table below describes every supported variable and its purpose.
+
+| Variable | Description |
+|----------|-------------|
+| `NODE_ENV` | Application environment (`dev`, `test`, `prod`) |
+| `PORT` | Backend server port |
+| `ENCRYPTION_KEY` | Symmetric encryption key used by the application |
+| `COOKIE_SECRET_KEY` | Secret used to sign session cookies |
+| `JWT_SECRET` | Secret used to sign JWT access tokens |
+| `JWT_EXPIRES_IN` | JWT token expiration time |
+| `POSTGRES_URL` | PostgreSQL connection string |
+| `POSTGRES_PORT` | PostgreSQL port |
+| `POSTGRES_USER` | PostgreSQL username |
+| `POSTGRES_PASSWORD` | PostgreSQL password |
+| `POSTGRES_DB` | PostgreSQL database name |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret |
+| `EMAIL_HOST` | SMTP server host |
+| `EMAIL_SMTP_PORT` | SMTP server port |
+| `EMAIL_HTTP_PORT` | MailHog web interface port |
+| `EMAIL_USER` | SMTP username |
+| `EMAIL_PASSWORD` | SMTP password |
+| `EMAIL_FROM_ADDRESS` | Default sender email address |
+| `REDIS_HOST` | Redis host |
+| `REDIS_PORT` | Redis port |
+| `REDIS_PASSWORD` | Redis password |
+| `REDIS_MAX_MEMORY` | Redis maximum memory allocation |
+| `SENTRY_DNS` | Sentry DSN for error monitoring |
+| `S3_ACCESS_KEY_ID` | AWS S3 / LocalStack access key |
+| `S3_SECRET_ACCESS_KEY` | AWS S3 / LocalStack secret key |
+| `S3_REGION` | S3 region |
+| `S3_ENDPOINT` | S3 endpoint (LocalStack in development) |
+| `S3_PORT` | S3 service port |
+| `ALLOW_CONFIG_MUTATIONS` | Allows runtime configuration mutations |
+| `OLLAMA_URL` | Ollama server URL |
+| `MODEL` | Ollama model name |
+| `POST_API_KEY` | Shippo API key |
+| `STRIPE_API_SECRET` | Stripe Secret API key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+
+A complete example configuration can be found in `.env.dev`.
+
+---
+
+## Tech Stack
+
+The backend is built with a modern TypeScript ecosystem focused on scalability, maintainability, and developer experience.
+
+| Category | Technologies |
+|----------|--------------|
+| **Language** | TypeScript, Node.js |
+| **Framework** | Express.js |
+| **Database** | PostgreSQL |
+| **ORM** | Prisma ORM |
+| **Authentication** | JWT, Passport.js, Google OAuth 2.0 |
+| **Sessions** | express-session, Redis |
+| **Caching** | Redis |
+| **Validation** | Joi |
+| **API Documentation** | Swagger UI, swagger-autogen |
+| **Payments** | Stripe |
+| **Shipping** | Shippo |
+| **Cloud Storage** | AWS S3 SDK, LocalStack |
+| **Internationalization** | i18next |
+| **Email** | Nodemailer, MailHog |
+| **AI Integration** | Ollama (Qwen2.5-VL) |
+| **Security** | Helmet, Express Rate Limit, CryptoJS |
+| **Logging** | Winston |
+| **Monitoring** | Sentry |
+| **Testing** | Mocha, Chai, Supertest, Faker |
+| **Linting** | ESLint |
+| **Containerization** | Docker, Docker Compose |
+| **Development Tools** | Nodemon, ts-node, cross-env |
+| **Version Control** | Git, GitHub |
+
+---
+
+## Database Schema
+
+The project uses **PostgreSQL** together with **Prisma ORM**. The schema is designed around a normalized multilingual catalog, allowing translations to be shared across products, categories, item types, tags, and florists.
+
+### Main entities
+
+| Entity | Description |
+|---------|-------------|
+| **User** | Customer and administrator accounts |
+| **Address** | User shipping addresses |
+| **Translation** | Multi-language strings (EN, UA, DE, SK) |
+| **Category** | Product categories |
+| **Good** | Flower products |
+| **Pricing** | Product variants with quantity and price |
+| **ItemType** | Product size/type information |
+| **Selectionist** | Flower creator/florist |
+| **Tag** | Product tags |
+| **BasketItem** | Shopping cart items |
+| **Order** | Customer orders |
+| **OrderItem** | Snapshot of purchased products |
+| **GoodTag** | Many-to-many relation between products and tags |
+
+
+![Database Schema](./docs/screenshots/db-schema.png)
+Unified Modeling Language (UML) Diagram
+
+### Highlights
+
+- UUID primary keys
+- Soft delete support
+- Automatic timestamps
+- Translation-based localization
+- Normalized pricing model
+- Order snapshots preserve historical data
+- Many-to-many product tagging
+- Optimized indexes for searching and filtering
+
+
+---
+
+## Project Structure
+
 The project follows a layered architecture with a clear separation between routing, controllers, services, and database access.
 
 ```text
@@ -345,16 +470,11 @@ Customers can:
 
 ### Home Page
 
-<a href="./docs/screenshots/home-dark.png">
-<img src="./docs/screenshots/home-dark.png" width="350">
-</a>
+![Home - Dark Theme](./docs/screenshots/home-dark.png)
 
 Landing page displaying featured flower collections.
 
-<a href="./docs/screenshots/home-white.png">
-<img src="./docs/screenshots/home-white.png" width="350">
-</a>
-
+![Home - Light Theme](./docs/screenshots/home-white.png)
 
 White theme support
 
@@ -362,9 +482,7 @@ White theme support
 
 ### Shopping Basket
 
-<a href="./docs/screenshots/cart.png">
-<img src="./docs/screenshots/cart.png" width="350">
-</a>
+![Shopping Cart](./docs/screenshots/cart.png)
 
 Customer shopping basket before checkout.
 
@@ -377,44 +495,32 @@ The checkout process is divided into multiple intuitive steps to provide a smoot
 The application validates user input at every step, calculates product and shipping costs in real time, and prevents users from continuing until all required information has been provided.
 
 
-<a href="./docs/screenshots/checkout-1.png">
-<img src="./docs/screenshots/checkout-1.png" width="350">
-</a>
+![Checkout - Customer Information](./docs/screenshots/checkout-1.png)
 
 **Step 1 – Customer Information**  
 Enter the recipient's personal information including name and email address.
 
-<a href="./docs/screenshots/checkout-2.png">
-<img src="./docs/screenshots/checkout-2.png" width="350">
-</a>
+![Checkout - Delivery Address](./docs/screenshots/checkout-2.png)
 
 **Step 2 – Delivery Address**  
 Provide the shipping address where the flowers should be delivered.
 
-<a href="./docs/screenshots/checkout-3.png">
-<img src="./docs/screenshots/checkout-3.png" width="350">
-</a>
+![Checkout - Shipping Method](./docs/screenshots/checkout-3.png)
 
 **Step 3 – Shipping Method**  
 Select one of the available shipping options with real-time rates calculated by Shippo.
 
-<a href="./docs/screenshots/checkout-4.png">
-<img src="./docs/screenshots/checkout-4.png" width="350">
-</a>
+![Checkout - Payment](./docs/screenshots/checkout-4.png)
 
 **Step 4 – Order Review**  
 Review all order details, including products, shipping, and pricing before placing the order.
 
-<a href="./docs/screenshots/checkout-5.png">
-<img src="./docs/screenshots/checkout-5.png" width="350">
-</a>
+![Checkout - Order Review](./docs/screenshots/checkout-5.png)
 
 **Step 5 – Payment**  
 Complete the payment securely using Stripe. Apple Pay and Google Pay are supported on compatible devices and browsers.
 
-<a href="./docs/screenshots/checkout-6.png">
-<img src="./docs/screenshots/checkout-6.png" width="350">
-</a>
+![Checkout - Confirmation](./docs/screenshots/checkout-6.png)
 
 **Step 6 – Confirmation**  
 The order is successfully created and the customer receives an order confirmation.
@@ -424,9 +530,7 @@ The order is successfully created and the customer receives an order confirmatio
 
 ### Orders
 
-<a href="./docs/screenshots/orders.png">
-<img src="./docs/screenshots/orders.png" width="350">
-</a>
+![Orders](./docs/screenshots/orders.png)
 
 Customer order history.
 
@@ -434,13 +538,9 @@ Customer order history.
 
 ### Order Details
 
-<a href="./docs/screenshots/order-details.png">
-<img src="./docs/screenshots/order-details.png" width="350">
-</a>
+![Order Details](./docs/screenshots/order-details.png)
 
-<a href="./docs/screenshots/order-details-shipping.png">
-<img src="./docs/screenshots/order-details-shipping.png" width="350">
-</a>
+![Order Shipping Details](./docs/screenshots/order-details-shipping.png)
 
 Detailed order information including shipping details and tracking.
 State update is available for admin only.
@@ -449,9 +549,7 @@ State update is available for admin only.
 
 ### Profile
 
-<a href="./docs/screenshots/profile.png">
-<img src="./docs/screenshots/profile.png" width="350">
-</a>
+![Profile](./docs/screenshots/profile.png)
 
 User profile and address management.
 
@@ -475,9 +573,7 @@ Administrators can:
 
 ### Products Management
 
-<a href="./docs/screenshots/website-management-goods.png">
-<img src="./docs/screenshots/website-management-goods.png" width="350">
-</a>
+![Goods Management](./docs/screenshots/website-management-goods.png)
 
 Catalogue management interface.
 
@@ -485,9 +581,7 @@ Catalogue management interface.
 
 ### Product Editor
 
-<a href="./docs/screenshots/website-management-edit-product.png">
-<img src="./docs/screenshots/website-management-edit-product.png" width="350">
-</a>
+![Edit Product](./docs/screenshots/website-management-edit-product.png)
 
 Create and edit flower products.
 
@@ -505,9 +599,7 @@ The backend supports multiple authentication methods.
 
 ### Sign In
 
-<a href="./docs/screenshots/signin.png">
-<img src="./docs/screenshots/signin.png" width="300">
-</a>
+![Sign In](./docs/screenshots/signin.png)
 
 User authentication page.
 
