@@ -25,7 +25,10 @@ export class ShippingService {
      */
     constructor(shippoConfig: IConfig['shippo']) {
         this.shippoConfig = shippoConfig
-
+        if (!shippoConfig?.config?.apiKey) {
+            logger.warn('Shipping service apiKey not provided')
+            return
+        }
         this.client = new Shippo({
             apiKeyHeader: this.shippoConfig.config.apiKey,
             shippoApiVersion: this.shippoConfig.config.version

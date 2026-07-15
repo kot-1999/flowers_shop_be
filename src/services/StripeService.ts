@@ -24,7 +24,10 @@ class StripeService {
 
     constructor(stripeConfig: IConfig['stripe']) {
         this.stripeConfig = stripeConfig
-
+        if (!stripeConfig?.config?.apiSecret) {
+            logger.warn('Stripe service apiSecret not provided')
+            return
+        }
         this.stripe = new Stripe(this.stripeConfig.config.apiSecret, {
             apiVersion: '2026-06-24.dahlia'
         })

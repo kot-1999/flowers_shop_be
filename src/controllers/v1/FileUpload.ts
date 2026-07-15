@@ -68,7 +68,7 @@ export class FileUpload extends AbstractController {
                 )))
 
             return res.status(200).json({
-                files: results,
+                files: results as any,
                 message: results.length > 1 ? req.t('Images were uploaded successfully') : req.t('Image was uploaded successfully')
             })
         } catch (err) {
