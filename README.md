@@ -21,7 +21,6 @@
     - [Shipping Management](#shipping-management)
     - [Email Notifications](#email-notifications)
     - [AI Assistant](#ai-assistant)
-- [Team](#team)
 - [License](#license)
 
 ---
@@ -47,13 +46,13 @@ Feel free to copy-paste following commands.
 **1. Clone GitHub repo:**
 
 ```terminaloutput
-git clone https://github.com/kot-1999/RestB_BE.git
+git clone https://github.com/kot-1999/flowers_shop_be.git
 ```
 
 **2. Enter the directory:**
 
 ```terminaloutput
-cd RestB_BE
+cd flowers_shop_be
 ```
 
 **3. Create `.env.dev` file. Feel free to copy-paste the following script:**
@@ -228,3 +227,370 @@ The integration provides:
 - New user registration through Google account;
 - Existing account linking;
 - Secure OAuth 2.0 authorization flow;
+
+### Test data
+
+The application automatically seeds the database when running in the development environment.
+
+The seeding process creates a realistic dataset including:
+
+- Users
+- Categories
+- Flower products
+- Item types
+- Selectionists
+- Product tags
+- Product pricing
+- Addresses
+
+The amount of generated data is configurable through the application configuration.
+
+> ⚠️ Seeded data is intended for development and testing purposes only.
+
+---
+
+## Useful links
+
+Once the application is running, the following services will be available:
+
+- **http://localhost:3000**  
+  Backend API entry point
+
+- **http://localhost:3000/api/docs**  
+  Swagger API documentation
+
+- **http://localhost:8025**  
+  Mailhog interface for viewing outgoing emails
+
+---
+
+The project follows a layered architecture with a clear separation between routing, controllers, services, and database access.
+
+```text
+flowers_shop_be/
+│
+├── config/                 # Environment-specific application configuration
+├── locales/                # Translation files
+├── ollama/                 # Local AI model configuration
+├── prisma/                 # Prisma (Database) schema and migrations
+├── scripts/                # Seeding and utility scripts
+├── src/
+│   ├── controllers/        # HTTP request handlers
+│   ├── middlewares/        # Express middlewares
+│   ├── routes/             # API routes
+│   ├── services/           # Business logic & external integrations
+│   ├── types/              # TypeScript types
+│   └── utils/              # Shared utilities
+│
+├── tests/                  # Unit and integration tests
+├── docker-compose.base.yml # Shared images for docker services
+├── docker-compose.yml      # Docker services
+├── package.json            # Dependencies and scripts
+└── tsconfig.json           # TypeScript configuration
+```
+
+---
+
+## Backend and DevOps features
+
+- **Dockerized Development Environment** — Complete development stack powered by Docker Compose.
+- **Express + TypeScript** — Strongly typed REST API.
+- **Prisma ORM** — PostgreSQL database access, migrations and schema management.
+- **JWT Authentication** — Secure API authentication for emails or one time use links.
+- **Google OAuth** — Sign in using Google accounts.
+- **Redis Sessions** — Session storage and future caching.
+- **Stripe Integration** — Secure payment processing and webhook handling.
+- **Shippo Integration** — Shipping rates, shipment creation and tracking.
+- **AWS S3 Compatible Storage** — Product image uploads using LocalStack or AWS S3.
+- **Internationalization (i18next)** — English, Ukrainian, German and Slovak translations.
+- **OpenStreetMap Integration** — Address validation and geolocation.
+- **Ollama AI Integration** — Local AI assistant support.
+- **Email Service** — Registration and password recovery emails.
+- **Swagger Documentation** — Automatically generated REST API documentation.
+- **Redis Rate Limiting** — API protection against abuse.
+- **Helmet Security Policies** — Secure HTTP headers and Content Security Policy.
+- **AES Encryption & SHA-256 Hashing** — Secure storage of sensitive information.
+- **Soft Deletes** — Recoverable database records.
+- **Logging** — Winston with daily log rotation.
+- **Sentry Monitoring** — Error tracking and performance monitoring.
+- **GitHub Actions** — Continuous Integration pipeline.
+- **Mocha & Chai Testing** — Unit and integration tests.
+
+# Application Overview
+
+The Flower Shop backend powers a modern e-commerce platform for ordering flowers online.
+
+Customers can browse the product catalogue, search for flowers, add products to their shopping basket, calculate shipping costs, complete secure payments, and track their orders.
+
+Administrators have access to a management dashboard where they can maintain the catalogue, manage pricing, process orders, and monitor customer purchases.
+
+---
+
+## Application From Customer Perspective
+
+The customer application focuses on providing a smooth shopping experience from product discovery to delivery.
+
+Customers can:
+
+- Browse flower categories
+- Search products
+- View detailed product information
+- Add products to basket
+- Manage quantities
+- Save delivery addresses
+- Calculate shipping rates
+- Pay securely using Stripe
+- Track order status
+- Manage personal profile
+
+### Home Page
+
+<a href="./docs/screenshots/home-dark.png">
+<img src="./docs/screenshots/home-dark.png" width="350">
+</a>
+
+Landing page displaying featured flower collections.
+
+<a href="./docs/screenshots/home-white.png">
+<img src="./docs/screenshots/home-white.png" width="350">
+</a>
+
+
+White theme support
+
+---
+
+### Shopping Basket
+
+<a href="./docs/screenshots/cart.png">
+<img src="./docs/screenshots/cart.png" width="350">
+</a>
+
+Customer shopping basket before checkout.
+
+---
+
+### Checkout
+
+The checkout process is divided into multiple intuitive steps to provide a smooth purchasing experience. Customers are guided through entering recipient information, selecting a delivery address, choosing the preferred shipping option with real-time carrier rates provided by Shippo, securely completing the payment via Stripe, and finally reviewing the order before confirmation.
+
+The application validates user input at every step, calculates product and shipping costs in real time, and prevents users from continuing until all required information has been provided.
+
+
+<a href="./docs/screenshots/checkout-1.png">
+<img src="./docs/screenshots/checkout-1.png" width="350">
+</a>
+
+**Step 1 – Customer Information**  
+Enter the recipient's personal information including name and email address.
+
+<a href="./docs/screenshots/checkout-2.png">
+<img src="./docs/screenshots/checkout-2.png" width="350">
+</a>
+
+**Step 2 – Delivery Address**  
+Provide the shipping address where the flowers should be delivered.
+
+<a href="./docs/screenshots/checkout-3.png">
+<img src="./docs/screenshots/checkout-3.png" width="350">
+</a>
+
+**Step 3 – Shipping Method**  
+Select one of the available shipping options with real-time rates calculated by Shippo.
+
+<a href="./docs/screenshots/checkout-4.png">
+<img src="./docs/screenshots/checkout-4.png" width="350">
+</a>
+
+**Step 4 – Order Review**  
+Review all order details, including products, shipping, and pricing before placing the order.
+
+<a href="./docs/screenshots/checkout-5.png">
+<img src="./docs/screenshots/checkout-5.png" width="350">
+</a>
+
+**Step 5 – Payment**  
+Complete the payment securely using Stripe. Apple Pay and Google Pay are supported on compatible devices and browsers.
+
+<a href="./docs/screenshots/checkout-6.png">
+<img src="./docs/screenshots/checkout-6.png" width="350">
+</a>
+
+**Step 6 – Confirmation**  
+The order is successfully created and the customer receives an order confirmation.
+
+
+---
+
+### Orders
+
+<a href="./docs/screenshots/orders.png">
+<img src="./docs/screenshots/orders.png" width="350">
+</a>
+
+Customer order history.
+
+---
+
+### Order Details
+
+<a href="./docs/screenshots/order-details.png">
+<img src="./docs/screenshots/order-details.png" width="350">
+</a>
+
+<a href="./docs/screenshots/order-details-shipping.png">
+<img src="./docs/screenshots/order-details-shipping.png" width="350">
+</a>
+
+Detailed order information including shipping details and tracking.
+State update is available for admin only.
+
+---
+
+### Profile
+
+<a href="./docs/screenshots/profile.png">
+<img src="./docs/screenshots/profile.png" width="350">
+</a>
+
+User profile and address management.
+
+---
+
+## Application From Admin Perspective
+
+The administration panel provides complete control over the product catalogue and customer orders.
+
+Administrators can:
+
+- Manage categories
+- Manage flower products
+- Upload product images
+- Configure pricing
+- Manage selectionists
+- Manage tags
+- Review customer orders
+- Update order statuses
+- Monitor shipping progress
+
+### Products Management
+
+<a href="./docs/screenshots/website-management-goods.png">
+<img src="./docs/screenshots/website-management-goods.png" width="350">
+</a>
+
+Catalogue management interface.
+
+---
+
+### Product Editor
+
+<a href="./docs/screenshots/website-management-edit-product.png">
+<img src="./docs/screenshots/website-management-edit-product.png" width="350">
+</a>
+
+Create and edit flower products.
+
+---
+
+## Authentication Flows
+
+The backend supports multiple authentication methods.
+
+- Email & Password
+- Google OAuth
+- JWT Authentication
+- Session Authentication
+- Password Reset
+
+### Sign In
+
+<a href="./docs/screenshots/signin.png">
+<img src="./docs/screenshots/signin.png" width="300">
+</a>
+
+User authentication page.
+
+---
+
+## Basket and Checkout Flow
+
+```text
+Browse Products
+        ↓
+Add Product to Basket
+        ↓
+Update Quantities
+        ↓
+Provide Delivery Address
+        ↓
+Retrieve Shipping Rates
+        ↓
+Choose Shipping Method
+        ↓    
+Create Order
+        ↓
+Stripe Payment
+        ↓
+Retrieve invoice
+
+```
+
+---
+
+## Payment Processing
+
+Payments are handled securely through Stripe.
+
+Features include:
+
+- Payment Intents
+- Stripe Elements
+- Webhooks
+- Automatic payment confirmation
+- Invoice generation support
+- Refund support
+
+---
+
+## Shipping Management
+
+Shipping is powered by Shippo.
+
+The backend automatically:
+
+- Calculates shipping rates
+- Creates shipments
+- Stores shipping transactions
+- Supports customs information
+- Stores tracking numbers
+
+---
+
+## Email Notifications
+
+The application sends transactional emails for important events.
+
+Current templates include:
+
+- User registration
+- Password reset
+
+---
+
+## AI Assistant
+
+The backend supports integration with locally hosted Large Language Models through Ollama.
+
+Features include:
+
+- Local inference
+- Product assistance
+- AI-powered backend endpoints
+- Custom Model file configuration
+
+---
+
+## License
+
+This project is licensed under the Apache-2.0 License.
