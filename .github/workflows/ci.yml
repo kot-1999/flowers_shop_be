@@ -54,6 +54,8 @@ jobs:
           echo "S3_REGION=${{ secrets.S3_REGION }}" >> .env
           echo "S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }}" >> .env
           echo "ALLOW_CONFIG_MUTATIONS=${{ secrets.ALLOW_CONFIG_MUTATIONS }}" >> .env
+          echo "POST_API_KEY=${{ secrets.POST_API_KEY }}" >> .env
+          echo "STRIPE_API_SECRET=${{ secrets.STRIPE_API_SECRET }}" >> .env
           cat .env
       # Run docker containers
       - name: Run docker
