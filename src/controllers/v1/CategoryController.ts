@@ -139,7 +139,7 @@ export class CategoryController extends AbstractController {
             return res.status(200).json({
                 categories: categories.map((category: any) => ({
                     ...category,
-                    coverImage: category.coverImage ?s3Service.getPublicUrl(category.coverImage) : null
+                    coverImage: s3Service.getPublicUrl(category.coverImage)
                 }))
             })
         } catch (err) {

@@ -29,7 +29,8 @@
     "sentry:sourcemaps": "tsc && sentry-cli sourcemaps inject --org null-a63 --project node-express ./dist && sentry-cli sourcemaps upload --org null-a63 --project node-express ./dist",
     "ollama:create": "ollama create ai-assistant -f ./ollama/Modelfile",
     "ollama:run": "sudo ollama run ai-assistant:latest",
-    "ollama:rebuild": "npm run ollama:create && npm run ollama:run"
+    "ollama:rebuild": "npm run ollama:create && npm run ollama:run",
+    "stripe:webhooks": "stripe listen --forward-to localhost:3000/api/v1/webhooks"
   },
   "private": true,
   "dependencies": {
@@ -68,6 +69,7 @@
     "rate-limit-redis": "4.2.0",
     "redis": "4.7.0",
     "shippo": "2.18.0",
+    "stripe": "22.3.0",
     "swagger-ui-express": "5.0.1",
     "tsx": "4.19.2",
     "winston": "3.17.0",

@@ -149,13 +149,15 @@ const options: IConfig = {
             version: '2018-02-08'
         },
         customs: {
+            hsCode: '9505.10',
+            tariffNumber: '9505100000',
             certify: true,
-            certify_signer: 'John Smith',
-            contents_type: 'MERCHANDISE',
+            certifySigner: 'John Smith',
+            contentsType: 'MERCHANDISE',
             incoterm: 'DDU',
-            non_delivery_option: 'RETURN',
+            nonDeliveryOption: 'RETURN',
             exporter: {
-                tax_ids: [
+                taxIDs: [
                     {
                         number: 'GB123456789' ,
                         type: TaxType.VAT
@@ -176,6 +178,12 @@ const options: IConfig = {
             phone: '+447467467467',
             postalCode: 'SW19 8TR',
             street: '172 Haydons Road'
+        }
+    },
+    stripe: {
+        config: {
+            apiSecret: process.env.STRIPE_API_SECRET as string,
+            webhookSecret: process.env.STRIPE_WEBHOOK_SECRET as string
         }
     }
 }

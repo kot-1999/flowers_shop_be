@@ -10,10 +10,13 @@ import { AIController } from '../src/controllers/v1/AIController'
 import { AuthorizationController as UserAuthorizationController } from '../src/controllers/v1/AuthorizationController'
 import { BasketController } from '../src/controllers/v1/BasketController'
 import { CategoryController } from '../src/controllers/v1/CategoryController'
+import { CheckoutController } from '../src/controllers/v1/CheckoutController'
 import { FileUpload } from '../src/controllers/v1/FileUpload'
 import { GoodController } from '../src/controllers/v1/GoodController'
 import { ItemTypeController } from '../src/controllers/v1/ItemTypeController'
+import { OrderController } from '../src/controllers/v1/OrderController'
 import { SelectionistController } from '../src/controllers/v1/SelectionistController'
+import { ShippingController } from '../src/controllers/v1/ShippingController'
 import { TagController } from '../src/controllers/v1/TagController'
 import { UsersController } from '../src/controllers/v1/UserController'
 
@@ -37,12 +40,18 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         me: UserAuthorizationController.schemas,
 
         // Basket
-
         getBasketItems: BasketController.schemas,
         postBasketItem: BasketController.schemas,
         patchBasketItem: BasketController.schemas,
         deleteBasketItem: BasketController.schemas,
-        
+
+        // Order
+        getOrders: OrderController.schemas,
+        getAdminOrders: OrderController.schemas,
+        getOrder: OrderController.schemas,
+        getAdminOrder: OrderController.schemas,
+        patchOrder: OrderController.schemas,
+
         // Address
         getAddresses: AddressController.schemas,
         putAddress: AddressController.schemas,
@@ -88,8 +97,15 @@ const schemas: {[key: string]: {[key: string]: any}} = {
         getUser: UsersController.schemas,
         getUsers: UsersController.schemas,
         patchUser: UsersController.schemas,
-        deleteUser: UsersController.schemas
+        deleteUser: UsersController.schemas,
 
+        // Shipping
+        getRates: ShippingController.schemas,
+        createLabel: ShippingController.schemas,
+
+        // Checkout
+        saveUser: CheckoutController.schemas,
+        createOrder: CheckoutController.schemas
     }
 }
 

@@ -77,6 +77,14 @@ class PassportSetup {
             this.adminJwtForgotPasswordStrategy
         ))
 
+        passport.use(PassportStrategy.jwtCheckout, new JwtStrategy(
+            {
+                jwtFromRequest: ExtractJwt.fromExtractors([this.passportConfig.jwtFromRequestHeader, this.passportConfig.jwtFromCookie]),
+                secretOrKey: this.jwtConfig.secret
+            },
+            this.jwtCheckoutStrategy
+        ))
+
         passport.serializeUser(this.serializeUser)
         passport.deserializeUser(this.deserializeUser)
     }
@@ -203,6 +211,32 @@ class PassportSetup {
                 throw new IError(401, 'Not authorized (JwtForgotPasswordStrategy)')
             }
             return done(null, admin)
+        } catch {
+            return done(null, false)
+        }
+    }
+
+    /**
+     * @method jwtCheckoutStrategy
+     * @description Validates JWT for B2B password reset flow
+     */
+    private async jwtCheckoutStrategy(payload: JwtPayload, done: VerifyCallback) {
+        try {
+            if (payload.aud !== JwtAudience.userCheckout) {
+                throw new IError(401, 'Not authorized (JwtForgotPasswordStrategy)')
+            }
+
+            const user = await prisma.user.findFirst({
+                where: {
+                    id: payload.id,
+                    deletedAt: null
+                }
+            })
+
+            if (!user) {
+                throw new IError(401, 'Not authorized (JwtForgotPasswordStrategy)')
+            }
+            return done(null, user)
         } catch {
             return done(null, false)
         }

@@ -5,7 +5,7 @@ CREATE TYPE "UserRole" AS ENUM ('Admin', 'User', 'NotRegistered');
 CREATE TYPE "GoodState" AS ENUM ('Available', 'NoShow', 'Awaiting', 'Deleted');
 
 -- CreateEnum
-CREATE TYPE "OrderState" AS ENUM ('Pending', 'Paid', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded');
+CREATE TYPE "OrderState" AS ENUM ('Pending', 'Paid', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded', 'Expired', 'PaymentFailed');
 
 -- CreateEnum
 CREATE TYPE "Country" AS ENUM ('UnitedKingdom', 'Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'CzechRepublic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Albania', 'Andorra', 'Armenia', 'Azerbaijan', 'BosniaAndHerzegovina', 'Georgia', 'Iceland', 'Kosovo', 'Liechtenstein', 'Moldova', 'Monaco', 'Montenegro', 'NorthMacedonia', 'Norway', 'SanMarino', 'Serbia', 'Switzerland', 'Turkey', 'Ukraine', 'VaticanCity', 'Canada', 'China', 'HongKong', 'India', 'Israel', 'Japan', 'Kazakhstan', 'Malaysia', 'NewZealand', 'Singapore', 'SouthKorea', 'Taiwan', 'Thailand', 'UnitedArabEmirates', 'Argentina', 'Brazil', 'Chile', 'Colombia', 'Mexico', 'Paraguay', 'Peru', 'Uruguay', 'Egypt', 'Morocco', 'SouthAfrica');
@@ -153,19 +153,26 @@ CREATE TABLE "basket_items" (
 -- CreateTable
 CREATE TABLE "orders" (
     "id" UUID NOT NULL,
-    "sum" DECIMAL(12,2) NOT NULL,
+    "productsPrice" DECIMAL(12,2) NOT NULL,
     "state" "OrderState" NOT NULL,
     "trackingUrl" TEXT,
     "trackingNumber" TEXT,
     "userID" UUID NOT NULL,
-    "addressID" UUID NOT NULL,
+    "addressSnapshot" JSONB NOT NULL,
+    "recipientFirstName" TEXT NOT NULL,
+    "recipientLastName" TEXT NOT NULL,
+    "recipientFirstNameSlug" TEXT,
+    "recipientLastNameSlug" TEXT,
+    "recipientEmail" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "expiresAt" TIMESTAMP(3),
     "shippingPrice" DECIMAL(12,2) NOT NULL,
-    "shippingRateID" TEXT,
+    "shippingRateID" TEXT NOT NULL,
     "shippingTransactionID" TEXT,
     "paymentTransactionID" TEXT,
+    "invoiceID" TEXT,
+    "refundAmount" DECIMAL(12,2),
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
 );
@@ -297,9 +304,6 @@ ALTER TABLE "basket_items" ADD CONSTRAINT "basket_items_pricingID_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_userID_fkey" FOREIGN KEY ("userID") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "orders" ADD CONSTRAINT "orders_addressID_fkey" FOREIGN KEY ("addressID") REFERENCES "addresses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "order_items" ADD CONSTRAINT "order_items_orderID_fkey" FOREIGN KEY ("orderID") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
