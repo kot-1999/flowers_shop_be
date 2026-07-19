@@ -105,7 +105,9 @@ const schemas: {[key: string]: {[key: string]: any}} = {
 
         // Checkout
         saveUser: CheckoutController.schemas,
-        createOrder: CheckoutController.schemas
+        createOrder: CheckoutController.schemas,
+        getInvoice: CheckoutController.schemas,
+        refundOrder: CheckoutController.schemas
     }
 }
 
@@ -249,8 +251,8 @@ const doc = {
     definitions
 }
 
-const distDir = path.join(__dirname, '../dist')
-const apiDocDir = path.join(__dirname, '../dist/apiDoc')
+const distDir = path.join(__dirname, '../docs')
+const apiDocDir = path.join(__dirname, '../docs/apiDoc')
 
 const outFile = 'swaggerApi.json'
 

@@ -1,0 +1,5831 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Flower Shop API",
+    "description": "Description",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/v1/authorization/register": {
+      "post": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Register a new user.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1RegisterReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1RegisterRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/authorization/login": {
+      "post": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Authorize a user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1LoginReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1LoginRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/authorization/google": {
+      "get": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Google OAuth2 endpoint",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/authorization/google/redirect": {
+      "get": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Google OAuth2 redirect endpoint",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GoogleRedirectReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GoogleRedirectRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/authorization/google/complete-registration": {
+      "post": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Complete Google OAuth2 registration",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1CompleteRegistrationReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1CompleteRegistrationRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/authorization/me": {
+      "get": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Check session user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1MeReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1MeRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/authorization/logout": {
+      "post": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Logout a user.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1LogoutReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1LogoutRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/authorization/forgot-password": {
+      "post": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Send email with password reset link.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1ForgotPasswordReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1ForgotPasswordRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/authorization/reset-password": {
+      "post": {
+        "tags": [
+          "v1-UserAuthorization"
+        ],
+        "description": "Resets a password.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1ResetPasswordReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1ResetPasswordRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/users/{userID}": {
+      "get": {
+        "tags": [
+          "v1-User"
+        ],
+        "description": "Get user details",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetUserRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "v1-User"
+        ],
+        "description": "Get users list",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PatchUserReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PatchUserRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/users": {
+      "get": {
+        "tags": [
+          "v1-User"
+        ],
+        "description": "Get users list",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetUsersReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetUsersRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/users": {
+      "delete": {
+        "tags": [
+          "v1-User"
+        ],
+        "description": "Delete user. User can delete only himself.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteUserReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1DeleteUserRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/ai/translations": {
+      "post": {
+        "tags": [
+          "v1-AI"
+        ],
+        "description": "Get translations",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PostTranslationsReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PostTranslationsRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/ai/good-metadata": {
+      "post": {
+        "tags": [
+          "v1-AI"
+        ],
+        "description": "Get good metadata.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PostGoodMetadataReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PostGoodMetadataRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/tags": {
+      "get": {
+        "tags": [
+          "v1-Tags"
+        ],
+        "description": "Get tags.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetTagsReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetTagsRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/tags": {
+      "get": {
+        "tags": [
+          "v1-Tags"
+        ],
+        "description": "Get admin tags.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetAdminTagsReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetAdminTagsRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "v1-Tags"
+        ],
+        "description": "Update tag.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PutTagReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PutTagRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/tags/{tagID}": {
+      "delete": {
+        "tags": [
+          "v1-Tags"
+        ],
+        "description": "Delete tag.",
+        "parameters": [
+          {
+            "name": "tagID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteTagReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1DeleteTagRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/selectionists": {
+      "get": {
+        "tags": [
+          "v1-Selectionists"
+        ],
+        "description": "Get selectionists.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetSelectionistsReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetSelectionistsRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/selectionists": {
+      "put": {
+        "tags": [
+          "v1-Selectionists"
+        ],
+        "description": "Update selectionist.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PutSelectionistReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PutSelectionistRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/selectionists/{selectionistID}": {
+      "delete": {
+        "tags": [
+          "v1-Selectionists"
+        ],
+        "description": "Delete selectionist.",
+        "parameters": [
+          {
+            "name": "selectionistID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteSelectionistReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1DeleteSelectionistRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/item-types": {
+      "get": {
+        "tags": [
+          "v1-ItemTypes"
+        ],
+        "description": "Get item types.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetItemTypesReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetItemTypesRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "v1-ItemTypes"
+        ],
+        "description": "Update or create item type.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PutItemTypeReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PutItemTypeRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/item-types/{itemTypeID}": {
+      "delete": {
+        "tags": [
+          "v1-ItemTypes"
+        ],
+        "description": "Delete item type.",
+        "parameters": [
+          {
+            "name": "itemTypeID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteItemTypeReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1DeleteItemTypeRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/categories": {
+      "get": {
+        "tags": [
+          "v1-Categories"
+        ],
+        "description": "Get categories.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetCategoriesReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetCategoriesRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/categories": {
+      "get": {
+        "tags": [
+          "v1-Categories"
+        ],
+        "description": "Get categories.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetAdminCategoriesReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetAdminCategoriesRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "v1-Categories"
+        ],
+        "description": "Update or create category.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PutCategoryReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PutCategoryRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/categories/{categoryID}": {
+      "delete": {
+        "tags": [
+          "v1-Categories"
+        ],
+        "description": "Delete category.",
+        "parameters": [
+          {
+            "name": "categoryID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteCategoryReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1DeleteCategoryRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/goods": {
+      "get": {
+        "tags": [
+          "v1-Goods"
+        ],
+        "description": "Get goods.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetGoodsReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetGoodsRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/goods/{goodID}": {
+      "get": {
+        "tags": [
+          "v1-Goods"
+        ],
+        "description": "Get single good.",
+        "parameters": [
+          {
+            "name": "goodID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetGoodReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetGoodRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/goods": {
+      "post": {
+        "tags": [
+          "v1-Goods"
+        ],
+        "description": "Create good.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PostGoodReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PostGoodRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/goods/{goodID}": {
+      "patch": {
+        "tags": [
+          "v1-Goods"
+        ],
+        "description": "Update good.",
+        "parameters": [
+          {
+            "name": "goodID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PatchGoodReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PatchGoodRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "v1-Goods"
+        ],
+        "description": "Delete good.",
+        "parameters": [
+          {
+            "name": "goodID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteGoodReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1DeleteGoodRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/files/upload": {
+      "put": {
+        "tags": [
+          "File-Upload"
+        ],
+        "description": "Upload a file.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PutFileReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PutFileRes"
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/addresses": {
+      "get": {
+        "tags": [
+          "v1-Addresses"
+        ],
+        "description": "Get user addresses.",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetAddressesRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "v1-Addresses"
+        ],
+        "description": "Create or update address.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PutAddressReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PutAddressRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/addresses/{addressID}": {
+      "delete": {
+        "tags": [
+          "v1-Addresses"
+        ],
+        "description": "Delete address.",
+        "parameters": [
+          {
+            "name": "addressID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteAddressReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1DeleteAddressRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/basket-items": {
+      "get": {
+        "tags": [
+          "v1-Basket"
+        ],
+        "description": "Get user basket items.",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetBasketItemsRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "v1-Basket"
+        ],
+        "description": "Add item to basket.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PostBasketItemReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PostBasketItemRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "v1-Basket"
+        ],
+        "description": "Update basket item.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PatchBasketItemReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PatchBasketItemRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "v1-Basket"
+        ],
+        "description": "Delete basket item.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteBasketItemReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1DeleteBasketItemRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/public/basket-items": {
+      "post": {
+        "tags": [
+          "v1-Basket"
+        ],
+        "description": "Get user basket items.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetPublicBasketItemsRes"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetBasketItemsRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/shipping": {
+      "post": {
+        "tags": [
+          "v1-Shipping"
+        ],
+        "description": "Get available shipping rates.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetRatesReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetRatesRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/shipping/{orderID}": {
+      "post": {
+        "tags": [
+          "v1-Shipping"
+        ],
+        "description": "Create a shipping label.",
+        "parameters": [
+          {
+            "name": "orderID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1CreateLabelReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1CreateLabelRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/checkout/user": {
+      "post": {
+        "tags": [
+          "v1-Checkout"
+        ],
+        "description": "Save guest user information before checkout.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1SaveUserReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1SaveUserRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/checkout/order": {
+      "post": {
+        "tags": [
+          "v1-Checkout"
+        ],
+        "description": "Create order.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1CreateOrderReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1CreateOrderRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/checkout/order/{orderID}/refund": {
+      "post": {
+        "tags": [
+          "v1-Checkout"
+        ],
+        "description": "Refund an order.",
+        "parameters": [
+          {
+            "name": "orderID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1RefundOrderReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1RefundOrderReqRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/checkout/order/{orderID}": {
+      "get": {
+        "tags": [
+          "v1-Checkout"
+        ],
+        "description": "Refund an order.",
+        "parameters": [
+          {
+            "name": "orderID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetInvoiceReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetInvoiceRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/orders": {
+      "get": {
+        "tags": [
+          "v1-Orders"
+        ],
+        "description": "Get current user orders.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetOrdersReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetOrdersRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/orders": {
+      "get": {
+        "tags": [
+          "v1-Orders"
+        ],
+        "description": "Get all orders.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetAdminOrdersReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetAdminOrdersRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/orders/{orderID}": {
+      "get": {
+        "tags": [
+          "v1-Orders"
+        ],
+        "description": "Get current user order.",
+        "parameters": [
+          {
+            "name": "orderID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetOrderReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetOrderRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/orders/{orderID}": {
+      "get": {
+        "tags": [
+          "v1-Orders"
+        ],
+        "description": "Get order by ID.",
+        "parameters": [
+          {
+            "name": "orderID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1GetOrderReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1GetOrderRes"
+            },
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "v1-Orders"
+        ],
+        "description": "Get order by ID.",
+        "parameters": [
+          {
+            "name": "orderID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/v1PatchOrderReqBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/v1PatchOrderRes"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "v1RegisterReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "example": "string min:2 max:255 required"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "string min:2 max:255 required"
+            },
+            "email": {
+              "type": "string",
+              "example": "string email required"
+            },
+            "password": {
+              "type": "string",
+              "example": "string min:3 required"
+            }
+          }
+        }
+      }
+    },
+    "v1RegisterRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "role": {
+              "type": "string",
+              "example": "string required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1LoginReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "example": "string email required"
+            },
+            "password": {
+              "type": "string",
+              "example": "string required"
+            }
+          }
+        }
+      }
+    },
+    "v1LoginRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "role": {
+              "type": "string",
+              "example": "string required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1ForgotPasswordReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "example": "string email required"
+            }
+          }
+        }
+      }
+    },
+    "v1ForgotPasswordRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1LogoutReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    "v1LogoutRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1ResetPasswordReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "newPassword": {
+              "type": "string",
+              "example": "string required"
+            }
+          }
+        }
+      }
+    },
+    "v1ResetPasswordRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GoogleRedirectReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    "v1GoogleRedirectRes": {
+      "type": "object",
+      "properties": {}
+    },
+    "v1CompleteRegistrationReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "example": "string min:2 max:255 required"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "string min:2 max:255 required"
+            },
+            "password": {
+              "type": "string",
+              "example": "string min:3 required"
+            }
+          }
+        }
+      }
+    },
+    "v1CompleteRegistrationRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1MeReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    "v1MeRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "email": {
+              "type": "string",
+              "example": "string email required"
+            },
+            "firstName": {
+              "type": "string",
+              "example": "string required"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "string required"
+            },
+            "googleProfileID": {
+              "type": "string",
+              "example": "string"
+            },
+            "role": {
+              "type": "string",
+              "example": "string required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetBasketItemsReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    "v1GetBasketItemsRes": {
+      "type": "object",
+      "properties": {
+        "basketItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "quantity": {
+                "type": "string",
+                "example": "integer required"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "good": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "name": {
+                    "type": "object",
+                    "properties": {
+                      "en": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "ua": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "sk": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "de": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "enSlug": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "uaSlug": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "skSlug": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "deSlug": {
+                        "type": "string",
+                        "example": "string"
+                      }
+                    }
+                  },
+                  "photos": {
+                    "type": "array",
+                    "example": [
+                      "string"
+                    ],
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": {
+                    "type": "object",
+                    "properties": {}
+                  },
+                  "state": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "selectionist": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "string uuid required"
+                      },
+                      "name": {
+                        "type": "object",
+                        "properties": {}
+                      },
+                      "country": {
+                        "type": "string",
+                        "example": "string required"
+                      }
+                    }
+                  }
+                }
+              },
+              "pricing": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "example": "integer required"
+                  },
+                  "price": {
+                    "type": "string",
+                    "example": "number float required"
+                  },
+                  "itemType": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "string uuid required"
+                      },
+                      "name": {
+                        "type": "object",
+                        "properties": {}
+                      },
+                      "weight": {
+                        "type": "string",
+                        "example": "number float required"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unavailableBasketItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "quantity": {
+                "type": "string",
+                "example": "integer required"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "good": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "name": {
+                    "type": "object",
+                    "properties": {
+                      "en": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "ua": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "sk": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "de": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "enSlug": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "uaSlug": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "skSlug": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "deSlug": {
+                        "type": "string",
+                        "example": "string"
+                      }
+                    }
+                  },
+                  "photos": {
+                    "type": "array",
+                    "example": [
+                      "string"
+                    ],
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": {
+                    "type": "object",
+                    "properties": {}
+                  },
+                  "state": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "selectionist": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "string uuid required"
+                      },
+                      "name": {
+                        "type": "object",
+                        "properties": {}
+                      },
+                      "country": {
+                        "type": "string",
+                        "example": "string required"
+                      }
+                    }
+                  }
+                }
+              },
+              "pricing": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "example": "integer required"
+                  },
+                  "price": {
+                    "type": "string",
+                    "example": "number float required"
+                  },
+                  "itemType": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "string uuid required"
+                      },
+                      "name": {
+                        "type": "object",
+                        "properties": {}
+                      },
+                      "weight": {
+                        "type": "string",
+                        "example": "number float required"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "totalPrice": {
+              "type": "string",
+              "example": "number float required"
+            },
+            "totalAvailable": {
+              "type": "string",
+              "example": "number float required"
+            },
+            "totalUnavailable": {
+              "type": "string",
+              "example": "number float required"
+            }
+          }
+        }
+      }
+    },
+    "v1PostBasketItemReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "pricingID": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "quantity": {
+              "type": "string",
+              "example": "integer min:1 required"
+            }
+          }
+        }
+      }
+    },
+    "v1PostBasketItemRes": {
+      "type": "object",
+      "properties": {
+        "basketItem": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1PatchBasketItemReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "basketItems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "1": {
+                    "type": "string"
+                  },
+                  "basketItemID": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "example": "integer min:1 required"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PatchBasketItemRes": {
+      "type": "object",
+      "properties": {
+        "basketItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "1": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              }
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1DeleteBasketItemReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "basketItems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "1": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1DeleteBasketItemRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetOrdersReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100"
+            },
+            "search": {
+              "type": "string",
+              "example": "string"
+            },
+            "state": {
+              "type": "array",
+              "example": [
+                "string"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "sortBy": {
+              "type": "string",
+              "example": "string"
+            },
+            "sortOrder": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetOrdersRes": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "state": {
+                "type": "string",
+                "example": "string required"
+              },
+              "productsPrice": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "shippingPrice": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "total": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "recipientFirstName": {
+                "type": "string",
+                "example": "string min:2 max:255 required"
+              },
+              "recipientLastName": {
+                "type": "string",
+                "example": "string min:2 max:255 required"
+              },
+              "recipientEmail": {
+                "type": "string",
+                "example": "string email required"
+              },
+              "itemsCount": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "addressSnapshot": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "userID": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "building": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "apartment": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "street": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "city": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "postcode": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "country": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "isDefault": {
+                    "type": "string",
+                    "example": "boolean required"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "example": "string date-time required"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "example": "string date-time required"
+                  },
+                  "deletedAt": {
+                    "type": "string",
+                    "example": "string date-time required"
+                  }
+                }
+              },
+              "user": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "string email required"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "example": "string required"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1 required"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100 required"
+            },
+            "total": {
+              "type": "string",
+              "example": "integer required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetAdminOrdersReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100"
+            },
+            "search": {
+              "type": "string",
+              "example": "string"
+            },
+            "state": {
+              "type": "array",
+              "example": [
+                "string"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "sortBy": {
+              "type": "string",
+              "example": "string"
+            },
+            "sortOrder": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetAdminOrdersRes": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "state": {
+                "type": "string",
+                "example": "string required"
+              },
+              "productsPrice": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "shippingPrice": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "total": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "recipientFirstName": {
+                "type": "string",
+                "example": "string min:2 max:255 required"
+              },
+              "recipientLastName": {
+                "type": "string",
+                "example": "string min:2 max:255 required"
+              },
+              "recipientEmail": {
+                "type": "string",
+                "example": "string email required"
+              },
+              "itemsCount": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "addressSnapshot": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "userID": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "building": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "apartment": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "street": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "city": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "postcode": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "country": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "isDefault": {
+                    "type": "string",
+                    "example": "boolean required"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "example": "string date-time required"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "example": "string date-time required"
+                  },
+                  "deletedAt": {
+                    "type": "string",
+                    "example": "string date-time required"
+                  }
+                }
+              },
+              "user": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "string email required"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "example": "string required"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1 required"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100 required"
+            },
+            "total": {
+              "type": "string",
+              "example": "integer required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetOrderReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "orderID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetOrderRes": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string required"
+            },
+            "state": {
+              "type": "string",
+              "example": "string required"
+            },
+            "productsPrice": {
+              "type": "string",
+              "example": "number float required"
+            },
+            "shippingPrice": {
+              "type": "string",
+              "example": "number float required"
+            },
+            "paymentTransactionID": {
+              "type": "string",
+              "example": "string"
+            },
+            "shippingTransactionID": {
+              "type": "string",
+              "example": "string"
+            },
+            "trackingNumber": {
+              "type": "string",
+              "example": "string"
+            },
+            "trackingUrl": {
+              "type": "string",
+              "example": "string"
+            },
+            "refundAmount": {
+              "type": "string",
+              "example": "number float"
+            },
+            "recipientFirstName": {
+              "type": "string",
+              "example": "string required"
+            },
+            "recipientLastName": {
+              "type": "string",
+              "example": "string required"
+            },
+            "recipientEmail": {
+              "type": "string",
+              "example": "string email required"
+            },
+            "addressSnapshot": {
+              "type": "object",
+              "properties": {}
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "string date-time required"
+            },
+            "updatedAt": {
+              "type": "string",
+              "example": "string date-time required"
+            },
+            "user": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "firstName": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "lastName": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "string email required"
+                },
+                "avatar": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "orderItems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1GetAdminOrderReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "orderID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetAdminOrderRes": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string required"
+            },
+            "state": {
+              "type": "string",
+              "example": "string required"
+            },
+            "productsPrice": {
+              "type": "string",
+              "example": "number float required"
+            },
+            "shippingPrice": {
+              "type": "string",
+              "example": "number float required"
+            },
+            "paymentTransactionID": {
+              "type": "string",
+              "example": "string"
+            },
+            "shippingTransactionID": {
+              "type": "string",
+              "example": "string"
+            },
+            "trackingNumber": {
+              "type": "string",
+              "example": "string"
+            },
+            "trackingUrl": {
+              "type": "string",
+              "example": "string"
+            },
+            "refundAmount": {
+              "type": "string",
+              "example": "number float"
+            },
+            "recipientFirstName": {
+              "type": "string",
+              "example": "string required"
+            },
+            "recipientLastName": {
+              "type": "string",
+              "example": "string required"
+            },
+            "recipientEmail": {
+              "type": "string",
+              "example": "string email required"
+            },
+            "addressSnapshot": {
+              "type": "object",
+              "properties": {}
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "string date-time required"
+            },
+            "updatedAt": {
+              "type": "string",
+              "example": "string date-time required"
+            },
+            "user": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "firstName": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "lastName": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "string email required"
+                },
+                "avatar": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "orderItems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PatchOrderReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "orderID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1PatchOrderRes": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "labelUrl": {
+              "type": "string",
+              "example": "string required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetAddressesReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    "v1GetAddressesRes": {
+      "type": "object",
+      "properties": {
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "apartment": {
+                "type": "string",
+                "example": "string"
+              },
+              "building": {
+                "type": "string",
+                "example": "string required"
+              },
+              "street": {
+                "type": "string",
+                "example": "string required"
+              },
+              "city": {
+                "type": "string",
+                "example": "string required"
+              },
+              "postcode": {
+                "type": "string",
+                "example": "string required"
+              },
+              "country": {
+                "type": "string",
+                "example": "string required"
+              },
+              "isDefault": {
+                "type": "string",
+                "example": "boolean required"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PutAddressReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "addressID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "apartment": {
+              "type": "string",
+              "example": "string"
+            },
+            "building": {
+              "type": "string",
+              "example": "string"
+            },
+            "street": {
+              "type": "string",
+              "example": "string"
+            },
+            "city": {
+              "type": "string",
+              "example": "string"
+            },
+            "postcode": {
+              "type": "string",
+              "example": "string"
+            },
+            "country": {
+              "type": "string",
+              "example": "string"
+            },
+            "isDefault": {
+              "type": "string",
+              "example": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "v1PutAddressRes": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1DeleteAddressReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "addressID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1DeleteAddressRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1PutFileReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "1": {
+                    "type": "string"
+                  },
+                  "filename": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "contentType": {
+                    "type": "string",
+                    "example": "string required"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PutFileRes": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "publicUrl": {
+                "type": "string",
+                "example": "string required"
+              },
+              "uploadUrl": {
+                "type": "string",
+                "example": "string required"
+              },
+              "key": {
+                "type": "string",
+                "example": "string required"
+              }
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1PostTranslationsReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "array",
+              "example": [
+                "string",
+                "(minItems:1)"
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PostTranslationsRes": {
+      "type": "object",
+      "properties": {
+        "translations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "1": {
+                "type": "string"
+              },
+              "en": {
+                "type": "string",
+                "example": "string required"
+              },
+              "ua": {
+                "type": "string",
+                "example": "string required"
+              },
+              "sk": {
+                "type": "string",
+                "example": "string required"
+              },
+              "de": {
+                "type": "string",
+                "example": "string required"
+              },
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PostGoodMetadataReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "imageUrl": {
+              "type": "string",
+              "example": "string required"
+            },
+            "name": {
+              "type": "string",
+              "example": "string required"
+            },
+            "category": {
+              "type": "string",
+              "example": "string required"
+            }
+          }
+        }
+      }
+    },
+    "v1PostGoodMetadataRes": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "example": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid"
+              },
+              "name": {
+                "type": "string",
+                "example": "string required"
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1GetCategoriesReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "sort": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetCategoriesRes": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "coverImage": {
+                "type": "string",
+                "example": "string"
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "en": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "ua": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "sk": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "de": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "enSlug": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "uaSlug": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "skSlug": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "deSlug": {
+                    "type": "string",
+                    "example": "string"
+                  }
+                }
+              },
+              "description": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1GetAdminCategoriesReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "sort": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetAdminCategoriesRes": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "coverImage": {
+                "type": "string",
+                "example": "string"
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "en": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "ua": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "sk": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "de": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  }
+                }
+              },
+              "description": {
+                "type": "object",
+                "properties": {
+                  "en": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "ua": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "sk": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "de": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "deletedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PutCategoryReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "categoryID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "nameTID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "nameTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "descriptionTID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "descriptionTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "coverImage": {
+              "type": "string",
+              "example": "string"
+            },
+            "restore": {
+              "type": "string",
+              "example": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "v1PutCategoryRes": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1DeleteCategoryReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "categoryID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1DeleteCategoryRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetItemTypesReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100"
+            },
+            "search": {
+              "type": "string",
+              "example": "string"
+            },
+            "sort": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetItemTypesRes": {
+      "type": "object",
+      "properties": {
+        "itemTypes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "en": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "ua": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "sk": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "de": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  }
+                }
+              },
+              "weight": {
+                "type": "string",
+                "example": "number float required"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              }
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1 required"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100 required"
+            },
+            "total": {
+              "type": "string",
+              "example": "integer required"
+            }
+          }
+        }
+      }
+    },
+    "v1PutItemTypeReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "itemTypeID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "nameTID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "nameTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "weight": {
+              "type": "string",
+              "example": "number float min:1 required"
+            }
+          }
+        }
+      }
+    },
+    "v1PutItemTypeRes": {
+      "type": "object",
+      "properties": {
+        "itemType": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1DeleteItemTypeReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "itemTypeID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1DeleteItemTypeRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetSelectionistsReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100"
+            },
+            "search": {
+              "type": "string",
+              "example": "string"
+            },
+            "categoryID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "sort": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetSelectionistsRes": {
+      "type": "object",
+      "properties": {
+        "selectionists": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "en": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "ua": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "sk": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "de": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  }
+                }
+              },
+              "country": {
+                "type": "string",
+                "example": "string required"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              }
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1 required"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100 required"
+            },
+            "total": {
+              "type": "string",
+              "example": "integer required"
+            }
+          }
+        }
+      }
+    },
+    "v1PutSelectionistReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "selectionistID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "nameTID": {
+              "type": "string",
+              "example": "string"
+            },
+            "nameTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "country": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1PutSelectionistRes": {
+      "type": "object",
+      "properties": {
+        "selectionist": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1DeleteSelectionistReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "selectionistID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1DeleteSelectionistRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetTagsReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100"
+            },
+            "search": {
+              "type": "string",
+              "example": "string"
+            },
+            "categoryID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "sort": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetTagsRes": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "name": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1 required"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100 required"
+            },
+            "total": {
+              "type": "string",
+              "example": "integer required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetAdminTagsReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100"
+            },
+            "search": {
+              "type": "string",
+              "example": "string"
+            },
+            "categoryID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "sort": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetAdminTagsRes": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "en": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "ua": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "sk": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "de": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "deletedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              }
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1 required"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100 required"
+            },
+            "total": {
+              "type": "string",
+              "example": "integer required"
+            }
+          }
+        }
+      }
+    },
+    "v1PutTagReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "tagID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "nameTID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "nameTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "restore": {
+              "type": "string",
+              "example": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "v1PutTagRes": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1DeleteTagReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "tagID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1DeleteTagRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetGoodsReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100"
+            },
+            "categoryID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "selectionistIDs": {
+              "type": "array",
+              "example": [
+                "string uuid"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "itemTypeIDs": {
+              "type": "array",
+              "example": [
+                "string uuid"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "tagIDs": {
+              "type": "array",
+              "example": [
+                "string uuid"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "state": {
+              "type": "array",
+              "example": [
+                "string"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "search": {
+              "type": "string",
+              "example": "string"
+            },
+            "sortBy": {
+              "type": "string",
+              "example": "string"
+            },
+            "sortOrder": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetGoodsRes": {
+      "type": "object",
+      "properties": {
+        "goods": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "photos": {
+                "type": "array",
+                "example": [
+                  "string"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "en": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "ua": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "sk": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "de": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "enSlug": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "uaSlug": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "skSlug": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "deSlug": {
+                    "type": "string",
+                    "example": "string"
+                  }
+                }
+              },
+              "description": {
+                "type": "object",
+                "properties": {}
+              },
+              "state": {
+                "type": "string",
+                "example": "string required"
+              },
+              "category": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "name": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "1": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "string uuid required"
+                    },
+                    "name": {
+                      "type": "object",
+                      "properties": {}
+                    }
+                  }
+                }
+              },
+              "selectionist": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "name": {
+                    "type": "object",
+                    "properties": {}
+                  },
+                  "country": {
+                    "type": "string",
+                    "example": "string required"
+                  }
+                }
+              },
+              "pricings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "1": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "string uuid required"
+                    },
+                    "price": {
+                      "type": "string",
+                      "example": "number double min:0.01 required"
+                    },
+                    "quantity": {
+                      "type": "string",
+                      "example": "integer required"
+                    },
+                    "itemType": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "string uuid required"
+                        },
+                        "name": {
+                          "type": "object",
+                          "properties": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1 required"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100 required"
+            },
+            "total": {
+              "type": "string",
+              "example": "integer required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetGoodReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "goodID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetGoodRes": {
+      "type": "object",
+      "properties": {
+        "good": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "photos": {
+              "type": "array",
+              "example": [
+                "string"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "selectionist": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "string uuid required"
+                },
+                "name": {
+                  "type": "object",
+                  "properties": {
+                    "en": {
+                      "type": "string",
+                      "example": "string required"
+                    },
+                    "ua": {
+                      "type": "string",
+                      "example": "string required"
+                    },
+                    "sk": {
+                      "type": "string",
+                      "example": "string required"
+                    },
+                    "de": {
+                      "type": "string",
+                      "example": "string required"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "string uuid required"
+                    }
+                  }
+                },
+                "country": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "category": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "string uuid required"
+                },
+                "name": {
+                  "type": "object",
+                  "properties": {
+                    "en": {
+                      "type": "string",
+                      "example": "string required"
+                    },
+                    "ua": {
+                      "type": "string",
+                      "example": "string required"
+                    },
+                    "sk": {
+                      "type": "string",
+                      "example": "string required"
+                    },
+                    "de": {
+                      "type": "string",
+                      "example": "string required"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "string uuid required"
+                    }
+                  }
+                }
+              }
+            },
+            "name": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "string uuid required"
+                }
+              }
+            },
+            "description": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "string uuid required"
+                }
+              }
+            },
+            "state": {
+              "type": "string",
+              "example": "string required"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "name": {
+                    "type": "object",
+                    "properties": {
+                      "en": {
+                        "type": "string",
+                        "example": "string required"
+                      },
+                      "ua": {
+                        "type": "string",
+                        "example": "string required"
+                      },
+                      "sk": {
+                        "type": "string",
+                        "example": "string required"
+                      },
+                      "de": {
+                        "type": "string",
+                        "example": "string required"
+                      },
+                      "id": {
+                        "type": "string",
+                        "example": "string uuid required"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "string date-time required"
+            },
+            "updatedAt": {
+              "type": "string",
+              "example": "string date-time required"
+            },
+            "pricings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "1": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "itemType": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "string uuid required"
+                      },
+                      "name": {
+                        "type": "object",
+                        "properties": {}
+                      }
+                    }
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "example": "integer required"
+                  },
+                  "price": {
+                    "type": "string",
+                    "example": "number float required"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PostGoodReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "categoryID": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "selectionistID": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "tagIDs": {
+              "type": "array",
+              "example": [
+                "string uuid",
+                "(minItems:1 maxItems:10)"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "nameTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "descriptionTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "action": {
+              "type": "string",
+              "example": "string"
+            },
+            "photos": {
+              "type": "array",
+              "example": [
+                "string",
+                "(maxItems:20)"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "pricings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "1": {
+                    "type": "string"
+                  },
+                  "itemTypeID": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "price": {
+                    "type": "string",
+                    "example": "number double min:0.01 required"
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "example": "integer required"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PostGoodRes": {
+      "type": "object",
+      "properties": {
+        "good": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1PatchGoodReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "goodID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "categoryID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "selectionistID": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "tagIDs": {
+              "type": "array",
+              "example": [
+                "string uuid",
+                "(minItems:1 maxItems:10)"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "nameTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "descriptionTranslations": {
+              "type": "object",
+              "properties": {
+                "en": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "ua": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "sk": {
+                  "type": "string",
+                  "example": "string required"
+                },
+                "de": {
+                  "type": "string",
+                  "example": "string required"
+                }
+              }
+            },
+            "action": {
+              "type": "string",
+              "example": "string"
+            },
+            "photos": {
+              "type": "array",
+              "example": [
+                "string",
+                "(maxItems:20)"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "pricings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "1": {
+                    "type": "string"
+                  },
+                  "pricingID": {
+                    "type": "string",
+                    "example": "string uuid"
+                  },
+                  "itemTypeID": {
+                    "type": "string",
+                    "example": "string uuid required"
+                  },
+                  "price": {
+                    "type": "string",
+                    "example": "number double min:0.01 required"
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "example": "integer required"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1PatchGoodRes": {
+      "type": "object",
+      "properties": {
+        "good": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1DeleteGoodReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "goodID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1DeleteGoodRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetUserReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "userID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetUserRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "firstName": {
+              "type": "string",
+              "example": "string min:2 max:255 required"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "string min:2 max:255 required"
+            },
+            "firstNameSlug": {
+              "type": "string",
+              "example": "string required"
+            },
+            "lastNameSlug": {
+              "type": "string",
+              "example": "string required"
+            },
+            "email": {
+              "type": "string",
+              "example": "string email"
+            },
+            "emailVerified": {
+              "type": "string",
+              "example": "boolean required"
+            },
+            "avatar": {
+              "type": "string",
+              "example": "string required"
+            },
+            "role": {
+              "type": "string",
+              "example": "string required"
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "string date-time required"
+            },
+            "updatedAt": {
+              "type": "string",
+              "example": "string date-time required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetUsersReqBody": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100"
+            },
+            "search": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1GetUsersRes": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "string uuid required"
+              },
+              "firstName": {
+                "type": "string",
+                "example": "string min:2 max:255 required"
+              },
+              "lastName": {
+                "type": "string",
+                "example": "string min:2 max:255 required"
+              },
+              "firstNameSlug": {
+                "type": "string",
+                "example": "string required"
+              },
+              "lastNameSlug": {
+                "type": "string",
+                "example": "string required"
+              },
+              "email": {
+                "type": "string",
+                "example": "string email"
+              },
+              "emailVerified": {
+                "type": "string",
+                "example": "boolean required"
+              },
+              "avatar": {
+                "type": "string",
+                "example": "string required"
+              },
+              "role": {
+                "type": "string",
+                "example": "string required"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "string date-time required"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "string date-time required"
+              }
+            }
+          }
+        },
+        "paginationRes": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "example": "integer min:1 required"
+            },
+            "limit": {
+              "type": "string",
+              "example": "integer min:1 max:100 required"
+            },
+            "total": {
+              "type": "string",
+              "example": "integer required"
+            }
+          }
+        }
+      }
+    },
+    "v1PatchUserReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "userID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "example": "string min:2 max:255"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "string min:2 max:255"
+            },
+            "avatar": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "v1PatchUserRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1DeleteUserReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    "v1DeleteUserRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetRatesReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "addressID": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "basketItems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "pricingID": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "example": "integer required"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "example": "string date-time required"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1GetRatesRes": {
+      "type": "object",
+      "properties": {}
+    },
+    "v1CreateLabelReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "orderID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1CreateLabelRes": {
+      "type": "object",
+      "properties": {}
+    },
+    "v1SaveUserReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "user": {
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "example": "string min:2 max:255 required"
+                },
+                "lastName": {
+                  "type": "string",
+                  "example": "string min:2 max:255 required"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "string email required"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1SaveUserRes": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "token": {
+              "type": "string",
+              "example": "string required"
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1CreateOrderReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "addressID": {
+              "type": "string",
+              "example": "string uuid required"
+            },
+            "shippingRateID": {
+              "type": "string",
+              "example": "string required"
+            },
+            "recipientFirstName": {
+              "type": "string",
+              "example": "string min:2 max:255 required"
+            },
+            "recipientLastName": {
+              "type": "string",
+              "example": "string min:2 max:255 required"
+            },
+            "recipientEmail": {
+              "type": "string",
+              "example": "string email required"
+            },
+            "basketItems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "pricingID": {
+                    "type": "string",
+                    "example": "string required"
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "example": "integer required"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "example": "string date-time required"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "v1CreateOrderRes": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "string uuid"
+            },
+            "pricings": {
+              "type": "array",
+              "example": [
+                "string uuid"
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "clientSecret": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1GetInvoiceReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "orderID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1GetInvoiceRes": {
+      "type": "object",
+      "properties": {
+        "invoiceID": {
+          "type": "string",
+          "example": "string"
+        },
+        "invoiceUrl": {
+          "type": "string",
+          "example": "string"
+        },
+        "pdfUrl": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    },
+    "v1RefundOrderReqBody": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {}
+        },
+        "body": {
+          "type": "object",
+          "properties": {}
+        },
+        "headers": {
+          "type": "object",
+          "properties": {}
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "orderID": {
+              "type": "string",
+              "example": "string uuid required"
+            }
+          }
+        }
+      }
+    },
+    "v1RefundOrderRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "string"
+        }
+      }
+    }
+  }
+}
