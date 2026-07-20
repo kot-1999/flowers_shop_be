@@ -1,7 +1,7 @@
 # Flowers Shop
 
 - Frontend repo: https://github.com/kot-1999/flowers_shop_fe
-
+- Swagger API: https://kot-1999.github.io/flowers_shop_be/
 ## Content
 
 - [About Flower Shop](#about-flower-shop)
