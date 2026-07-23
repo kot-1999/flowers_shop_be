@@ -30,7 +30,7 @@ export class GoodController extends AbstractController {
                         .optional(),
                     state: Joi.array()
                         .items(Joi.string().valid(...Object.values(GoodState)))
-                        .default([GoodState.Available, GoodState.NoShow]),
+                        .default([GoodState.Available, GoodState.Awaiting]),
                     search: Joi.string()
                         .allow('')
                         .optional(),
