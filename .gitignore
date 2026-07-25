@@ -24,3 +24,6 @@ yarn-error.log*
 .sentryclirc
 localstack-data
 .idea
+
+.nyc_output
+coverage
