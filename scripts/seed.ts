@@ -67,14 +67,14 @@ async function seed() {
         for (let i = 0; i < seedConfig.grain; i++) {
             if (i % 3 === 0) {
                 users.push(UserGenerator.generateData({
-                    password: EncryptionService.hashSHA256('test123'),
+                    password: EncryptionService.hashSHA256('Test123'),
                     role: UserRole.Admin,
                     email: `admin${adminCounter}@gmail.com`
                 }))
                 adminCounter += 1
             } else if (i % 2 === 0) {
                 users.push(UserGenerator.generateData({
-                    password: EncryptionService.hashSHA256('test123'),
+                    password: EncryptionService.hashSHA256('Test123'),
                     role: UserRole.User,
                     email: `user${userCounter}@gmail.com`
                 }))
