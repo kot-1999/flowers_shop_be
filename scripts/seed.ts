@@ -61,23 +61,30 @@ async function seed() {
                 }
             }
         }
-
+        let adminCounter = 1
+        let userCounter = 1
         // Generate plain objects
         for (let i = 0; i < seedConfig.grain; i++) {
             if (i % 3 === 0) {
                 users.push(UserGenerator.generateData({
-                    password: EncryptionService.hashSHA256('Test123'),
-                    role: UserRole.Admin
+                    password: EncryptionService.hashSHA256('test123'),
+                    role: UserRole.Admin,
+                    email: `admin${adminCounter}@gmail.com`
                 }))
+                adminCounter += 1
             } else if (i % 2 === 0) {
                 users.push(UserGenerator.generateData({
-                    password: EncryptionService.hashSHA256('Test123'),
-                    role: UserRole.User
+                    password: EncryptionService.hashSHA256('test123'),
+                    role: UserRole.User,
+                    email: `user${userCounter}@gmail.com`
                 }))
+                userCounter += 1
             } else {
                 users.push(UserGenerator.generateData({
-                    role: UserRole.NotRegistered
+                    role: UserRole.NotRegistered,
+                    email: `user${userCounter}@gmail.com`
                 }))
+                userCounter += 1
             }
         }
         
@@ -99,8 +106,14 @@ async function seed() {
             selectionists.push(SelectionistGenerator.generateData())
         }
 
+        let categoryCount = 0
         for (const category of seedData.categories) {
-            categories.push(CategoryGenerator.generateData(category))
+            const coverImage = images[imagesDirs[categoryCount]][0] ?? null
+            categoryCount += 1
+            categories.push(CategoryGenerator.generateData({
+                ...category,
+                coverImage
+            }))
         }
 
         for (const itemType of seedData.itemTypes) {
