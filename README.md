@@ -254,8 +254,28 @@ The seeding process creates a realistic dataset including:
 
 The amount of generated data is configurable through the application configuration.
 
+The seed also creates test user accounts that can be used immediately:
+
+| Role  | Email              | Password |
+|-------|--------------------|----------|
+| User  | `user1@gmail.com`  | `Test123` |
+| User  | `userX@gmail.com`  | `Test123` |
+| Admin | `admin1@gmail.com` | `Test123` |
+| Admin   | `adminX@gmail.com` | `Test123` |
+
+
+#### Stripe test payment
+
+To test Stripe payments, use the following test card:
+
+- **Card number:** `4242 4242 4242 4242`
+- **Expiration date:** Any future date
+- **CVC:** Any 3-digit number
+- **ZIP/Postcode:** Any valid value (if requested)
+
 > ⚠️ Seeded data is intended for development and testing purposes only.
 
+> ⚠️ The Stripe card above works only when using Stripe in **test mode**.
 ---
 
 ## Useful links
