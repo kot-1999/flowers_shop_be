@@ -389,7 +389,7 @@ export class OrderController {
                     itemsCount: order._count.orderItems,
                     user: {
                         ...order.user,
-                        avatar: s3Service.getPublicUrl(user.avatar)
+                        avatar: s3Service.getPublicUrl(order.user.avatar)
                     }
                 })),
                 pagination: {
