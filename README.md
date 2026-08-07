@@ -3,8 +3,6 @@
 - Frontend repo: https://github.com/kot-1999/flowers_shop_fe
 - Swagger API: https://kot-1999.github.io/flowers_shop_be/
 
-![High level system architecture](./docs/screenshots/high-level-arch.PNG)
-
 ## Content
 
 - [About Flower Shop](#about-flower-shop)
@@ -467,6 +465,8 @@ flowers_shop_be/
 - **Sentry Monitoring** — Error tracking and performance monitoring.
 - **GitHub Actions** — Continuous Integration pipeline.
 - **Mocha & Chai Testing** — Unit and integration tests.
+
+![High level system architecture](./docs/screenshots/high-level-arch.PNG)
 
 # Application Overview
 
